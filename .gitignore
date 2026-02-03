@@ -4,7 +4,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 bun-debug.log*
-lerna-debug.log*
 
 # 临时文件
 *.tmp
@@ -13,7 +12,6 @@ lerna-debug.log*
 *.swo
 *~
 .DS_Store
-.DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
@@ -35,8 +33,6 @@ Thumbs.db
 
 # Node.js 依赖
 node_modules/
-npm-debug.log
-yarn-error.log
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
@@ -57,20 +53,6 @@ out/
 *.cert
 *.crt
 
-# 测试覆盖率
-coverage/
-.nyc_output/
-*.lcov
-
-# 操作系统文件
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
 # 备份文件
 *.bak
 *.backup
@@ -82,34 +64,6 @@ Thumbs.db
 *.rar
 *.7z
 
-# 策略备份目录（可选，如果不希望提交备份）
-# backups/
-# strategy-history.json
-
-# TypeScript
-*.tsbuildinfo
-
-# 可选：npm 包目录
-# .npm/
-
-# 可选：ESLint 缓存
-.eslintcache
-
-# Jest
-.jest-cache/
-jest-report/
-
-# Husky
-.husky/_/
-
-# Code Climate
-.codeclimate/
-
-# SonarQube
-.sonar/
-
-# 编辑器 - 保留项目级 VSCode 配置
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+# 策略备份目录
+backups/
+strategy-history.json
