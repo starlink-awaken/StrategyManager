@@ -58,6 +58,10 @@ out/
 *.backup
 *.old
 
+# 测试覆盖率
+coverage/
+*.lcov
+
 # 压缩文件
 *.zip
 *.tar.gz

@@ -2,12 +2,10 @@
   "name": "strategy-manager",
   "version": "1.0.0",
   "description": "智能策略管理系统 - 管理和执行各种 AI 策略",
-  "main": "dist/ManageStrategies.js",
-  "types": "dist/ManageStrategies.d.ts",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "dev:watch": "bun --watch Tools/ManageStrategies.ts",
+    "test": "bun test"
   },
   "keywords": [
     "strategy",
@@ -15,7 +13,8 @@
     "ai",
     "automation",
     "workflow",
-    "typescript"
+    "typescript",
+    "skill"
   ],
   "author": "starlink-awaken",
   "license": "MIT",
@@ -28,7 +27,7 @@
   },
   "homepage": "https://github.com/starlink-awaken/StrategyManager#readme",
   "files": [
-    "dist",
+    "Tools",
     "Workflows",
     "SKILL.md",
     "README.md",
@@ -42,10 +41,10 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
+    "bun-types": "latest",
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "bun": ">=1.0.0"
   }
 }

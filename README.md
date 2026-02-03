@@ -4,19 +4,11 @@
 
 **智能策略管理系统 - 管理和执行各种 AI 策略**
 
-[![CI Status](https://github.com/starlink-awaken/StrategyManager/workflows/CI/badge.svg)](https://github.com/starlink-awaken/StrategyManager/actions)
-[![CodeQL](https://github.com/starlink-awaken/StrategyManager/workflows/CodeQL/badge.svg)](https://github.com/starlink-awaken/StrategyManager/actions/security)
-[![codecov](https://codecov.io/gh/starlink-awaken/StrategyManager/branch/main/graph/badge.svg)](https://codecov.io/gh/starlink-awaken/StrategyManager)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://badge.fury.io/js/strategy-manager.svg)](https://www.npmjs.com/package/strategy-manager)
+[![Bun](https://img.shields.io/badge/Bun-1.0+-black?logo=bun&logoColor=white)](https://bun.sh)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![GitHub Stars](https://img.shields.io/github/stars/starlink-awaken/StrategyManager?style=social)](https://github.com/starlink-awaken/StrategyManager/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/starlink-awaken/StrategyManager)](https://github.com/starlink-awaken/StrategyManager/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)](https://nodejs.org/)
-[![Code Climate](https://img.shields.io/codeclimate/maintainability/starlink-awaken/StrategyManager)](https://codeclimate.com/github/starlink-awaken/StrategyManager)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlink-awaken_StrategyManager&metric=alert_status)](https://sonarcloud.io/dashboard?id=starlink-awaken_StrategyManager)
 
 </div>
 
