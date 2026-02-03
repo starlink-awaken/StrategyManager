@@ -147,15 +147,60 @@ export function formatTable(headers: string[], rows: string[][]): string {
 export function readJSONC(filePath: string): any {
   const content = fs.readFileSync(filePath, 'utf-8');
 
-  const hasComments = /\/\/.*$|\/\*[\s\S]*?\*\//.test(content);
+  const hasComments = /^\s*\/\/|\/\*/m.test(content);
 
   if (!hasComments) {
     return JSON.parse(content);
   }
 
-  const jsonContent = content
-    .replace(/\/\/.*$/gm, '')
-    .replace(/\/\*[\s\S]*?\*\//g, '');
+  let result = content;
+
+  // 先移除块注释 /* ... */
+  result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  // 移除行尾的 // 注释（需要小心不匹配字符串内的 //）
+  // 策略：逐行处理，只移除不在引号内的 //
+  const lines = result.split('\n');
+  const processedLines: string[] = [];
+
+  for (const line of lines) {
+    let processedLine = '';
+    let inString = false;
+    let escapeNext = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+
+      if (escapeNext) {
+        processedLine += char;
+        escapeNext = false;
+        continue;
+      }
+
+      if (char === '\\') {
+        processedLine += char;
+        escapeNext = true;
+        continue;
+      }
+
+      if (char === '"' || char === "'" || char === '`') {
+        inString = !inString;
+        processedLine += char;
+        continue;
+      }
+
+      // 如果不在字符串内且遇到 //，则截断
+      if (!inString && char === '/' && i + 1 < line.length && line[i + 1] === '/') {
+        break;
+      }
+
+      processedLine += char;
+    }
+
+    processedLines.push(processedLine);
+  }
+
+  const jsonContent = processedLines.join('\n');
 
   try {
     return JSON.parse(jsonContent);
@@ -837,7 +882,7 @@ export function recommendStrategy(scenario: string): Recommendation | null {
 
     // 基于 use_case 和 cost_level 的推荐
     if (scenarioLower.includes('performance') || scenarioLower.includes('速度') ||
-        scenarioLower.includes('快速') || scenarioLower.includes('紧急')) {
+      scenarioLower.includes('快速') || scenarioLower.includes('紧急')) {
       if (strategy.costLevel === 'high') {
         score = 90;
         reason = '高性能模式适合快速响应和紧急任务';
@@ -845,7 +890,7 @@ export function recommendStrategy(scenario: string): Recommendation | null {
     }
 
     if (scenarioLower.includes('economical') || scenarioLower.includes('节省') ||
-        scenarioLower.includes('便宜') || scenarioLower.includes('预算')) {
+      scenarioLower.includes('便宜') || scenarioLower.includes('预算')) {
       if (strategy.costLevel === 'low') {
         score = 95;
         reason = '经济模式最大程度降低成本';
@@ -853,7 +898,7 @@ export function recommendStrategy(scenario: string): Recommendation | null {
     }
 
     if (scenarioLower.includes('balanced') || scenarioLower.includes('均衡') ||
-        scenarioLower.includes('日常') || scenarioLower.includes('开发')) {
+      scenarioLower.includes('日常') || scenarioLower.includes('开发')) {
       if (strategy.costLevel === 'medium') {
         score = 85;
         reason = '均衡模式适合日常开发工作';
@@ -861,7 +906,7 @@ export function recommendStrategy(scenario: string): Recommendation | null {
     }
 
     if (scenarioLower.includes('overnight') || scenarioLower.includes('夜间') ||
-        scenarioLower.includes('晚上')) {
+      scenarioLower.includes('晚上')) {
       if (strategy.name.includes('overnight')) {
         score = 100;
         reason = '夜间模式优化夜间工作的成本和性能';
@@ -869,7 +914,7 @@ export function recommendStrategy(scenario: string): Recommendation | null {
     }
 
     if (scenarioLower.includes('emergency') || scenarioLower.includes('紧急') ||
-        scenarioLower.includes('快速')) {
+      scenarioLower.includes('快速')) {
       if (strategy.name.includes('emergency')) {
         score = 95;
         reason = '紧急模式提供最快的响应速度';
