@@ -1,0 +1,96 @@
+# 日志文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+lerna-debug.log*
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE 和编辑器配置
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# Node.js 依赖
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# 构建输出
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# 环境变量和配置文件
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+*.crt
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+*.lcov
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 策略备份目录（可选，如果不希望提交备份）
+# backups/
+# strategy-history.json
+
+# TypeScript
+*.tsbuildinfo
+
+# 可选：npm 包目录
+# .npm/
+
+# 可选：ESLint 缓存
+# .eslintcache
