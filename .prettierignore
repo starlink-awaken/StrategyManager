@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+build
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.git
+.github
+*.md
+.vscode
+.idea
+.DS_Store

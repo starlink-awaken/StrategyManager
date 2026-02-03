@@ -93,4 +93,23 @@ Thumbs.db
 # .npm/
 
 # 可选：ESLint 缓存
-# .eslintcache
+.eslintcache
+
+# Jest
+.jest-cache/
+jest-report/
+
+# Husky
+.husky/_/
+
+# Code Climate
+.codeclimate/
+
+# SonarQube
+.sonar/
+
+# 编辑器 - 保留项目级 VSCode 配置
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
