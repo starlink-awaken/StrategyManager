@@ -1,20 +1,33 @@
 {
-  "name": "strategy-manager",
-  "version": "1.0.0",
-  "description": "智能策略管理系统 - 管理和执行各种 AI 策略",
+  "name": "@starlink-awaken/strategy-manager",
+  "version": "3.0.0",
+  "description": "AI策略配置生命周期管理工具 - OpenCode Skill for managing AI model configurations",
   "scripts": {
     "type-check": "tsc --noEmit",
     "dev:watch": "bun --watch Tools/ManageStrategies.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "test:unit": "bun test tests/unit/",
+    "test:pathmanager": "bun test tests/unit/PathManager.test.ts",
+    "test:validator": "bun test tests/unit/Validator.test.ts",
+    "test:recommender": "bun test tests/unit/Recommender.test.ts",
+    "test:ci": "bun test --coverage --reporter=junit"
   },
   "keywords": [
-    "strategy",
-    "management",
+    "opencode",
+    "skill",
     "ai",
-    "automation",
+    "strategy",
+    "configuration",
+    "management",
+    "claude",
+    "copilot",
+    "gemini",
+    "openai",
     "workflow",
     "typescript",
-    "skill"
+    "bun"
   ],
   "author": "starlink-awaken",
   "license": "MIT",
@@ -29,9 +42,13 @@
   "files": [
     "Tools",
     "Workflows",
+    "templates",
+    "scripts",
     "SKILL.md",
     "README.md",
-    "LICENSE"
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "chalk": "^4.1.2",

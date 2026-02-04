@@ -166,7 +166,18 @@ export class SmartRecommender {
    * 推荐策略（返回前 3 个）
    */
   recommend(context: RecommendationContext): Recommendation[] {
-    return this.strategies
+    let candidates = this.strategies;
+
+    // 过滤超预算5倍以上的策略
+    if (context.budget) {
+      const remaining = context.budget.monthly - context.budget.currentSpent;
+      candidates = candidates.filter((strategy) => {
+        const cost = COST_LEVELS[strategy.name] || 500;
+        return cost <= remaining * 5; // 最多允许5倍超支
+      });
+    }
+
+    return candidates
       .map((strategy) => this.scoreStrategy(strategy, context))
       .sort((a, b) => b.score - a.score)
       .slice(0, 3);
@@ -522,6 +533,25 @@ export class SmartRecommender {
       reasons.push("质量适中，适合非关键任务");
     }
 
+    // 优先级匹配 - 添加关键词
+    const priority = context.scenario?.priority;
+    if (priority === "speed") {
+      if (
+        strategy.name.includes("super") ||
+        strategy.name.includes("performance")
+      ) {
+        reasons.push("快速响应");
+      }
+    } else if (priority === "quality" && scores.quality > 0.7) {
+      if (!reasons.some((r) => r.includes("高质量"))) {
+        reasons.push("高质量输出");
+      }
+    } else if (priority === "cost" && scores.cost > 0.7) {
+      if (!reasons.some((r) => r.includes("成本") || r.includes("经济"))) {
+        reasons.push("成本经济");
+      }
+    }
+
     // 历史偏好
     if (scores.history > 0.7) {
       reasons.push("您经常使用此策略");
@@ -533,7 +563,9 @@ export class SmartRecommender {
         strategy.name.includes("super") ||
         strategy.name.includes("performance")
       ) {
-        reasons.push("适合紧急任务的快速响应");
+        if (!reasons.some((r) => r.includes("快速"))) {
+          reasons.push("适合紧急任务的快速响应");
+        }
       }
     }
 
@@ -690,39 +722,82 @@ export function parseRecommendationContext(
     }
   }
 
-  // 优先级识别
-  if (
-    lowerDesc.includes("预算") ||
-    lowerDesc.includes("便宜") ||
-    lowerDesc.includes("成本") ||
-    lowerDesc.includes("cost")
-  ) {
-    if (context.scenario) {
-      context.scenario.priority = "cost";
-    } else {
-      context.scenario = { type: "daily", priority: "cost" };
+  // 优先级识别 - 使用计数方式，选择最强的优先级
+  const priorityScores = {
+    quality: 0,
+    cost: 0,
+    speed: 0,
+  };
+
+  // 质量关键词
+  const qualityKeywords = [
+    "质量",
+    "重要",
+    "关键",
+    "完美",
+    "最好",
+    "professional",
+    "quality",
+    "best",
+    "excellent",
+  ];
+  const costKeywords = [
+    "便宜",
+    "省钱",
+    "经济",
+    "cheap",
+    "economical",
+    "affordable",
+  ];
+  const speedKeywords = ["紧急", "快速", "urgent", "fast", "quick"];
+  // 预算关键词特殊处理：只有在低预算时才算cost优先
+  const budgetKeywords = ["预算", "budget"];
+
+  for (const kw of qualityKeywords) {
+    if (lowerDesc.includes(kw)) priorityScores.quality++;
+  }
+  for (const kw of costKeywords) {
+    if (lowerDesc.includes(kw)) priorityScores.cost++;
+  }
+  for (const kw of speedKeywords) {
+    if (lowerDesc.includes(kw)) priorityScores.speed++;
+  }
+
+  // 预算关键词：提取数字判断
+  const budgetMatch = lowerDesc.match(/预算[：:]*\s*(\d+)/);
+  if (budgetMatch) {
+    const budgetAmount = parseInt(budgetMatch[1]);
+    // 只有预算<1000才算cost优先，否则不计入
+    if (budgetAmount < 1000) {
+      priorityScores.cost += 2; // 低预算强制cost优先
     }
-  } else if (
-    lowerDesc.includes("质量") ||
-    lowerDesc.includes("重要") ||
-    lowerDesc.includes("关键") ||
-    lowerDesc.includes("quality")
-  ) {
-    if (context.scenario) {
-      context.scenario.priority = "quality";
-    } else {
-      context.scenario = { type: "daily", priority: "quality" };
+  } else {
+    // 如果只是提到"预算"但没有数字，算1分
+    for (const kw of budgetKeywords) {
+      if (lowerDesc.includes(kw)) priorityScores.cost++;
     }
-  } else if (
-    lowerDesc.includes("紧急") ||
-    lowerDesc.includes("快速") ||
-    lowerDesc.includes("urgent") ||
-    lowerDesc.includes("fast")
-  ) {
+  }
+
+  // 选择得分最高的优先级
+  const maxScore = Math.max(
+    priorityScores.quality,
+    priorityScores.cost,
+    priorityScores.speed,
+  );
+  if (maxScore > 0) {
+    let priority: Priority = "balanced";
+    if (priorityScores.quality === maxScore) {
+      priority = "quality";
+    } else if (priorityScores.cost === maxScore) {
+      priority = "cost";
+    } else if (priorityScores.speed === maxScore) {
+      priority = "speed";
+    }
+
     if (context.scenario) {
-      context.scenario.priority = "speed";
+      context.scenario.priority = priority;
     } else {
-      context.scenario = { type: "daily", priority: "speed" };
+      context.scenario = { type: "daily", priority };
     }
   }
 
@@ -745,11 +820,11 @@ export function parseRecommendationContext(
     }
   }
 
-  // 预算识别
-  const budgetMatch = lowerDesc.match(/(\d+)\s*元/);
-  if (budgetMatch) {
+  // 预算识别（元单位）
+  const budgetMatchYuan = lowerDesc.match(/(\d+)\s*元/);
+  if (budgetMatchYuan) {
     context.budget = {
-      monthly: parseInt(budgetMatch[1]),
+      monthly: parseInt(budgetMatchYuan[1]),
       currentSpent: 0,
       alertThreshold: 0.8,
     };

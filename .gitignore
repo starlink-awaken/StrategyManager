@@ -71,3 +71,15 @@ coverage/
 # 策略备份目录
 backups/
 strategy-history.json
+
+# 临时开发文件
+*.sh
+DELIVERY_REPORT.md
+test_results.txt
+debug_*.ts
+test_*.ts
+
+# 开发报告归档（保留但不提交）
+docs/archive/dev-reports/
+docs/archive/phase1/
+docs/archive/optimization-history/

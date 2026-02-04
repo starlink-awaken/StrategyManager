@@ -99,9 +99,16 @@ export class StrategyValidator {
     // 验证 agents 配置
     if (config.agents) {
       for (const [agentName, agentConfig] of Object.entries(config.agents)) {
-        if (!agentConfig.model) {
+        // 检查 agentConfig 是否存在以及 model 字段
+        if (!agentConfig || typeof agentConfig !== "object") {
           result.errors.push({
             field: `agents.${agentName}`,
+            message: `agent ${agentName} 配置无效`,
+            severity: "error",
+          });
+        } else if (!agentConfig.model) {
+          result.errors.push({
+            field: `agents.${agentName}.model`,
             message: `agent ${agentName} 缺少 model 字段`,
             severity: "error",
           });
@@ -114,9 +121,16 @@ export class StrategyValidator {
       for (const [categoryName, categoryConfig] of Object.entries(
         config.categories,
       )) {
-        if (!categoryConfig.model) {
+        // 检查 categoryConfig 是否存在以及 model 字段
+        if (!categoryConfig || typeof categoryConfig !== "object") {
           result.errors.push({
             field: `categories.${categoryName}`,
+            message: `category ${categoryName} 配置无效`,
+            severity: "error",
+          });
+        } else if (!categoryConfig.model) {
+          result.errors.push({
+            field: `categories.${categoryName}.model`,
             message: `category ${categoryName} 缺少 model 字段`,
             severity: "error",
           });
@@ -331,7 +345,9 @@ export class StrategyValidator {
 
     const utilizationRate = totalModels > 0 ? copilotModels / totalModels : 0;
 
-    if (utilizationRate < 0.1) {
+    // 只有在配置了足够多的模型时才检查利用率（至少5个）
+    // 阈值设为25%，即至少1/4的模型应使用GitHub Copilot
+    if (totalModels >= 5 && utilizationRate < 0.25) {
       result.warnings.push({
         field: "github-copilot",
         message: `GitHub Copilot 利用率仅 ${(utilizationRate * 100).toFixed(1)}%，建议增加使用`,
@@ -359,16 +375,56 @@ export class StrategyValidator {
    * 生成优化建议
    */
   private generateSuggestions(result: ValidationResult): void {
+    // 配置完整时的建议
     if (result.errors.length === 0 && result.warnings.length === 0) {
       result.suggestions.push("配置完整且合理，无明显问题");
+      return;
     }
 
+    // 有错误时的建议
+    if (result.errors.length > 0) {
+      result.suggestions.push(
+        `发现 ${result.errors.length} 个错误，需要修复后才能使用此策略`,
+      );
+
+      // 针对特定错误类型的建议
+      const hasModelError = result.errors.some((e) =>
+        e.field.includes("model"),
+      );
+      if (hasModelError) {
+        result.suggestions.push(
+          "确保所有 agent 和 category 都配置了 model 字段",
+        );
+      }
+    }
+
+    // 有警告时的建议
     if (result.warnings.length > 0) {
-      result.suggestions.push("建议查看警告项并考虑优化");
+      result.suggestions.push(
+        `发现 ${result.warnings.length} 个警告，建议优化以提升性价比`,
+      );
+
+      // 针对特定警告类型的建议
+      const hasCostWarning = result.warnings.some((w) =>
+        w.field.includes("cost"),
+      );
+      if (hasCostWarning) {
+        result.suggestions.push("考虑使用更经济的模型组合以降低成本");
+      }
+
+      const hasCopilotWarning = result.warnings.some(
+        (w) => w.field === "github-copilot",
+      );
+      if (hasCopilotWarning) {
+        result.suggestions.push(
+          "增加 GitHub Copilot 模型使用以充分利用免费额度",
+        );
+      }
     }
 
-    if (result.info.length > 0) {
-      result.suggestions.push("有一些可选的优化建议");
+    // 有信息提示时的建议
+    if (result.info.length > 0 && result.warnings.length === 0) {
+      result.suggestions.push("配置基本合理，有一些可选的优化建议");
     }
   }
 }
