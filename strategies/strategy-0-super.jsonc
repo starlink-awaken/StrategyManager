@@ -1,0 +1,259 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "极致性能型：最强模型负责关键决策，大用量资源承担主力，思考预算充足",
+  "metadata": {
+    "version": "2.0.0",
+    "updated": "2026-02-04",
+    "cost_level": "high",
+    "use_case": "关键项目、复杂架构设计、深度推理任务",
+    "optimization": "最高性能优先，不考虑成本",
+    "monthly_cost": "¥2000-3000",
+    "resources_used": [
+      "GitHub Copilot Pro+",
+      "Anthropic Pro",
+      "OpenAI Plus",
+      "Google Pro",
+      "ZhiPu CodingPlan Max",
+      "方舟 CodingPlan Pro"
+    ]
+  },
+  // ================================================
+  // Strategy-0: 极致性能型 (SUPER)
+  // ================================================
+  // 理念：用最强的模型做最重要的事，充分利用思考预算
+  // 关键特性：
+  //   1. Sisyphus 用 Opus 4.5，完整思考支持
+  //   2. 规划器用 Opus 4.5 (Antigravity)，思考预算充足
+  //   3. 架构评审用 GPT-5.2-Codex 高级推理
+  //   4. 快速任务用 ZhiPu GLM 4.7（60倍额度）
+  //   5. 严格并发控制，避免超限
+  // ================================================
+  // ========== Agent 配置 ==========
+  "agents": {
+    // 主编排器 - Claude Opus 4.5 (Anthropic/GitHub Copilot)
+    // 职责：任务规划、多agent协调、最终决策
+    // 配置：完整思考支持，高预算用于复杂推理
+    "sisyphus": {
+      "model": "anthropic/claude-opus-4-5",
+      "variant": "max",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 200000
+      },
+      "temperature": 0.3,
+      "maxTokens": 8000
+    },
+    // 规划器 - Claude Opus 4.5 Thinking (Google Antigravity)
+    // 职责：战略规划、需求分析、工作流设计
+    // 配置：通过 Antigravity 访问，充足思考预算
+    "prometheus": {
+      "model": "google/antigravity-claude-opus-4-5-thinking",
+      "variant": "max",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 150000
+      },
+      "temperature": 0.2,
+      "maxTokens": 6000
+    },
+    // 架构/代码审查 - GPT-5.2-Codex
+    // 职责：架构决策、代码审查、设计模式评估
+    // 配置：xhigh 推理能力
+    "oracle": {
+      "model": "openai/gpt-5.2-codex",
+      "reasoningEffort": "xhigh",
+      "temperature": 0.3,
+      "maxTokens": 6000
+    },
+    // 深度工作者 - GPT-5.2-Codex
+    // 职责：自主完成复杂开发任务，执行细节实现
+    "hephaestus": {
+      "model": "openai/gpt-5.2-codex",
+      "reasoningEffort": "high",
+      "temperature": 0.3,
+      "maxTokens": 8000
+    },
+    // 文档/知识查询 - GLM 4.7 (ZhiPu 60倍额度)
+    // 职责：快速查询、文档检索、模式匹配
+    // 配置：低温度、低成本、高并发
+    "librarian": {
+      "model": "zai-coding-plan/glm-4.7",
+      "temperature": 0.1,
+      "maxTokens": 3000
+    },
+    // 快速探索 - Claude Haiku 4.5
+    // 职责：快速代码探索、grep 上下文收集
+    // 配置：经济型，用于辅助任务
+    "explore": {
+      "model": "anthropic/claude-haiku-4-5",
+      "temperature": 0.2,
+      "maxTokens": 2000
+    },
+    // 多模态分析 - Gemini 3 Pro
+    // 职责：图像分析、UI 评审、多模态任务
+    // 配置：高变体用于最佳质量
+    "multimodal-looker": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.3,
+      "maxTokens": 4000
+    },
+    // 规划前分析 - Claude Sonnet 4.5 Thinking
+    // 职责：需求歧义识别、AI失败点分析
+    "metis": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 80000
+      },
+      "temperature": 0.2,
+      "maxTokens": 4000
+    },
+    // 规划审查 - GPT-5.2-Codex
+    // 职责：计划验证、完整性检查、可验证性评估
+    "momus": {
+      "model": "openai/gpt-5.2-codex",
+      "reasoningEffort": "medium",
+      "temperature": 0.2,
+      "maxTokens": 4000
+    },
+    // 深度思考 - Claude Opus 4.5 Thinking
+    // 职责：复杂问题的深度分析和思考
+    "atlas": {
+      "model": "anthropic/claude-opus-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 150000
+      },
+      "temperature": 0.2,
+      "maxTokens": 6000
+    }
+  },
+  // ========== Category 配置 ==========
+  "categories": {
+    // 前端 UI/UX 设计
+    "visual-engineering": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.4,
+      "maxTokens": 5000,
+      "description": "UI/UX 设计、前端实现、样式优化"
+    },
+    // 深度逻辑推理
+    "ultrabrain": {
+      "model": "openai/gpt-5.2-codex",
+      "variant": "xhigh",
+      "reasoningEffort": "xhigh",
+      "temperature": 0.2,
+      "maxTokens": 8000,
+      "description": "复杂架构决策、深度逻辑推理、算法设计"
+    },
+    // 创意任务
+    "artistry": {
+      "model": "google/gemini-3-pro",
+      "variant": "max",
+      "temperature": 0.7,
+      "maxTokens": 6000,
+      "description": "创意文案、设计创意、新颖想法生成"
+    },
+    // 快速简单任务
+    "quick": {
+      "model": "zai-coding-plan/glm-4.7",
+      "temperature": 0.3,
+      "maxTokens": 2000,
+      "description": "快速修复、简单功能、格式转换"
+    },
+    // 通用低难度
+    "unspecified-low": {
+      "model": "zai-coding-plan/glm-4.7",
+      "temperature": 0.3,
+      "maxTokens": 3000,
+      "description": "文件编辑、代码清理、基础实现"
+    },
+    // 通用高难度
+    "unspecified-high": {
+      "model": "anthropic/claude-opus-4-5",
+      "variant": "max",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 100000
+      },
+      "temperature": 0.3,
+      "maxTokens": 8000,
+      "description": "复杂功能实现、架构设计、系统优化"
+    },
+    // 文档/技术写作
+    "writing": {
+      "model": "google/gemini-3-pro",
+      "temperature": 0.5,
+      "maxTokens": 5000,
+      "description": "文档编写、技术文章、API 文档"
+    },
+    // 深度分析
+    "deep": {
+      "model": "openai/gpt-5.2-codex",
+      "reasoningEffort": "xhigh",
+      "temperature": 0.2,
+      "maxTokens": 8000,
+      "description": "系统分析、性能优化、问题诊断"
+    }
+  },
+  // ========== 并发控制 ==========
+  "background_task": {
+    "defaultConcurrency": 5,
+    "staleTimeoutMs": 300000,
+    // Provider 级别并发限制
+    "providerConcurrency": {
+      "anthropic": 2,
+      "openai": 3,
+      "google": 5,
+      "zai-coding-plan": 15,
+      "github-copilot": 2,
+      "ark": 8
+    },
+    // 模型级别并发限制（优先级更高）
+    "modelConcurrency": {
+      "anthropic/claude-opus-4-5": 2,
+      "anthropic/claude-sonnet-4-5": 2,
+      "anthropic/claude-haiku-4-5": 5,
+      "google/antigravity-claude-opus-4-5-thinking": 2,
+      "google/gemini-3-pro": 4,
+      "google/gemini-3-flash": 8,
+      "openai/gpt-5.2-codex": 2,
+      "zai-coding-plan/glm-4.7": 20
+    }
+  },
+  // ========== Sisyphus Agent 配置 ==========
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true
+  },
+  // ========== Git 配置 ==========
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  // ========== Tmux 集成 ==========
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40
+  },
+  // ========== 实验性功能 ==========
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+    "dynamic_context_pruning": {
+      "enabled": false
+    }
+  },
+  // ========== MCP 配置 ==========
+  "disabled_mcps": [],
+  // ========== Hooks 配置 ==========
+  "disabled_hooks": []
+}
