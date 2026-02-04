@@ -5,9 +5,10 @@
  * 提供策略的读取、切换、列表、修正、验证、对比、历史记录、导出/导入和智能推荐功能
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { execSync } from 'child_process';
+import * as fs from "fs";
+import * as path from "path";
+import { execSync } from "child_process";
+import { PathManager, defaultPathManager } from "./PathManager";
 
 // ==================== 类型定义 ====================
 
@@ -20,10 +21,13 @@ export interface StrategyConfig {
   lsp?: Record<string, any>;
   agents?: Record<string, { model: string; variant?: string }>;
   categories?: Record<string, { model: string; variant?: string }>;
+  background_task?: {
+    modelConcurrency?: Record<string, number>;
+  };
   metadata?: {
     version?: string;
     updated?: string;
-    cost_level?: 'low' | 'medium' | 'high';
+    cost_level?: "low" | "medium" | "high";
     use_case?: string;
     optimization?: string;
   };
@@ -49,7 +53,7 @@ export interface HistoryEntry {
   timestamp: string;
   strategyName: string;
   strategyPath: string;
-  action: 'switch' | 'rollback' | 'import';
+  action: "switch" | "rollback" | "import";
   backupPath?: string;
 }
 
@@ -73,21 +77,26 @@ export interface Recommendation {
 
 // ==================== 常量定义 ====================
 
-const CONFIG_DIR = path.join(process.env.HOME || '', '.config', 'opencode');
-const STRATEGIES_DIR = path.join(CONFIG_DIR, 'strategies');
-const CONFIG_FILE = path.join(CONFIG_DIR, 'oh-my-opencode.json');
-const HISTORY_FILE = path.join(CONFIG_DIR, 'strategy-history.json');
+// 使用默认路径管理器（用户模式）
+const pathManager = defaultPathManager;
+const CONFIG_DIR = pathManager.getConfigDir();
+const STRATEGIES_DIR = pathManager.getStrategiesDir();
+const CONFIG_FILE = pathManager.getConfigFile();
+const HISTORY_FILE = pathManager.getHistoryFile();
 const MAX_BACKUPS = 5;
+
+// 确保必要的目录存在
+pathManager.ensureDirectories();
 
 // ==================== 彩色输出 ====================
 
 const COLORS = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  bright: '\x1b[1m',
+  reset: "\x1b[0m",
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  bright: "\x1b[1m",
 };
 
 /**
@@ -98,19 +107,19 @@ export function colorize(text: string, color: keyof typeof COLORS): string {
 }
 
 export function success(text: string): void {
-  console.log(colorize(`✓ ${text}`, 'green'));
+  console.log(colorize(`✓ ${text}`, "green"));
 }
 
 export function error(text: string): void {
-  console.error(colorize(`✗ ${text}`, 'red'));
+  console.error(colorize(`✗ ${text}`, "red"));
 }
 
 export function warning(text: string): void {
-  console.log(colorize(`⚠ ${text}`, 'yellow'));
+  console.log(colorize(`⚠ ${text}`, "yellow"));
 }
 
 export function info(text: string): void {
-  console.log(colorize(`ℹ ${text}`, 'blue'));
+  console.log(colorize(`ℹ ${text}`, "blue"));
 }
 
 // ==================== 格式化表格 ====================
@@ -120,22 +129,24 @@ export function info(text: string): void {
  */
 export function formatTable(headers: string[], rows: string[][]): string {
   const maxWidths = headers.map((header, i) => {
-    const columnWidths = rows.map(row => (row[i] || '').length);
+    const columnWidths = rows.map((row) => (row[i] || "").length);
     return Math.max(header.length, ...columnWidths);
   });
 
-  const separator = maxWidths.map(width => '-'.repeat(width + 2)).join('+');
+  const separator = maxWidths.map((width) => "-".repeat(width + 2)).join("+");
 
-  let result = separator + '\n';
-  result += '| ' + headers.map((header, i) =>
-    header.padEnd(maxWidths[i])
-  ).join(' | ') + ' |\n';
-  result += separator + '\n';
+  let result = separator + "\n";
+  result +=
+    "| " +
+    headers.map((header, i) => header.padEnd(maxWidths[i])).join(" | ") +
+    " |\n";
+  result += separator + "\n";
 
   for (const row of rows) {
-    result += '| ' + row.map((cell, i) =>
-      (cell || '').padEnd(maxWidths[i])
-    ).join(' | ') + ' |\n';
+    result +=
+      "| " +
+      row.map((cell, i) => (cell || "").padEnd(maxWidths[i])).join(" | ") +
+      " |\n";
   }
 
   result += separator;
@@ -145,7 +156,7 @@ export function formatTable(headers: string[], rows: string[][]): string {
 // ==================== 文件系统操作 ====================
 
 export function readJSONC(filePath: string): any {
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = fs.readFileSync(filePath, "utf-8");
 
   const hasComments = /^\s*\/\/|\/\*/m.test(content);
 
@@ -156,15 +167,15 @@ export function readJSONC(filePath: string): any {
   let result = content;
 
   // 先移除块注释 /* ... */
-  result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+  result = result.replace(/\/\*[\s\S]*?\*\//g, "");
 
   // 移除行尾的 // 注释（需要小心不匹配字符串内的 //）
   // 策略：逐行处理，只移除不在引号内的 //
-  const lines = result.split('\n');
+  const lines = result.split("\n");
   const processedLines: string[] = [];
 
   for (const line of lines) {
-    let processedLine = '';
+    let processedLine = "";
     let inString = false;
     let escapeNext = false;
 
@@ -177,20 +188,25 @@ export function readJSONC(filePath: string): any {
         continue;
       }
 
-      if (char === '\\') {
+      if (char === "\\") {
         processedLine += char;
         escapeNext = true;
         continue;
       }
 
-      if (char === '"' || char === "'" || char === '`') {
+      if (char === '"' || char === "'" || char === "`") {
         inString = !inString;
         processedLine += char;
         continue;
       }
 
       // 如果不在字符串内且遇到 //，则截断
-      if (!inString && char === '/' && i + 1 < line.length && line[i + 1] === '/') {
+      if (
+        !inString &&
+        char === "/" &&
+        i + 1 < line.length &&
+        line[i + 1] === "/"
+      ) {
         break;
       }
 
@@ -200,7 +216,7 @@ export function readJSONC(filePath: string): any {
     processedLines.push(processedLine);
   }
 
-  const jsonContent = processedLines.join('\n');
+  const jsonContent = processedLines.join("\n");
 
   try {
     return JSON.parse(jsonContent);
@@ -214,7 +230,7 @@ export function readJSONC(filePath: string): any {
  */
 export function writeJSONC(filePath: string, data: any): void {
   const jsonContent = JSON.stringify(data, null, 2);
-  fs.writeFileSync(filePath, jsonContent, 'utf-8');
+  fs.writeFileSync(filePath, jsonContent, "utf-8");
 }
 
 /**
@@ -265,14 +281,14 @@ export function getCurrentStrategy(): StrategyMetadata | null {
     const target = readSymlink(CONFIG_FILE);
     if (!target) return null;
 
-    const name = path.basename(target, '.jsonc');
+    const name = path.basename(target, ".jsonc");
     try {
       const config = readJSONC(target);
       return {
         name,
         filePath: target,
-        description: config.description || '无描述',
-        costLevel: config.metadata?.cost_level || 'unknown',
+        description: config.description || "无描述",
+        costLevel: config.metadata?.cost_level || "unknown",
         version: config.metadata?.version,
         isCurrent: true,
         useCase: config.metadata?.use_case,
@@ -343,15 +359,17 @@ export function switchStrategy(strategyName: string): boolean {
       timestamp: new Date().toISOString(),
       strategyName: current.name,
       strategyPath: current.filePath,
-      action: 'switch',
-      backupPath: fileExists(CONFIG_FILE) && !isSymlink(CONFIG_FILE) ?
-        `${CONFIG_FILE}.backup.${Date.now()}` : undefined,
+      action: "switch",
+      backupPath:
+        fileExists(CONFIG_FILE) && !isSymlink(CONFIG_FILE)
+          ? `${CONFIG_FILE}.backup.${Date.now()}`
+          : undefined,
     });
   }
 
   // 创建软链接
   try {
-    execSync(`ln -sf "${strategyFile}" "${CONFIG_FILE}"`, { stdio: 'inherit' });
+    execSync(`ln -sf "${strategyFile}" "${CONFIG_FILE}"`, { stdio: "inherit" });
 
     success(`已切换到策略: ${strategyName}`);
     info(`软链目标: ${strategyFile}`);
@@ -362,7 +380,7 @@ export function switchStrategy(strategyName: string): boolean {
       timestamp: new Date().toISOString(),
       strategyName,
       strategyPath: strategyFile,
-      action: 'switch',
+      action: "switch",
     });
 
     return true;
@@ -389,20 +407,24 @@ export function listStrategies(): StrategyMetadata[] {
   const strategies: StrategyMetadata[] = [];
 
   for (const file of files) {
-    if (!file.startsWith('strategy-') || !file.endsWith('.jsonc') || file.includes('.backup')) {
+    if (
+      !file.startsWith("strategy-") ||
+      !file.endsWith(".jsonc") ||
+      file.includes(".backup")
+    ) {
       continue;
     }
 
     const filePath = path.join(STRATEGIES_DIR, file);
     try {
       const config = readJSONC(filePath);
-      const name = path.basename(file, '.jsonc');
+      const name = path.basename(file, ".jsonc");
 
       strategies.push({
         name,
         filePath,
-        description: config.description || '无描述',
-        costLevel: config.metadata?.cost_level || 'unknown',
+        description: config.description || "无描述",
+        costLevel: config.metadata?.cost_level || "unknown",
         version: config.metadata?.version,
         isCurrent: current?.name === name,
         useCase: config.metadata?.use_case,
@@ -422,22 +444,23 @@ export function displayStrategies(): void {
   const strategies = listStrategies();
 
   if (strategies.length === 0) {
-    error('没有找到可用的策略');
+    error("没有找到可用的策略");
     return;
   }
 
-  info('可用策略:');
+  info("可用策略:");
   console.log();
 
-  const headers = ['名称', '成本级别', '描述', '状态'];
+  const headers = ["名称", "成本级别", "描述", "状态"];
   const rows: string[][] = [];
 
   for (const strategy of strategies) {
     rows.push([
       strategy.name,
       strategy.costLevel,
-      strategy.description.substring(0, 30) + (strategy.description.length > 30 ? '...' : ''),
-      strategy.isCurrent ? colorize('[当前]', 'green') : '',
+      strategy.description.substring(0, 30) +
+        (strategy.description.length > 30 ? "..." : ""),
+      strategy.isCurrent ? colorize("[当前]", "green") : "",
     ]);
   }
 
@@ -457,10 +480,10 @@ export function fixStrategies(): boolean {
 
   // 创建备份
   const backupDir = path.join(
-    process.env.HOME || '',
-    '.config',
-    'opencode',
-    `strategies-backup-${Date.now()}`
+    process.env.HOME || "",
+    ".config",
+    "opencode",
+    `strategies-backup-${Date.now()}`,
   );
 
   try {
@@ -468,10 +491,10 @@ export function fixStrategies(): boolean {
 
     const files = fs.readdirSync(STRATEGIES_DIR);
     for (const file of files) {
-      if (file.endsWith('.jsonc')) {
+      if (file.endsWith(".jsonc")) {
         fs.copyFileSync(
           path.join(STRATEGIES_DIR, file),
-          path.join(backupDir, file)
+          path.join(backupDir, file),
         );
       }
     }
@@ -484,10 +507,10 @@ export function fixStrategies(): boolean {
 
   // 修正 Google 模型命名
   const replacements = [
-    ['google/gemini-3-pro', 'google/antigravity-gemini-3-pro'],
-    ['google/gemini-3-flash', 'google/antigravity-gemini-3-flash'],
-    ['google/gemini-2.0-', 'google/antigravity-gemini-2.0-'],
-    ['google/gemini-2.5-', 'google/antigravity-gemini-2.5-'],
+    ["google/gemini-3-pro", "google/antigravity-gemini-3-pro"],
+    ["google/gemini-3-flash", "google/antigravity-gemini-3-flash"],
+    ["google/gemini-2.0-", "google/antigravity-gemini-2.0-"],
+    ["google/gemini-2.5-", "google/antigravity-gemini-2.5-"],
   ];
 
   let fixedCount = 0;
@@ -495,23 +518,26 @@ export function fixStrategies(): boolean {
   try {
     const files = fs.readdirSync(STRATEGIES_DIR);
     for (const file of files) {
-      if (!file.endsWith('.jsonc')) {
+      if (!file.endsWith(".jsonc")) {
         continue;
       }
 
       const filePath = path.join(STRATEGIES_DIR, file);
-      let content = fs.readFileSync(filePath, 'utf-8');
+      let content = fs.readFileSync(filePath, "utf-8");
       let modified = false;
 
       for (const [from, to] of replacements) {
         if (content.includes(from)) {
-          content = content.replace(new RegExp(from.replace(/\//g, '\\/'), 'g'), to);
+          content = content.replace(
+            new RegExp(from.replace(/\//g, "\\/"), "g"),
+            to,
+          );
           modified = true;
         }
       }
 
       if (modified) {
-        fs.writeFileSync(filePath, content, 'utf-8');
+        fs.writeFileSync(filePath, content, "utf-8");
         info(`已修正: ${file}`);
         fixedCount++;
       }
@@ -535,7 +561,7 @@ export function validateStrategy(config: StrategyConfig): boolean {
 
   // 检查必需字段
   if (!config.description) {
-    errors.push('缺少 description 字段');
+    errors.push("缺少 description 字段");
   }
 
   // 验证 agents 配置
@@ -549,7 +575,9 @@ export function validateStrategy(config: StrategyConfig): boolean {
 
   // 验证 categories 配置
   if (config.categories) {
-    for (const [categoryName, categoryConfig] of Object.entries(config.categories)) {
+    for (const [categoryName, categoryConfig] of Object.entries(
+      config.categories,
+    )) {
       if (!categoryConfig.model) {
         errors.push(`category ${categoryName} 缺少 model 字段`);
       }
@@ -557,7 +585,7 @@ export function validateStrategy(config: StrategyConfig): boolean {
   }
 
   if (errors.length > 0) {
-    error('策略验证失败:');
+    error("策略验证失败:");
     for (const err of errors) {
       console.log(`  - ${err}`);
     }
@@ -584,7 +612,10 @@ export function validateStrategyFile(strategyName: string): boolean {
 /**
  * 比较两个策略的差异
  */
-export function compareStrategies(name1: string, name2: string): StrategyDiff | null {
+export function compareStrategies(
+  name1: string,
+  name2: string,
+): StrategyDiff | null {
   const config1 = readStrategy(name1);
   const config2 = readStrategy(name2);
 
@@ -602,10 +633,9 @@ export function compareStrategies(name1: string, name2: string): StrategyDiff | 
   const agents1 = config1.agents || {};
   const agents2 = config2.agents || {};
 
-  const allAgents = Array.from(new Set([
-    ...Object.keys(agents1),
-    ...Object.keys(agents2),
-  ]));
+  const allAgents = Array.from(
+    new Set([...Object.keys(agents1), ...Object.keys(agents2)]),
+  );
 
   for (const agent of allAgents) {
     if (!agents1[agent]) {
@@ -614,7 +644,7 @@ export function compareStrategies(name1: string, name2: string): StrategyDiff | 
       diff.removed.push(`agent: ${agent}`);
     } else if (agents1[agent].model !== agents2[agent].model) {
       diff.modified.push(
-        `agent: ${agent} (${agents1[agent].model} → ${agents2[agent].model})`
+        `agent: ${agent} (${agents1[agent].model} → ${agents2[agent].model})`,
       );
     }
   }
@@ -623,10 +653,9 @@ export function compareStrategies(name1: string, name2: string): StrategyDiff | 
   const cats1 = config1.categories || {};
   const cats2 = config2.categories || {};
 
-  const allCats = Array.from(new Set([
-    ...Object.keys(cats1),
-    ...Object.keys(cats2),
-  ]));
+  const allCats = Array.from(
+    new Set([...Object.keys(cats1), ...Object.keys(cats2)]),
+  );
 
   for (const cat of allCats) {
     if (!cats1[cat]) {
@@ -635,7 +664,7 @@ export function compareStrategies(name1: string, name2: string): StrategyDiff | 
       diff.removed.push(`category: ${cat}`);
     } else if (cats1[cat].model !== cats2[cat].model) {
       diff.modified.push(
-        `category: ${cat} (${cats1[cat].model} → ${cats2[cat].model})`
+        `category: ${cat} (${cats1[cat].model} → ${cats2[cat].model})`,
       );
     }
   }
@@ -650,7 +679,7 @@ export function displayStrategyDiff(name1: string, name2: string): void {
   const diff = compareStrategies(name1, name2);
 
   if (!diff) {
-    error('无法比较策略');
+    error("无法比较策略");
     return;
   }
 
@@ -658,7 +687,7 @@ export function displayStrategyDiff(name1: string, name2: string): void {
   console.log();
 
   if (diff.added.length > 0) {
-    console.log(colorize('新增:', 'green'));
+    console.log(colorize("新增:", "green"));
     for (const item of diff.added) {
       console.log(`  + ${item}`);
     }
@@ -666,7 +695,7 @@ export function displayStrategyDiff(name1: string, name2: string): void {
   }
 
   if (diff.removed.length > 0) {
-    console.log(colorize('移除:', 'red'));
+    console.log(colorize("移除:", "red"));
     for (const item of diff.removed) {
       console.log(`  - ${item}`);
     }
@@ -674,15 +703,19 @@ export function displayStrategyDiff(name1: string, name2: string): void {
   }
 
   if (diff.modified.length > 0) {
-    console.log(colorize('修改:', 'yellow'));
+    console.log(colorize("修改:", "yellow"));
     for (const item of diff.modified) {
       console.log(`  ~ ${item}`);
     }
     console.log();
   }
 
-  if (diff.added.length === 0 && diff.removed.length === 0 && diff.modified.length === 0) {
-    success('策略配置完全相同');
+  if (
+    diff.added.length === 0 &&
+    diff.removed.length === 0 &&
+    diff.modified.length === 0
+  ) {
+    success("策略配置完全相同");
   }
 }
 
@@ -697,14 +730,14 @@ export function getHistory(): HistoryEntry[] {
   }
 
   try {
-    const content = fs.readFileSync(HISTORY_FILE, 'utf-8');
+    const content = fs.readFileSync(HISTORY_FILE, "utf-8");
     const data = JSON.parse(content);
 
     if (Array.isArray(data)) {
       return data;
     }
 
-    if (data && typeof data === 'object' && Array.isArray(data.history)) {
+    if (data && typeof data === "object" && Array.isArray(data.history)) {
       return data.history;
     }
 
@@ -726,7 +759,11 @@ export function addHistoryEntry(entry: HistoryEntry): void {
   const trimmedHistory = history.slice(0, 100);
 
   try {
-    fs.writeFileSync(HISTORY_FILE, JSON.stringify(trimmedHistory, null, 2), 'utf-8');
+    fs.writeFileSync(
+      HISTORY_FILE,
+      JSON.stringify(trimmedHistory, null, 2),
+      "utf-8",
+    );
   } catch (err) {
     error(`保存历史记录失败: ${err}`);
   }
@@ -740,23 +777,23 @@ export function displayHistory(limit: number = 10): void {
   const displayHistory = history.slice(0, limit);
 
   if (displayHistory.length === 0) {
-    info('没有历史记录');
+    info("没有历史记录");
     return;
   }
 
-  info('策略切换历史:');
+  info("策略切换历史:");
   console.log();
 
-  const headers = ['时间', '策略', '操作', '备份'];
+  const headers = ["时间", "策略", "操作", "备份"];
   const rows: string[][] = [];
 
   for (const entry of displayHistory) {
-    const date = new Date(entry.timestamp).toLocaleString('zh-CN');
+    const date = new Date(entry.timestamp).toLocaleString("zh-CN");
     rows.push([
       date,
       entry.strategyName,
       entry.action,
-      entry.backupPath ? path.basename(entry.backupPath) : '-',
+      entry.backupPath ? path.basename(entry.backupPath) : "-",
     ]);
   }
 
@@ -776,7 +813,11 @@ export function rollbackToHistory(index: number): boolean {
 
   const entry = history[index];
 
-  if (entry.action === 'switch' && entry.backupPath && fileExists(entry.backupPath)) {
+  if (
+    entry.action === "switch" &&
+    entry.backupPath &&
+    fileExists(entry.backupPath)
+  ) {
     // 从备份恢复
     try {
       fs.copyFileSync(entry.backupPath, CONFIG_FILE);
@@ -786,7 +827,7 @@ export function rollbackToHistory(index: number): boolean {
         timestamp: new Date().toISOString(),
         strategyName: entry.strategyName,
         strategyPath: entry.strategyPath,
-        action: 'rollback',
+        action: "rollback",
       });
 
       return true;
@@ -796,7 +837,7 @@ export function rollbackToHistory(index: number): boolean {
     }
   } else if (fileExists(entry.strategyPath)) {
     // 直接切换到历史策略
-    return switchStrategy(path.basename(entry.strategyPath, '.jsonc'));
+    return switchStrategy(path.basename(entry.strategyPath, ".jsonc"));
   } else {
     error(`无法回滚: 策略文件或备份不存在`);
     return false;
@@ -808,7 +849,10 @@ export function rollbackToHistory(index: number): boolean {
 /**
  * 导出策略为 JSON 文件
  */
-export function exportStrategy(strategyName: string, outputPath: string): boolean {
+export function exportStrategy(
+  strategyName: string,
+  outputPath: string,
+): boolean {
   const config = readStrategy(strategyName);
   if (!config) {
     return false;
@@ -827,7 +871,10 @@ export function exportStrategy(strategyName: string, outputPath: string): boolea
 /**
  * 导入策略并验证
  */
-export function importStrategy(strategyName: string, inputPath: string): boolean {
+export function importStrategy(
+  strategyName: string,
+  inputPath: string,
+): boolean {
   if (!fileExists(inputPath)) {
     error(`文件不存在: ${inputPath}`);
     return false;
@@ -849,7 +896,7 @@ export function importStrategy(strategyName: string, inputPath: string): boolean
       timestamp: new Date().toISOString(),
       strategyName,
       strategyPath: outputPath,
-      action: 'import',
+      action: "import",
     });
 
     return true;
@@ -873,55 +920,76 @@ export function recommendStrategy(scenario: string): Recommendation | null {
   const scenarioLower = scenario.toLowerCase();
   let bestStrategy: StrategyMetadata | null = null;
   let bestScore = 0;
-  let bestReason = '';
+  let bestReason = "";
 
   // 推荐规则
   for (const strategy of strategies) {
     let score = 0;
-    let reason = '';
+    let reason = "";
 
     // 基于 use_case 和 cost_level 的推荐
-    if (scenarioLower.includes('performance') || scenarioLower.includes('速度') ||
-      scenarioLower.includes('快速') || scenarioLower.includes('紧急')) {
-      if (strategy.costLevel === 'high') {
+    if (
+      scenarioLower.includes("performance") ||
+      scenarioLower.includes("速度") ||
+      scenarioLower.includes("快速") ||
+      scenarioLower.includes("紧急")
+    ) {
+      if (strategy.costLevel === "high") {
         score = 90;
-        reason = '高性能模式适合快速响应和紧急任务';
+        reason = "高性能模式适合快速响应和紧急任务";
       }
     }
 
-    if (scenarioLower.includes('economical') || scenarioLower.includes('节省') ||
-      scenarioLower.includes('便宜') || scenarioLower.includes('预算')) {
-      if (strategy.costLevel === 'low') {
+    if (
+      scenarioLower.includes("economical") ||
+      scenarioLower.includes("节省") ||
+      scenarioLower.includes("便宜") ||
+      scenarioLower.includes("预算")
+    ) {
+      if (strategy.costLevel === "low") {
         score = 95;
-        reason = '经济模式最大程度降低成本';
+        reason = "经济模式最大程度降低成本";
       }
     }
 
-    if (scenarioLower.includes('balanced') || scenarioLower.includes('均衡') ||
-      scenarioLower.includes('日常') || scenarioLower.includes('开发')) {
-      if (strategy.costLevel === 'medium') {
+    if (
+      scenarioLower.includes("balanced") ||
+      scenarioLower.includes("均衡") ||
+      scenarioLower.includes("日常") ||
+      scenarioLower.includes("开发")
+    ) {
+      if (strategy.costLevel === "medium") {
         score = 85;
-        reason = '均衡模式适合日常开发工作';
+        reason = "均衡模式适合日常开发工作";
       }
     }
 
-    if (scenarioLower.includes('overnight') || scenarioLower.includes('夜间') ||
-      scenarioLower.includes('晚上')) {
-      if (strategy.name.includes('overnight')) {
+    if (
+      scenarioLower.includes("overnight") ||
+      scenarioLower.includes("夜间") ||
+      scenarioLower.includes("晚上")
+    ) {
+      if (strategy.name.includes("overnight")) {
         score = 100;
-        reason = '夜间模式优化夜间工作的成本和性能';
+        reason = "夜间模式优化夜间工作的成本和性能";
       }
     }
 
-    if (scenarioLower.includes('emergency') || scenarioLower.includes('紧急') ||
-      scenarioLower.includes('快速')) {
-      if (strategy.name.includes('emergency')) {
+    if (
+      scenarioLower.includes("emergency") ||
+      scenarioLower.includes("紧急") ||
+      scenarioLower.includes("快速")
+    ) {
+      if (strategy.name.includes("emergency")) {
         score = 95;
-        reason = '紧急模式提供最快的响应速度';
+        reason = "紧急模式提供最快的响应速度";
       }
     }
 
-    if (strategy.useCase && scenarioLower.includes(strategy.useCase.toLowerCase())) {
+    if (
+      strategy.useCase &&
+      scenarioLower.includes(strategy.useCase.toLowerCase())
+    ) {
       score = Math.max(score, 80);
       reason = `使用场景匹配: ${strategy.useCase}`;
     }
@@ -942,11 +1010,13 @@ export function recommendStrategy(scenario: string): Recommendation | null {
   }
 
   // 如果没有明确匹配，推荐均衡策略
-  const balanced = strategies.find(s => s.costLevel === 'medium' || s.name.includes('balanced'));
+  const balanced = strategies.find(
+    (s) => s.costLevel === "medium" || s.name.includes("balanced"),
+  );
   if (balanced) {
     return {
       strategyName: balanced.name,
-      reason: '均衡模式适合大多数使用场景',
+      reason: "均衡模式适合大多数使用场景",
       score: 70,
     };
   }
@@ -961,13 +1031,13 @@ export function displayRecommendation(scenario: string): void {
   const recommendation = recommendStrategy(scenario);
 
   if (!recommendation) {
-    error('无法生成推荐');
+    error("无法生成推荐");
     return;
   }
 
   info(`基于场景 "${scenario}" 的推荐:`);
   console.log();
-  console.log(colorize(`推荐策略: ${recommendation.strategyName}`, 'green'));
+  console.log(colorize(`推荐策略: ${recommendation.strategyName}`, "green"));
   console.log(`推荐理由: ${recommendation.reason}`);
   console.log(`匹配度: ${recommendation.score}%`);
 }
@@ -978,11 +1048,7 @@ export function displayRecommendation(scenario: string): void {
  * 清理旧备份，保留最近 MAX_BACKUPS 个
  */
 export function cleanOldBackups(): void {
-  const backupDir = path.join(
-    process.env.HOME || '',
-    '.config',
-    'opencode'
-  );
+  const backupDir = path.join(process.env.HOME || "", ".config", "opencode");
 
   if (!fileExists(backupDir)) {
     return;
@@ -991,8 +1057,10 @@ export function cleanOldBackups(): void {
   try {
     const files = fs.readdirSync(backupDir);
     const backups = files
-      .filter(f => f.startsWith('strategies-backup-') || f.includes('.backup.'))
-      .map(f => ({
+      .filter(
+        (f) => f.startsWith("strategies-backup-") || f.includes(".backup."),
+      )
+      .map((f) => ({
         name: f,
         path: path.join(backupDir, f),
         time: fs.statSync(path.join(backupDir, f)).mtime.getTime(),
@@ -1019,10 +1087,10 @@ export function cleanOldBackups(): void {
  */
 export function createBackup(): string | null {
   const backupDir = path.join(
-    process.env.HOME || '',
-    '.config',
-    'opencode',
-    `strategies-backup-${Date.now()}`
+    process.env.HOME || "",
+    ".config",
+    "opencode",
+    `strategies-backup-${Date.now()}`,
   );
 
   try {
@@ -1030,10 +1098,10 @@ export function createBackup(): string | null {
 
     const files = fs.readdirSync(STRATEGIES_DIR);
     for (const file of files) {
-      if (file.endsWith('.jsonc')) {
+      if (file.endsWith(".jsonc")) {
         fs.copyFileSync(
           path.join(STRATEGIES_DIR, file),
-          path.join(backupDir, file)
+          path.join(backupDir, file),
         );
       }
     }
@@ -1048,7 +1116,114 @@ export function createBackup(): string | null {
 
 // ==================== 主导出 ====================
 
+/**
+ * 安装策略模板到用户配置目录
+ */
+export function installTemplate(templateName: string): boolean {
+  const templatePath = pathManager.getTemplateFilePath(templateName);
+  const targetPath = pathManager.getStrategyFilePath(templateName);
+
+  if (!fileExists(templatePath)) {
+    error(`模板不存在: ${templateName}`);
+    return false;
+  }
+
+  if (fileExists(targetPath)) {
+    warning(`策略已存在: ${templateName}`);
+    return false;
+  }
+
+  try {
+    fs.copyFileSync(templatePath, targetPath);
+    success(`已安装模板: ${templateName}`);
+    return true;
+  } catch (err) {
+    error(`安装失败: ${err}`);
+    return false;
+  }
+}
+
+/**
+ * 同步所有模板到用户配置目录
+ */
+export function syncAllTemplates(force: boolean = false): boolean {
+  const templates = pathManager.listTemplates();
+
+  if (templates.length === 0) {
+    error("没有找到可用的模板");
+    return false;
+  }
+
+  info(`找到 ${templates.length} 个模板`);
+  let installedCount = 0;
+  let skippedCount = 0;
+  let overwrittenCount = 0;
+
+  for (const template of templates) {
+    const templatePath = pathManager.getTemplateFilePath(template);
+    const targetPath = pathManager.getStrategyFilePath(template);
+
+    if (fileExists(targetPath)) {
+      if (force) {
+        // 创建备份
+        const backupPath = path.join(
+          pathManager.getBackupDir(),
+          `${template}-${Date.now()}.jsonc`,
+        );
+        fs.copyFileSync(targetPath, backupPath);
+        fs.copyFileSync(templatePath, targetPath);
+        warning(`已覆盖: ${template} (备份: ${path.basename(backupPath)})`);
+        overwrittenCount++;
+      } else {
+        info(`跳过已存在: ${template}`);
+        skippedCount++;
+      }
+    } else {
+      fs.copyFileSync(templatePath, targetPath);
+      success(`已安装: ${template}`);
+      installedCount++;
+    }
+  }
+
+  console.log();
+  success(
+    `同步完成: ${installedCount} 个新安装, ${overwrittenCount} 个覆盖, ${skippedCount} 个跳过`,
+  );
+  return true;
+}
+
+/**
+ * 列出所有可用的模板
+ */
+export function listTemplates(): void {
+  const templates = pathManager.listTemplates();
+
+  if (templates.length === 0) {
+    error("没有找到可用的模板");
+    return;
+  }
+
+  info(`可用模板 (${templates.length} 个):`);
+  console.log();
+
+  for (const template of templates) {
+    const isInstalled = pathManager.isStrategyInstalled(template);
+    const status = isInstalled
+      ? colorize("[已安装]", "green")
+      : colorize("[未安装]", "yellow");
+    console.log(`  ${status} ${template}`);
+  }
+}
+
 export const ManageStrategies = {
+  // 路径管理
+  pathManager,
+
+  // 安装功能
+  installTemplate,
+  syncAllTemplates,
+  listTemplates,
+
   // 读取功能
   getCurrentStrategy,
   readStrategy,

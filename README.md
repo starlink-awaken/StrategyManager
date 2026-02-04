@@ -2,13 +2,13 @@
 
 <div align="center">
 
-**智能策略管理系统 - 管理和执行各种 AI 策略**
+**智能策略管理系统 - AI 模型配置的生命周期管理**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bun](https://img.shields.io/badge/Bun-1.0+-black?logo=bun&logoColor=white)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
+[![Version](https://img.shields.io/badge/version-3.0.0-green)](./CHANGELOG.md)
 [![GitHub Stars](https://img.shields.io/github/stars/starlink-awaken/StrategyManager?style=social)](https://github.com/starlink-awaken/StrategyManager/stargazers)
-[![GitHub Issues](https://img.shields.io/github/issues/starlink-awaken/StrategyManager)](https://github.com/starlink-awaken/StrategyManager/issues)
 
 </div>
 
@@ -16,37 +16,49 @@
 
 ## 📖 项目简介
 
-StrategyManager 是一个功能强大的策略管理系统，专为管理和执行各种 AI 策略而设计。它提供了完整的策略生命周期管理功能，包括策略比较、导入/导出、版本控制、历史记录追踪和智能推荐等核心特性。
+StrategyManager 是一个功能强大的策略管理系统，专为管理 AI 模型配置而设计。它提供了完整的策略生命周期管理功能，包括模板管理、智能推荐、成本优化、历史追踪等核心特性。
 
 ### ✨ 核心特性
 
-- 🔍 **策略比较** - 可视化对比两个策略的差异，支持字段级别的变更追踪
-- 📥 **导入/导出** - 支持从文件导入策略或将策略导出为 JSON/JSONC 格式
-- 📜 **历史管理** - 完整的操作历史记录，支持时间点回滚
-- 🔄 **策略切换** - 安全地在不同策略之间切换，自动创建备份
-- ✅ **策略验证** - 验证策略配置的完整性和架构符合性
-- 🔧 **自动修复** - 智能检测并修复策略中的常见问题
-- 💡 **智能推荐** - 基于上下文和场景推荐最合适的策略
-- 📊 **彩色终端输出** - 直观的可视化输出，支持 ANSI 颜色编码
+- 🎯 **智能推荐系统** - 基于场景、预算、质量需求的多因素智能推荐
+- 📦 **模板管理** - 策略模板与用户配置分离，安全可靠
+- 🔍 **策略比较** - 可视化对比两个策略的差异
+- 💰 **成本优化** - GitHub Copilot 使用分析和优化建议
+- 📜 **历史管理** - 完整的操作历史记录，支持一键回滚
+- 🔄 **安全切换** - 自动备份，软链接机制，零风险切换
+- ✅ **增强验证** - 多层次验证（错误/警告/信息），自动修复建议
+- 📊 **友好界面** - 彩色终端输出，清晰的表格展示
+
+### 🎯 策略概览
+
+| 策略                           | 成本/月    | 适用场景             | 质量       |
+| ------------------------------ | ---------- | -------------------- | ---------- |
+| **strategy-0-super**           | ¥2000-3000 | 关键项目、必须成功   | ⭐⭐⭐⭐⭐ |
+| **strategy-1-performance**     | ¥1000-1500 | 重要任务、生产环境   | ⭐⭐⭐⭐   |
+| **strategy-2-balanced** ⭐     | ¥400-700   | 日常工作（默认推荐） | ⭐⭐⭐     |
+| **strategy-3-economical**      | ¥50-150    | 成本敏感、学习探索   | ⭐⭐       |
+| **strategy-research-thinking** | ¥1800-2500 | 深度研究、金融分析   | ⭐⭐⭐⭐⭐ |
+| **strategy-creative-content**  | ¥500-800   | 创意写作、新媒体运营 | ⭐⭐⭐⭐   |
 
 ---
 
 ## 🚀 快速开始
 
-### 安装
+### 1. 安装
 
 ```bash
 # 克隆仓库
 git clone https://github.com/starlink-awaken/StrategyManager.git
-
-# 进入项目目录
 cd StrategyManager
 
-# 安装依赖（如果需要）
-npm install  # 或 bun install
+# 安装依赖
+bun install
+
+# 安装策略模板到用户配置目录
+bash scripts/install.sh
 ```
 
-### 基本使用
+### 2. 基本使用
 
 ```bash
 # 列出所有可用策略
@@ -210,6 +222,7 @@ StrategyManager/
 - 🔵 **蓝色** (`info`) - 普通信息输出和步骤说明
 
 在策略比较中：
+
 - `+` 绿色 = 新增字段
 - `-` 红色 = 删除字段
 - `~` 黄色 = 修改的字段
@@ -233,17 +246,17 @@ StrategyManager/
 
 所有命令都会调用对应的 StrategyManager skill 工作流：
 
-| 命令 | 工作流文件 |
-|------|-----------|
-| `list` | `Workflows/List.md` |
-| `switch` | `Workflows/Switch.md` |
-| `fix` | `Workflows/Fix.md` |
-| `validate` | `Workflows/Validate.md` |
-| `compare` | `Workflows/Compare.md` |
-| `history/rollback` | `Workflows/History.md` |
-| `recommend` | `Workflows/Recommend.md` |
-| `export` | `Workflows/Export.md` |
-| `import` | `Workflows/Import.md` |
+| 命令               | 工作流文件               |
+| ------------------ | ------------------------ |
+| `list`             | `Workflows/List.md`      |
+| `switch`           | `Workflows/Switch.md`    |
+| `fix`              | `Workflows/Fix.md`       |
+| `validate`         | `Workflows/Validate.md`  |
+| `compare`          | `Workflows/Compare.md`   |
+| `history/rollback` | `Workflows/History.md`   |
+| `recommend`        | `Workflows/Recommend.md` |
+| `export`           | `Workflows/Export.md`    |
+| `import`           | `Workflows/Import.md`    |
 
 ### 文件存储位置
 

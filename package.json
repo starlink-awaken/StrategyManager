@@ -40,9 +40,9 @@
     "json5": "^2.2.3"
   },
   "devDependencies": {
-    "@types/node": "^20.10.6",
+    "@types/node": "^25.2.0",
     "bun-types": "latest",
-    "typescript": "^5.3.3"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "bun": ">=1.0.0"
