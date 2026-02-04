@@ -21,6 +21,7 @@ triggers:
 | "import strategy" | `Workflows/Import.md` |
 | "list strategies" | `Workflows/List.md` |
 | "recommend strategy" | `Workflows/Recommend.md` |
+| "feedback report" | `Workflows/FeedbackReport.md` |
 | "switch strategy" | `Workflows/Switch.md` |
 | "fix strategies" | `Workflows/Fix.md` |
 | "validate strategy" | `Workflows/Validate.md` |

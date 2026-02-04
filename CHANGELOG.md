@@ -5,6 +5,24 @@ All notable changes to StrategyManager will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Documentation Organization** (2026-02-04)
+  - Reorganized `docs/` directory structure for better navigation
+  - Moved all P1 verification documents (24 files) to `docs/archive/phase1/`
+  - Moved all development reports (29 files) to `docs/archive/dev-reports/`
+  - Created clear documentation hierarchy:
+    - `docs/guides/` - User guides and references
+    - `docs/architecture/` - Architecture documentation
+    - `docs/reports/` - Current analysis reports
+    - `docs/archive/` - Historical documents (phase1, dev-reports)
+  - Added `docs/README.md` as central documentation index
+  - Added README files to archive directories for context
+  - Updated all documentation links in main README.md
+  - Cleaned up verification scripts (9 files moved to archive)
+
 ## [3.0.0] - 2026-02-04
 
 ### 🎉 Major Refactoring - Week 1 & 2 Implementation

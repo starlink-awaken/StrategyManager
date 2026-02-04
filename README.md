@@ -47,6 +47,19 @@ StrategyManager 是一个功能强大的策略管理系统，专为管理 AI 模
 | **strategy-research-thinking** | ¥1800-2500 | 深度研究、金融分析   | ⭐⭐⭐⭐⭐ |
 | **strategy-creative-content**  | ¥500-800   | 创意写作、新媒体运营 | ⭐⭐⭐⭐   |
 
+### 📋 功能验证状态
+
+**最新验证**: 2024-02-04 | **验证方式**: 代码审查 + 实际功能测试
+
+| 项目     | 状态        | 说明                    |
+| -------- | ----------- | ----------------------- |
+| 代码质量 | ✅ 95.9%    | 47/49 测试通过          |
+| API 集成 | ⚠️ 部分可用 | 4 个配置问题待修复      |
+| 核心功能 | ✅ 完全可用 | 策略管理、成本计算 100% |
+| 生产就绪 | 🟡 条件性   | 修复配置后 100% 就绪    |
+
+**详细验证报告**: [docs/archive/phase1/VERIFICATION.md](docs/archive/phase1/VERIFICATION.md)
+
 ---
 
 ## 🚀 快速开始
@@ -95,8 +108,26 @@ bash scripts/install.sh
 # 回滚到历史版本
 /strategies rollback 2024-02-01T12:00:00Z
 
-# 获取策略推荐
-/strategies recommend --context "生产环境高并发场景"
+# 获取策略推荐（含配额感知 + 预算约束）
+/strategies recommend --context "生产环境高并发场景" \
+	--budget-monthly 120 \
+	--budget-spent 30 \
+	--budget-alert 0.8
+
+# 生成动态策略（含配额感知）
+/strategies generate "日常开发" --priority balanced --with-usage-sync
+
+# 列出策略（含动态）
+/strategies list --include-dynamic
+
+# 推荐反馈报告
+/strategies feedback-report --json
+
+# 推荐反馈报告（写入文件）
+/strategies feedback-report --format text --output ./feedback-report.txt
+
+# 推荐反馈报告（按周分桶）
+/strategies feedback-report --bucket week --format json
 ```
 
 ---
@@ -281,8 +312,12 @@ StrategyManager/
 
 ## 🔗 相关资源
 
-- [快速开始指南](QuickStart.md)
-- [策略命令文档](strategies.md)
+- [文档导航](docs/README.md) - 完整文档索引
+- [使用指南](docs/guides/USAGE_GUIDE.md) - 详细使用说明
+- [配置指南](docs/guides/CONFIGURATION.md) - 配置说明
+- [API 参考](docs/guides/API_REFERENCE.md) - API 文档
+- [故障排除](docs/guides/TROUBLESHOOTING.md) - 常见问题解决
+- [架构文档](docs/architecture/ARCHITECTURE.md) - 系统架构
 - [问题反馈](https://github.com/starlink-awaken/StrategyManager/issues)
 - [功能建议](https://github.com/starlink-awaken/StrategyManager/issues)
 

@@ -59,6 +59,13 @@ export class PathManager {
   }
 
   /**
+   * 获取动态策略目录路径
+   */
+  getDynamicStrategiesDir(): string {
+    return path.join(this.getConfigDir(), "dynamic-strategies");
+  }
+
+  /**
    * 获取模板目录路径（项目自带）
    */
   getTemplatesDir(): string {
@@ -80,6 +87,16 @@ export class PathManager {
   }
 
   /**
+   * 获取推荐反馈记录文件路径
+   */
+  getRecommendationFeedbackFile(): string {
+    return path.join(
+      this.getConfigDir(),
+      "strategy-recommendation-feedback.json",
+    );
+  }
+
+  /**
    * 获取备份目录路径
    */
   getBackupDir(): string {
@@ -93,6 +110,7 @@ export class PathManager {
     const dirs = [
       this.getConfigDir(),
       this.getStrategiesDir(),
+      this.getDynamicStrategiesDir(),
       this.getBackupDir(),
     ];
 

@@ -1,46 +1,46 @@
-import { UsageSync, UsageData } from './interfaces';
+import { UsageSync, UsageData } from "./interfaces";
 
 /**
  * GitHub Copilot 使用量同步器
- * 
+ *
  * 使用 GitHub Billing API 查询 Copilot 使用量
  * 认证: GitHub OAuth Token
  * 精确度: 99%
- * 
+ *
  * API 文档:
  * - /repos/{owner}/{repo}/billing/copilot-seats
  * - /user/copilot_metrics (需要 copilot:metrics_read scope)
  * - 返回字段: total_seats_used, total_seats_purchased, active_users
  */
 export class GitHubSync implements UsageSync {
-  readonly provider = 'github';
+  readonly provider = "github";
   readonly accuracy = 99;
-  
+
   private token: string;
-  private baseURL: string = 'https://api.github.com';
+  private baseURL: string = "https://api.github.com";
   private owner?: string;
-  
+
   constructor(token?: string, owner?: string) {
-    this.token = token || process.env.GITHUB_TOKEN || '';
+    this.token = token || process.env.GITHUB_TOKEN || "";
     this.owner = owner;
     if (!this.token) {
-      throw new Error('GitHubSync: GITHUB_TOKEN is required');
+      throw new Error("GitHubSync: GITHUB_TOKEN is required");
     }
   }
-  
+
   /**
    * 从 opencode auth.json 创建实例
    */
   static fromOpenCodeAuth(authInfo: any): GitHubSync {
     return new GitHubSync(authInfo.access || authInfo.key, authInfo.owner);
   }
-  
+
   async healthCheck(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseURL}/user`, {
         headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Accept': 'application/vnd.github.v3+json',
+          Authorization: `Bearer ${this.token}`,
+          Accept: "application/vnd.github.v3+json",
         },
       });
       return response.ok;
@@ -48,65 +48,68 @@ export class GitHubSync implements UsageSync {
       return false;
     }
   }
-  
+
   async fetchUsage(period?: { start: Date; end: Date }): Promise<UsageData[]> {
     try {
       // 首先获取当前用户信息
       const userResponse = await fetch(`${this.baseURL}/user`, {
         headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Accept': 'application/vnd.github.v3+json',
+          Authorization: `Bearer ${this.token}`,
+          Accept: "application/vnd.github.v3+json",
         },
       });
-      
+
       if (!userResponse.ok) {
         throw new Error(`GitHub API returned ${userResponse.status}`);
       }
-      
+
       const userData = (await userResponse.json()) as any;
       const username = userData.login;
-      
+
       // 获取 Copilot 使用指标（如果可用）
-      const metricsResponse = await fetch(`${this.baseURL}/user/copilot_metrics`, {
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Accept': 'application/vnd.github.v3+json',
+      const metricsResponse = await fetch(
+        `${this.baseURL}/user/copilot_metrics`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            Accept: "application/vnd.github.v3+json",
+          },
         },
-      });
-      
+      );
+
       let metricsData: any = {};
       if (metricsResponse.ok) {
         metricsData = await metricsResponse.json();
       }
-      
+
       // 如果提供了 owner，尝试获取组织级别的数据
       if (this.owner) {
         const orgResponse = await fetch(
           `${this.baseURL}/orgs/${this.owner}/billing/copilot-seats`,
           {
             headers: {
-              'Authorization': `Bearer ${this.token}`,
-              'Accept': 'application/vnd.github.v3+json',
+              Authorization: `Bearer ${this.token}`,
+              Accept: "application/vnd.github.v3+json",
             },
-          }
+          },
         );
-        
+
         if (orgResponse.ok) {
           const orgData = await orgResponse.json();
           return this.transformOrgData(orgData, period);
         }
       }
-      
+
       return this.transformUserData(metricsData, username, period);
     } catch (error: any) {
       throw new Error(`GitHubSync failed: ${error.message}`);
     }
   }
-  
+
   private transformUserData(
     data: any,
     username: string,
-    period?: { start: Date; end: Date }
+    period?: { start: Date; end: Date },
   ): UsageData[] {
     /**
      * GitHub Copilot Metrics 返回格式:
@@ -121,26 +124,27 @@ export class GitHubSync implements UsageSync {
      *   date: string (YYYY-MM-DD)
      * }
      */
-    
+
     const now = new Date();
-    const startDate = period?.start || new Date(now.getFullYear(), now.getMonth(), 1);
+    const startDate =
+      period?.start || new Date(now.getFullYear(), now.getMonth(), 1);
     const endDate = period?.end || now;
-    
+
     // Copilot 通常按座位计费，而不是按 token 计费
     // 这里我们用提示数和接受数作为代理指标
     const totalPrompts = data.total_prompts_count || 0;
     const acceptedPrompts = data.total_accepts_count || 0;
     const suggestedLines = data.total_lines_suggested || 0;
     const acceptedLines = data.total_lines_accepted || 0;
-    
+
     // 估算成本: 按接受的提示数计算
     // GitHub Copilot: $10-20/用户/月（这里只是单位成本参考）
     const estimatedCost = acceptedPrompts * 0.01; // 简化计算
-    
+
     return [
       {
         provider: this.provider,
-        model: 'copilot',
+        model: "copilot",
         usage: {
           inputTokens: totalPrompts,
           outputTokens: acceptedPrompts,
@@ -149,7 +153,7 @@ export class GitHubSync implements UsageSync {
           cachedTokens: undefined,
         },
         cost: estimatedCost,
-        source: '✅ API (官方)',
+        source: "✅ API (官方)",
         accuracy: this.accuracy,
         period: {
           start: startDate,
@@ -159,10 +163,10 @@ export class GitHubSync implements UsageSync {
       },
     ];
   }
-  
+
   private transformOrgData(
     data: any,
-    period?: { start: Date; end: Date }
+    period?: { start: Date; end: Date },
   ): UsageData[] {
     /**
      * GitHub Organization Billing 返回格式:
@@ -180,23 +184,24 @@ export class GitHubSync implements UsageSync {
      *   ]
      * }
      */
-    
+
     const now = new Date();
-    const startDate = period?.start || new Date(now.getFullYear(), now.getMonth(), 1);
+    const startDate =
+      period?.start || new Date(now.getFullYear(), now.getMonth(), 1);
     const endDate = period?.end || now;
-    
+
     const seatsUsed = data.total_seats_used || 0;
     const seatsPurchased = data.total_seats_purchased || 0;
-    
+
     // 组织级别成本计算: 按已使用座位数 * 单价
     // GitHub Copilot: $10/用户/月
     const costPerSeat = 10;
     const estimatedCost = seatsUsed * costPerSeat;
-    
+
     return [
       {
         provider: this.provider,
-        model: 'copilot-org',
+        model: "copilot-org",
         usage: {
           inputTokens: seatsUsed,
           outputTokens: seatsUsed,
@@ -205,7 +210,7 @@ export class GitHubSync implements UsageSync {
           cachedTokens: undefined,
         },
         cost: estimatedCost,
-        source: '✅ API (官方)',
+        source: "✅ API (官方)",
         accuracy: this.accuracy,
         period: {
           start: startDate,
@@ -214,29 +219,5 @@ export class GitHubSync implements UsageSync {
         lastUpdated: now,
       },
     ];
-  }
-  
-  /**
-   * 从 opencode auth.json 加载认证信息
-   */
-  static async fromOpenCodeAuth(authPath?: string, owner?: string): Promise<GitHubSync> {
-    try {
-      const path = authPath || `${process.env.HOME}/.local/share/opencode/auth.json`;
-      const fs = require('fs').promises;
-      const authContent = await fs.readFile(path, 'utf-8');
-      const authData = JSON.parse(authContent);
-      
-      // GitHub token 从 'github-copilot' 字段读取
-      const githubAuth = authData['github-copilot'] || authData.github || {};
-      const token = githubAuth.access || githubAuth.token || '';
-      
-      if (!token) {
-        throw new Error('No GitHub token found in auth.json');
-      }
-      
-      return new GitHubSync(token, owner);
-    } catch (error: any) {
-      throw new Error(`Failed to load GitHub auth from file: ${error.message}`);
-    }
   }
 }

@@ -5,7 +5,17 @@
  * 基于多因素评分算法，为用户推荐最合适的策略
  */
 
-import type { StrategyMetadata } from "./ManageStrategies";
+export interface StrategyMetadata {
+  name: string;
+  filePath: string;
+  description: string;
+  costLevel: string;
+  version?: string;
+  isCurrent: boolean;
+  useCase?: string;
+  models?: string[];
+  source?: "installed" | "dynamic";
+}
 
 // ==================== 类型定义 ====================
 
@@ -39,6 +49,14 @@ export interface BudgetConfig {
   alertThreshold: number; // 告警阈值 (0-1)
 }
 
+export interface QuotaStatus {
+  provider: string; // 厂商标识
+  remaining: number; // 剩余额度 (USD)
+  total: number; // 总额度 (USD)
+  usagePercent: number; // 使用百分比 (0-1)
+  resetDate?: Date; // 重置日期
+}
+
 export interface HistoryData {
   recentStrategies: string[]; // 最近使用的策略
   frequentScenarios: string[]; // 常用场景
@@ -55,6 +73,7 @@ export interface RecommendationContext {
   budget?: BudgetConfig;
   history?: HistoryData;
   timeContext?: TimeContext;
+  quotaStatus?: QuotaStatus[];
 }
 
 export interface EstimatedCost {
@@ -119,6 +138,21 @@ const QUALITY_SCORES: Record<string, number> = {
   "strategy-3-economical": 0.5,
 };
 
+/**
+ * 模型特性画像（0-1）
+ */
+const MODEL_PROFILES: Record<
+  string,
+  { quality: number; cost: number; speed: number }
+> = {
+  anthropic: { quality: 0.95, cost: 0.35, speed: 0.6 },
+  openai: { quality: 0.9, cost: 0.45, speed: 0.7 },
+  google: { quality: 0.75, cost: 0.7, speed: 0.85 },
+  zhipu: { quality: 0.7, cost: 0.85, speed: 0.75 },
+  github: { quality: 0.8, cost: 0.9, speed: 0.9 },
+  unknown: { quality: 0.6, cost: 0.6, speed: 0.6 },
+};
+
 // ==================== 智能推荐器类 ====================
 
 export class SmartRecommender {
@@ -150,6 +184,8 @@ export class SmartRecommender {
       cost: this.calculateCostEfficiency(strategy, context.budget),
       quality: this.getQualityScore(strategy),
       history: this.getHistoryPreference(strategy, context.history),
+      model: this.calculateModelProfileScore(strategy, context.scenario),
+      quota: this.calculateQuotaScore(strategy, context.quotaStatus),
     };
 
     // 根据上下文调整权重
@@ -159,7 +195,9 @@ export class SmartRecommender {
       scores.scenario * weights.scenario +
       scores.cost * weights.cost +
       scores.quality * weights.quality +
-      scores.history * weights.history;
+      scores.history * weights.history +
+      scores.model * weights.model +
+      scores.quota * weights.quota;
 
     // 计算置信度
     const confidence = this.calculateConfidence(scores, context);
@@ -271,37 +309,142 @@ export class SmartRecommender {
   private getWeights(context: RecommendationContext): Record<string, number> {
     const priority = context.scenario?.priority || "balanced";
 
+    const hasQuota = !!context.quotaStatus?.length;
+
     switch (priority) {
       case "quality":
-        return {
-          scenario: 0.3,
+        return this.normalizeWeights({
+          scenario: 0.25,
           cost: 0.1,
-          quality: 0.5,
+          quality: 0.4,
           history: 0.1,
-        };
+          model: 0.1,
+          quota: hasQuota ? 0.05 : 0,
+        });
       case "cost":
-        return {
-          scenario: 0.3,
-          cost: 0.5,
+        return this.normalizeWeights({
+          scenario: 0.25,
+          cost: 0.45,
           quality: 0.1,
           history: 0.1,
-        };
+          model: 0.05,
+          quota: hasQuota ? 0.05 : 0,
+        });
       case "speed":
-        return {
-          scenario: 0.4,
+        return this.normalizeWeights({
+          scenario: 0.35,
           cost: 0.2,
-          quality: 0.3,
+          quality: 0.25,
           history: 0.1,
-        };
+          model: 0.05,
+          quota: hasQuota ? 0.05 : 0,
+        });
       case "balanced":
       default:
-        return {
-          scenario: 0.4,
-          cost: 0.3,
+        return this.normalizeWeights({
+          scenario: 0.35,
+          cost: 0.25,
           quality: 0.2,
           history: 0.1,
-        };
+          model: 0.05,
+          quota: hasQuota ? 0.05 : 0,
+        });
     }
+  }
+
+  private normalizeWeights(
+    weights: Record<string, number>,
+  ): Record<string, number> {
+    const total = Object.values(weights).reduce((sum, v) => sum + v, 0);
+    if (total === 0) return weights;
+
+    const normalized: Record<string, number> = {};
+    for (const [key, value] of Object.entries(weights)) {
+      normalized[key] = value / total;
+    }
+    return normalized;
+  }
+
+  private calculateModelProfileScore(
+    strategy: StrategyMetadata,
+    scenario?: ScenarioConfig,
+  ): number {
+    if (!strategy.models || strategy.models.length === 0) return 0.5;
+
+    const profiles = strategy.models.map((model) => {
+      const provider = this.getProviderFromModel(model);
+      return MODEL_PROFILES[provider] || MODEL_PROFILES.unknown;
+    });
+
+    const avg = profiles.reduce(
+      (acc, p) => ({
+        quality: acc.quality + p.quality,
+        cost: acc.cost + p.cost,
+        speed: acc.speed + p.speed,
+      }),
+      { quality: 0, cost: 0, speed: 0 },
+    );
+
+    const count = profiles.length || 1;
+    const avgProfile = {
+      quality: avg.quality / count,
+      cost: avg.cost / count,
+      speed: avg.speed / count,
+    };
+
+    const priority = scenario?.priority || "balanced";
+    switch (priority) {
+      case "quality":
+        return avgProfile.quality;
+      case "cost":
+        return avgProfile.cost;
+      case "speed":
+        return avgProfile.speed;
+      case "balanced":
+      default:
+        return (avgProfile.quality + avgProfile.cost + avgProfile.speed) / 3;
+    }
+  }
+
+  private calculateQuotaScore(
+    strategy: StrategyMetadata,
+    quotaStatus?: QuotaStatus[],
+  ): number {
+    if (!quotaStatus || quotaStatus.length === 0) return 0.5;
+    if (!strategy.models || strategy.models.length === 0) return 0.5;
+
+    const providerRatios: number[] = [];
+
+    for (const model of strategy.models) {
+      const provider = this.getProviderFromModel(model);
+      const quota = quotaStatus.find((q) => q.provider === provider);
+      if (!quota) continue;
+
+      const usagePercent =
+        quota.usagePercent > 0
+          ? quota.usagePercent
+          : quota.total > 0
+            ? 1 - Math.min(quota.remaining / quota.total, 1)
+            : 0.5;
+      providerRatios.push(1 - usagePercent);
+    }
+
+    if (providerRatios.length === 0) return 0.5;
+
+    const avgRemaining =
+      providerRatios.reduce((sum, v) => sum + v, 0) / providerRatios.length;
+
+    return Math.max(0.1, Math.min(avgRemaining, 1));
+  }
+
+  private getProviderFromModel(model: string): string {
+    const lower = model.toLowerCase();
+    if (lower.startsWith("anthropic/")) return "anthropic";
+    if (lower.startsWith("openai/")) return "openai";
+    if (lower.startsWith("google/")) return "google";
+    if (lower.startsWith("zai-") || lower.includes("zhipu")) return "zhipu";
+    if (lower.startsWith("github/")) return "github";
+    return "unknown";
   }
 
   /**
@@ -365,6 +508,11 @@ export class SmartRecommender {
       reasons.push("成本在预算范围内且经济高效");
     } else if (scores.cost < 0.3) {
       reasons.push("⚠️ 成本可能超出预算");
+    }
+
+    // 配额压力
+    if (context.quotaStatus && scores.quota < 0.4) {
+      reasons.push("配额偏紧，已降低高消耗模型权重");
     }
 
     // 质量

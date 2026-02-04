@@ -1,83 +1,88 @@
-import { UsageSync, UsageData } from './interfaces';
+import { UsageSync, UsageData } from "./interfaces";
 
 /**
  * Google Gemini 使用量同步器
- * 
+ *
  * 使用 Google Quota API 查询使用量
  * 参考: Antigravity-Manager (21k⭐) - https://github.com/antigravity-ai/antigravity
- * 
+ *
  * 认证: OAuth Access Token
  * 精确度: 90%
- * 
+ *
  * API 文档:
  * - 端点: https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:fetchAvailableModels
  * - 返回字段: models[].percentage (剩余配额百分比)
  * - 计算使用量: 100% - percentage = 使用百分比
  */
 export class GeminiSync implements UsageSync {
-  readonly provider = 'gemini';
+  readonly provider = "gemini";
   readonly accuracy = 90;
-  
+
   private accessToken: string;
-  private quotaApiUrl: string = 
-    'https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:fetchAvailableModels';
-  
+  private quotaApiUrl: string =
+    "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:fetchAvailableModels";
+
   constructor(accessToken?: string) {
-    this.accessToken = accessToken || process.env.GEMINI_ACCESS_TOKEN || '';
+    this.accessToken = accessToken || process.env.GEMINI_ACCESS_TOKEN || "";
     if (!this.accessToken) {
-      throw new Error('GeminiSync: GEMINI_ACCESS_TOKEN is required');
+      throw new Error("GeminiSync: GEMINI_ACCESS_TOKEN is required");
     }
   }
-  
+
   /**
    * 从 opencode auth.json 创建实例
    */
   static fromOpenCodeAuth(authInfo: any): GeminiSync {
     return new GeminiSync(authInfo.access);
   }
-  
+
   async healthCheck(): Promise<boolean> {
     try {
       const response = await fetch(this.quotaApiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
       });
-      
+
       // 200 或 400 (无数据) 都表示认证成功
       return response.ok || response.status === 400;
     } catch {
       return false;
     }
   }
-  
+
   async fetchUsage(period?: { start: Date; end: Date }): Promise<UsageData[]> {
     try {
       const response = await fetch(this.quotaApiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
       });
-      
+
       if (!response.ok) {
-        throw new Error(`Gemini Quota API returned ${response.status}: ${response.statusText}`);
+        throw new Error(
+          `Gemini Quota API returned ${response.status}: ${response.statusText}`,
+        );
       }
-      
+
       const data = await response.json();
-      
+
       return this.transformData(data, period);
     } catch (error: any) {
       throw new Error(`GeminiSync failed: ${error.message}`);
     }
   }
-  
-  private transformData(data: any, period?: { start: Date; end: Date }): UsageData[] {
+
+  private transformData(
+    data: any,
+    period?: { start: Date; end: Date },
+  ): UsageData[] {
     /**
      * Gemini Quota API 返回格式 (参考 Antigravity):
      * {
@@ -90,27 +95,28 @@ export class GeminiSync implements UsageSync {
      *   ],
      *   subscription_tier: string,     // "PRO" | "FREE"
      * }
-     * 
+     *
      * 使用百分比 = 100 - percentage
      */
-    
+
     const now = new Date();
-    const startDate = period?.start || new Date(now.getFullYear(), now.getMonth(), 1);
+    const startDate =
+      period?.start || new Date(now.getFullYear(), now.getMonth(), 1);
     const endDate = period?.end || now;
-    
+
     const usageByModel = new Map<string, UsageData>();
-    
+
     if (data.models && Array.isArray(data.models)) {
       for (const model of data.models) {
         const modelName = this.normalizeModelName(model.name);
         const remainingPercent = model.percentage || 0;
         const usedPercent = 100 - remainingPercent;
-        
+
         // 估算成本 (基于使用百分比)
         // Gemini 定价: $0.075/M input tokens, $0.3/M output tokens
         // 这里按使用百分比估算
         const estimatedCost = usedPercent * 0.01; // 简化计算
-        
+
         usageByModel.set(modelName, {
           provider: this.provider,
           model: modelName,
@@ -124,7 +130,7 @@ export class GeminiSync implements UsageSync {
             cachedTokens: undefined,
           },
           cost: estimatedCost,
-          source: '✅ API (官方)',
+          source: "✅ API (官方)",
           accuracy: this.accuracy,
           period: {
             start: startDate,
@@ -134,78 +140,50 @@ export class GeminiSync implements UsageSync {
           metadata: {
             quotaPercentage: remainingPercent,
             usagePercentage: usedPercent,
-            tier: data.subscription_tier || 'unknown',
+            tier: data.subscription_tier || "unknown",
             resetTime: model.reset_time,
           } as any,
         });
       }
     }
-    
+
     return Array.from(usageByModel.values());
   }
-  
+
   private normalizeModelName(name: string): string {
     // 将 "models/gemini-pro" 转换为 "gemini-pro"
-    if (name.startsWith('models/')) {
+    if (name.startsWith("models/")) {
       return name.substring(7);
     }
     return name;
   }
-  
-  /**
-   * 从 opencode auth.json 加载认证信息
-   * 
-   * 流程:
-   * 1. 读取 auth.json 中的 google.access 字段
-   * 2. 如果不存在，使用已缓存的 access token
-   */
-  static async fromOpenCodeAuth(authPath?: string): Promise<GeminiSync> {
-    try {
-      const path = authPath || `${process.env.HOME}/.local/share/opencode/auth.json`;
-      const fs = require('fs').promises;
-      const authContent = await fs.readFile(path, 'utf-8');
-      const authData = JSON.parse(authContent);
-      
-      // Google OAuth token
-      const googleAuth = authData.google || {};
-      const token = googleAuth.access || googleAuth.token || '';
-      
-      if (!token) {
-        throw new Error('No Google access token found in auth.json');
-      }
-      
-      return new GeminiSync(token);
-    } catch (error: any) {
-      throw new Error(`Failed to load Gemini auth from file: ${error.message}`);
-    }
-  }
-  
+
   /**
    * 刷新 OAuth token
    * 使用 refresh token 获取新的 access token
    */
   async refreshToken(refreshToken: string): Promise<string> {
     try {
-      const response = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
+      const response = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          grant_type: 'refresh_token',
+          grant_type: "refresh_token",
           refresh_token: refreshToken,
-          client_id: process.env.GOOGLE_CLIENT_ID || '',
-          client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+          client_id: process.env.GOOGLE_CLIENT_ID || "",
+          client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
         }).toString(),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Token refresh failed: ${response.statusText}`);
       }
-      
+
       const data = (await response.json()) as any;
       this.accessToken = data.access_token;
-      
+
       return data.access_token;
     } catch (error: any) {
       throw new Error(`Failed to refresh token: ${error.message}`);
