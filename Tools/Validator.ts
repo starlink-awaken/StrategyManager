@@ -173,7 +173,9 @@ export class StrategyValidator {
 
     if (config.agents) {
       for (const [agentName, agentConfig] of Object.entries(config.agents)) {
-        checkModel(agentConfig.model, `agents.${agentName}.model`);
+        if (agentConfig.model) {
+          checkModel(agentConfig.model, `agents.${agentName}.model`);
+        }
       }
     }
 
@@ -181,7 +183,9 @@ export class StrategyValidator {
       for (const [categoryName, categoryConfig] of Object.entries(
         config.categories,
       )) {
-        checkModel(categoryConfig.model, `categories.${categoryName}.model`);
+        if (categoryConfig.model) {
+          checkModel(categoryConfig.model, `categories.${categoryName}.model`);
+        }
       }
     }
   }
@@ -213,7 +217,9 @@ export class StrategyValidator {
 
     if (config.agents) {
       for (const [agentName, agentConfig] of Object.entries(config.agents)) {
-        checkExpensive(agentConfig.model, `agents.${agentName}.model`);
+        if (agentConfig.model) {
+          checkExpensive(agentConfig.model, `agents.${agentName}.model`);
+        }
       }
     }
 
@@ -221,10 +227,12 @@ export class StrategyValidator {
       for (const [categoryName, categoryConfig] of Object.entries(
         config.categories,
       )) {
-        checkExpensive(
-          categoryConfig.model,
-          `categories.${categoryName}.model`,
-        );
+        if (categoryConfig.model) {
+          checkExpensive(
+            categoryConfig.model,
+            `categories.${categoryName}.model`,
+          );
+        }
       }
     }
 
@@ -307,13 +315,17 @@ export class StrategyValidator {
 
     if (config.agents) {
       for (const agentConfig of Object.values(config.agents)) {
-        checkCopilot(agentConfig.model);
+        if (agentConfig.model) {
+          checkCopilot(agentConfig.model);
+        }
       }
     }
 
     if (config.categories) {
       for (const categoryConfig of Object.values(config.categories)) {
-        checkCopilot(categoryConfig.model);
+        if (categoryConfig.model) {
+          checkCopilot(categoryConfig.model);
+        }
       }
     }
 

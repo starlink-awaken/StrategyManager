@@ -15,12 +15,66 @@ import { PathManager, defaultPathManager } from "./PathManager";
 /**
  * 策略配置接口
  */
+export interface AgentPermissionConfig {
+  edit?: "ask" | "allow" | "deny";
+  bash?:
+    | "ask"
+    | "allow"
+    | "deny"
+    | Record<string, "ask" | "allow" | "deny">;
+  webfetch?: "ask" | "allow" | "deny";
+  doom_loop?: "ask" | "allow" | "deny";
+  external_directory?: "ask" | "allow" | "deny";
+}
+
+export interface AgentThinkingConfig {
+  type: "enabled" | "disabled";
+  budgetTokens?: number;
+}
+
+export interface AgentConfig {
+  model?: string;
+  variant?: string;
+  category?: string;
+  skills?: string[];
+  temperature?: number;
+  top_p?: number;
+  prompt?: string;
+  prompt_append?: string;
+  tools?: Record<string, boolean>;
+  disable?: boolean;
+  description?: string;
+  mode?: "subagent" | "primary" | "all";
+  color?: string;
+  permission?: AgentPermissionConfig;
+  maxTokens?: number;
+  thinking?: AgentThinkingConfig;
+  reasoningEffort?: "low" | "medium" | "high" | "xhigh";
+  textVerbosity?: "low" | "medium" | "high";
+  providerOptions?: Record<string, any>;
+}
+
+export interface CategoryConfig {
+  description?: string;
+  model?: string;
+  variant?: string;
+  temperature?: number;
+  top_p?: number;
+  maxTokens?: number;
+  thinking?: AgentThinkingConfig;
+  reasoningEffort?: "low" | "medium" | "high" | "xhigh";
+  textVerbosity?: "low" | "medium" | "high";
+  tools?: Record<string, boolean>;
+  prompt_append?: string;
+  is_unstable_agent?: boolean;
+}
+
 export interface StrategyConfig {
   $schema?: string;
-  description: string;
+  description?: string;
   lsp?: Record<string, any>;
-  agents?: Record<string, { model: string; variant?: string }>;
-  categories?: Record<string, { model: string; variant?: string }>;
+  agents?: Record<string, AgentConfig>;
+  categories?: Record<string, CategoryConfig>;
   background_task?: {
     modelConcurrency?: Record<string, number>;
   };
@@ -87,6 +141,78 @@ const MAX_BACKUPS = 5;
 
 // 确保必要的目录存在
 pathManager.ensureDirectories();
+
+// ==================== 元数据规范化 ====================
+
+/**
+ * 规范化策略元数据
+ */
+export function normalizeMetadata(
+  config: StrategyConfig,
+  strategyName: string,
+): StrategyConfig {
+  const now = new Date().toISOString().split("T")[0];
+
+  if (!config.metadata) {
+    config.metadata = {};
+  }
+
+  // 补充缺失的字段
+  if (!config.metadata.version) {
+    config.metadata.version = "1.0.0";
+  }
+
+  if (!config.metadata.updated) {
+    config.metadata.updated = now;
+  }
+
+  if (!config.metadata.cost_level) {
+    // 根据策略名称推断成本等级
+    if (strategyName.includes("super") || strategyName.includes("performance")) {
+      config.metadata.cost_level = "high";
+    } else if (strategyName.includes("economical")) {
+      config.metadata.cost_level = "low";
+    } else {
+      config.metadata.cost_level = "medium";
+    }
+  }
+
+  if (!config.metadata.use_case) {
+    config.metadata.use_case = "通用场景";
+  }
+
+  return config;
+}
+
+/**
+ * 验证元数据完整性
+ */
+export function validateMetadata(config: StrategyConfig): string[] {
+  const warnings: string[] = [];
+
+  if (!config.metadata) {
+    warnings.push("缺少 metadata 字段（建议补充）");
+    return warnings;
+  }
+
+  if (!config.metadata.version) {
+    warnings.push("metadata 缺少 version 字段");
+  }
+
+  if (!config.metadata.updated) {
+    warnings.push("metadata 缺少 updated 字段");
+  }
+
+  if (!config.metadata.cost_level) {
+    warnings.push("metadata 缺少 cost_level 字段");
+  }
+
+  if (!config.metadata.use_case) {
+    warnings.push("metadata 缺少 use_case 字段");
+  }
+
+  return warnings;
+}
 
 // ==================== 彩色输出 ====================
 
@@ -335,10 +461,13 @@ export function switchStrategy(strategyName: string): boolean {
   }
 
   // 验证策略有效性
-  const config = readStrategy(strategyName);
+  let config = readStrategy(strategyName);
   if (!config) {
     return false;
   }
+
+  // 规范化元数据
+  config = normalizeMetadata(config, strategyName);
 
   if (!validateStrategy(config)) {
     error(`策略验证失败: ${strategyName}`);
@@ -558,17 +687,155 @@ export function fixStrategies(): boolean {
  */
 export function validateStrategy(config: StrategyConfig): boolean {
   const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const isObject = (value: unknown): value is Record<string, any> =>
+    typeof value === "object" && value !== null;
+  const isString = (value: unknown): value is string =>
+    typeof value === "string";
+  const isNumber = (value: unknown): value is number =>
+    typeof value === "number" && !Number.isNaN(value);
+  const isBoolean = (value: unknown): value is boolean =>
+    typeof value === "boolean";
+  const isStringArray = (value: unknown): value is string[] =>
+    Array.isArray(value) && value.every((item) => typeof item === "string");
 
   // 检查必需字段
   if (!config.description) {
-    errors.push("缺少 description 字段");
+    warnings.push("缺少 description 字段（建议补充）");
   }
 
   // 验证 agents 配置
   if (config.agents) {
     for (const [agentName, agentConfig] of Object.entries(config.agents)) {
-      if (!agentConfig.model) {
-        errors.push(`agent ${agentName} 缺少 model 字段`);
+      if (!isObject(agentConfig)) {
+        errors.push(`agent ${agentName} 配置不是对象`);
+        continue;
+      }
+
+      if (agentConfig.model !== undefined && !isString(agentConfig.model)) {
+        errors.push(`agent ${agentName} 的 model 必须是字符串`);
+      }
+
+      if (agentConfig.model === undefined) {
+        warnings.push(`agent ${agentName} 未配置 model`);
+      }
+
+      if (
+        agentConfig.variant !== undefined &&
+        !isString(agentConfig.variant)
+      ) {
+        errors.push(`agent ${agentName} 的 variant 必须是字符串`);
+      }
+
+      if (
+        agentConfig.category !== undefined &&
+        !isString(agentConfig.category)
+      ) {
+        errors.push(`agent ${agentName} 的 category 必须是字符串`);
+      }
+
+      if (
+        agentConfig.skills !== undefined &&
+        !isStringArray(agentConfig.skills)
+      ) {
+        errors.push(`agent ${agentName} 的 skills 必须是字符串数组`);
+      }
+
+      if (
+        agentConfig.temperature !== undefined &&
+        !isNumber(agentConfig.temperature)
+      ) {
+        errors.push(`agent ${agentName} 的 temperature 必须是数字`);
+      }
+
+      if (agentConfig.top_p !== undefined && !isNumber(agentConfig.top_p)) {
+        errors.push(`agent ${agentName} 的 top_p 必须是数字`);
+      }
+
+      if (agentConfig.maxTokens !== undefined && !isNumber(agentConfig.maxTokens)) {
+        errors.push(`agent ${agentName} 的 maxTokens 必须是数字`);
+      }
+
+      if (
+        agentConfig.prompt !== undefined &&
+        !isString(agentConfig.prompt)
+      ) {
+        errors.push(`agent ${agentName} 的 prompt 必须是字符串`);
+      }
+
+      if (
+        agentConfig.prompt_append !== undefined &&
+        !isString(agentConfig.prompt_append)
+      ) {
+        errors.push(`agent ${agentName} 的 prompt_append 必须是字符串`);
+      }
+
+      if (
+        agentConfig.tools !== undefined &&
+        !isObject(agentConfig.tools)
+      ) {
+        errors.push(`agent ${agentName} 的 tools 必须是对象`);
+      }
+
+      if (
+        agentConfig.disable !== undefined &&
+        !isBoolean(agentConfig.disable)
+      ) {
+        errors.push(`agent ${agentName} 的 disable 必须是布尔值`);
+      }
+
+      if (
+        agentConfig.description !== undefined &&
+        !isString(agentConfig.description)
+      ) {
+        errors.push(`agent ${agentName} 的 description 必须是字符串`);
+      }
+
+      if (
+        agentConfig.mode !== undefined &&
+        !isString(agentConfig.mode)
+      ) {
+        errors.push(`agent ${agentName} 的 mode 必须是字符串`);
+      }
+
+      if (agentConfig.color !== undefined && !isString(agentConfig.color)) {
+        errors.push(`agent ${agentName} 的 color 必须是字符串`);
+      }
+
+      if (
+        agentConfig.permission !== undefined &&
+        !isObject(agentConfig.permission)
+      ) {
+        errors.push(`agent ${agentName} 的 permission 必须是对象`);
+      }
+
+      if (
+        agentConfig.thinking !== undefined &&
+        !isObject(agentConfig.thinking)
+      ) {
+        errors.push(`agent ${agentName} 的 thinking 必须是对象`);
+      }
+
+      if (
+        agentConfig.reasoningEffort !== undefined &&
+        !isString(agentConfig.reasoningEffort)
+      ) {
+        errors.push(`agent ${agentName} 的 reasoningEffort 必须是字符串`);
+      }
+
+      if (
+        agentConfig.textVerbosity !== undefined &&
+        !isString(agentConfig.textVerbosity)
+      ) {
+        errors.push(`agent ${agentName} 的 textVerbosity 必须是字符串`);
+      }
+
+      if (
+        agentConfig.providerOptions !== undefined &&
+        !isObject(agentConfig.providerOptions)
+      ) {
+        errors.push(`agent ${agentName} 的 providerOptions 必须是对象`);
       }
     }
   }
@@ -578,9 +845,109 @@ export function validateStrategy(config: StrategyConfig): boolean {
     for (const [categoryName, categoryConfig] of Object.entries(
       config.categories,
     )) {
-      if (!categoryConfig.model) {
-        errors.push(`category ${categoryName} 缺少 model 字段`);
+      if (!isObject(categoryConfig)) {
+        errors.push(`category ${categoryName} 配置不是对象`);
+        continue;
       }
+
+      if (
+        categoryConfig.model !== undefined &&
+        !isString(categoryConfig.model)
+      ) {
+        errors.push(`category ${categoryName} 的 model 必须是字符串`);
+      }
+
+      if (categoryConfig.model === undefined) {
+        warnings.push(`category ${categoryName} 未配置 model`);
+      }
+
+      if (
+        categoryConfig.variant !== undefined &&
+        !isString(categoryConfig.variant)
+      ) {
+        errors.push(`category ${categoryName} 的 variant 必须是字符串`);
+      }
+
+      if (
+        categoryConfig.description !== undefined &&
+        !isString(categoryConfig.description)
+      ) {
+        errors.push(`category ${categoryName} 的 description 必须是字符串`);
+      }
+
+      if (
+        categoryConfig.temperature !== undefined &&
+        !isNumber(categoryConfig.temperature)
+      ) {
+        errors.push(`category ${categoryName} 的 temperature 必须是数字`);
+      }
+
+      if (
+        categoryConfig.top_p !== undefined &&
+        !isNumber(categoryConfig.top_p)
+      ) {
+        errors.push(`category ${categoryName} 的 top_p 必须是数字`);
+      }
+
+      if (
+        categoryConfig.maxTokens !== undefined &&
+        !isNumber(categoryConfig.maxTokens)
+      ) {
+        errors.push(`category ${categoryName} 的 maxTokens 必须是数字`);
+      }
+
+      if (
+        categoryConfig.thinking !== undefined &&
+        !isObject(categoryConfig.thinking)
+      ) {
+        errors.push(`category ${categoryName} 的 thinking 必须是对象`);
+      }
+
+      if (
+        categoryConfig.reasoningEffort !== undefined &&
+        !isString(categoryConfig.reasoningEffort)
+      ) {
+        errors.push(
+          `category ${categoryName} 的 reasoningEffort 必须是字符串`,
+        );
+      }
+
+      if (
+        categoryConfig.textVerbosity !== undefined &&
+        !isString(categoryConfig.textVerbosity)
+      ) {
+        errors.push(
+          `category ${categoryName} 的 textVerbosity 必须是字符串`,
+        );
+      }
+
+      if (
+        categoryConfig.tools !== undefined &&
+        !isObject(categoryConfig.tools)
+      ) {
+        errors.push(`category ${categoryName} 的 tools 必须是对象`);
+      }
+
+      if (
+        categoryConfig.prompt_append !== undefined &&
+        !isString(categoryConfig.prompt_append)
+      ) {
+        errors.push(`category ${categoryName} 的 prompt_append 必须是字符串`);
+      }
+
+      if (
+        categoryConfig.is_unstable_agent !== undefined &&
+        !isBoolean(categoryConfig.is_unstable_agent)
+      ) {
+        errors.push(`category ${categoryName} 的 is_unstable_agent 必须是布尔值`);
+      }
+    }
+  }
+
+  if (warnings.length > 0) {
+    warning("策略验证警告:");
+    for (const item of warnings) {
+      console.log(`  - ${item}`);
     }
   }
 
@@ -628,6 +995,34 @@ export function compareStrategies(
     removed: [],
     modified: [],
   };
+
+  // 对比 metadata
+  const meta1 = config1.metadata || {};
+  const meta2 = config2.metadata || {};
+
+  if (meta1.version !== meta2.version) {
+    diff.modified.push(
+      `metadata.version (${meta1.version || "无"} → ${meta2.version || "无"})`,
+    );
+  }
+
+  if (meta1.cost_level !== meta2.cost_level) {
+    diff.modified.push(
+      `metadata.cost_level (${meta1.cost_level || "无"} → ${meta2.cost_level || "无"})`,
+    );
+  }
+
+  if (meta1.use_case !== meta2.use_case) {
+    diff.modified.push(
+      `metadata.use_case (${meta1.use_case || "无"} → ${meta2.use_case || "无"})`,
+    );
+  }
+
+  if (config1.description !== config2.description) {
+    diff.modified.push(
+      `description (${config1.description?.substring(0, 30) || "无"}... → ${config2.description?.substring(0, 30) || "无"}...)`,
+    );
+  }
 
   // 对比 agents
   const agents1 = config1.agents || {};
@@ -881,7 +1276,10 @@ export function importStrategy(
   }
 
   try {
-    const config = readJSONC(inputPath);
+    let config = readJSONC(inputPath);
+
+    // 规范化元数据
+    config = normalizeMetadata(config, strategyName);
 
     if (!validateStrategy(config)) {
       return false;

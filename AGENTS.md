@@ -1,6 +1,6 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-02-03T09:56:00Z
+**Generated:** 2026-02-04T15:02:00Z
 **Commit:** (current HEAD)
 **Branch:** main
 
@@ -40,6 +40,17 @@ Skill-based strategy manager: TypeScript library + markdown workflows for AI str
 | recommend | method | Tools/ManageStrategies.ts | - | Context-based recommendations |
 
 ## CONVENTIONS
+
+**Development Principles:**
+- **Schema Compliance**: All features must conform to oh-my-opencode schema constraints
+- **Consistency Guarantee**: Any modification must ensure logical consistency across:
+  - `scripts/` - Shell scripts and automation
+  - `docs/` - Documentation and guides
+  - `templates/` - Strategy template files
+  - `Workflows/` - Markdown workflow definitions
+  - `Tools/` - TypeScript implementation
+- **Validation First**: Run type-check, tests, and template validation before committing
+- **Documentation Sync**: Update relevant docs when code/behavior changes
 
 **Skill-Based Architecture:**
 - Source code in `Tools/` (Skill convention for tool implementations)
@@ -98,11 +109,17 @@ bun run Tools/ManageStrategies.ts
 
 ## NOTES
 
+**Development Guidelines:**
+- See [Consistency Checklist](docs/guides/CONSISTENCY_CHECKLIST.md) for change impact analysis
+- Run full validation suite before commits: `bun run type-check && bun test && for f in templates/*.jsonc; do bun run Tools/ManageStrategies.ts validate "$f"; done`
+- Update CHANGELOG.md for all notable changes
+- Mark breaking changes clearly in documentation
+
 **Gotchas:**
 - No compilation needed: Bun runs `.ts` files directly
 - No CI workflows: This is a local Skill, not a CI-driven project
-- No test coverage: Unit tests not yet implemented
 - LSP requires TypeScript service restart after config changes
+- Template validation must pass for all 8 strategy files
 
 **Skill Integration:**
 - This is a Bun-based Skill package
