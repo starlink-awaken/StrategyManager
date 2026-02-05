@@ -16,14 +16,19 @@ import "./setup_auth";
 
 export * from "./interfaces";
 export { AnthropicSync } from "./AnthropicSync";
+export { AnthropicLocalSync } from "./AnthropicLocalSync";
 export { OpenAISync } from "./OpenAISync";
+export { OpenAILocalSync } from "./OpenAILocalSync";
 export { ZhiPuSync } from "./ZhiPuSync";
+export { ZhiPuLocalSync } from "./ZhiPuLocalSync";
 export { GitHubSync } from "./GitHubSync";
 export { GeminiSync } from "./GeminiSync";
+export { GeminiLocalSync } from "./GeminiLocalSync";
 export { DeepSeekSync, SiliconFlowSync } from "./LocalStatsSync";
 export { Validator } from "./Validator";
 export { CostCalculator } from "./CostCalculator";
 export { SourceTagger } from "./SourceTagger";
+export { ConfigLoader } from "./ConfigLoader";
 
 import {
   UsageSync,

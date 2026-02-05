@@ -37,7 +37,7 @@
     },
     // 规划器 - Claude Opus 4.5 (Gemini antigravity, Thinking 模式)
     "prometheus": {
-      "model": "google/antigravity-claude-opus-4.5-thinking",
+      "model": "google/antigravity-claude-opus-4-5-thinking",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -139,7 +139,7 @@
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {
       "anthropic/claude-opus-4-5": 2, // Opus 限制 2 并发（昂贵）
-      "google/antigravity-claude-opus-4.5": 3, // Antigravity Opus 限制 3 并发
+      "google/antigravity-claude-opus-4-5": 3, // Antigravity Opus 限制 3 并发
       "anthropic/claude-sonnet-4-5": 3, // Sonnet 限制 3 并发
       "openai/gpt-5.2-codex": 2, // GPT-5.2 Codex 限制 2 并发
       "github-copilot/claude-sonnet-4.5": 2, // claude-sonnet-4.5 限制 2 并发（Premium）

@@ -18,10 +18,16 @@ export class OpenAISync implements UsageSync {
     if (!this.apiKey) {
       throw new Error("OpenAISync: OPENAI_API_KEY is required");
     }
-    // 支持两种密钥格式: sk-... 和 sk-proj-...
-    if (!this.apiKey.startsWith("sk-proj-") && !this.apiKey.startsWith("sk-")) {
+    // 支持三种密钥格式:
+    // 1. sk-... (API Key)
+    // 2. sk-proj-... (Project API Key)
+    // 3. eyJ... (OAuth JWT Token)
+    const isApiKey = this.apiKey.startsWith("sk-proj-") || this.apiKey.startsWith("sk-");
+    const isOAuthToken = this.apiKey.startsWith("eyJ"); // JWT token 前缀
+    
+    if (!isApiKey && !isOAuthToken) {
       throw new Error(
-        "OpenAISync: Invalid API key format. Expected sk-* or sk-proj-*",
+        "OpenAISync: Invalid credential format. Expected sk-*, sk-proj-*, or JWT token (eyJ...)",
       );
     }
     this.baseURL = "https://api.openai.com/v1";

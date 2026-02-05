@@ -22,12 +22,17 @@ import {
 import {
   UsageSyncCoordinator,
   AnthropicSync,
+  AnthropicLocalSync,
   OpenAISync,
+  OpenAILocalSync,
   GitHubSync,
   GeminiSync,
+  GeminiLocalSync,
   ZhiPuSync,
+  ZhiPuLocalSync,
   DeepSeekSync,
   SiliconFlowSync,
+  ConfigLoader,
   type UsageData,
 } from "./UsageSync";
 
@@ -1841,31 +1846,57 @@ function deriveQuotaStatusFromUsageData(data: UsageData[]): QuotaStatus[] {
 
 async function fetchQuotaStatusFromUsageSync(): Promise<QuotaStatus[]> {
   const coordinator = new UsageSyncCoordinator();
+  
+  // 加载增强配置（从3个配置文件合并）
+  const config = ConfigLoader.loadAll();
 
+  // Anthropic: API优先 → 本地回退
   try {
     coordinator.register(new AnthropicSync());
-  } catch {}
+  } catch {
+    try {
+      coordinator.register(new AnthropicLocalSync());
+    } catch {}
+  }
 
+  // OpenAI: API优先 → 本地回退
   try {
     coordinator.register(new OpenAISync());
-  } catch {}
+  } catch {
+    try {
+      coordinator.register(new OpenAILocalSync());
+    } catch {}
+  }
 
+  // GitHub: 仅API
   try {
     coordinator.register(new GitHubSync());
   } catch {}
 
+  // Gemini: API优先 → 本地回退
   try {
     coordinator.register(new GeminiSync());
-  } catch {}
+  } catch {
+    try {
+      coordinator.register(new GeminiLocalSync());
+    } catch {}
+  }
 
+  // ZhiPu: API优先 → 本地回退（处理404）
   try {
     coordinator.register(new ZhiPuSync());
-  } catch {}
+  } catch {
+    try {
+      coordinator.register(new ZhiPuLocalSync());
+    } catch {}
+  }
 
+  // DeepSeek: 仅本地
   try {
     coordinator.register(new DeepSeekSync());
   } catch {}
 
+  // SiliconFlow: 仅本地
   try {
     coordinator.register(new SiliconFlowSync());
   } catch {}
@@ -2649,18 +2680,18 @@ if (import.meta.main) {
       try {
         const coordinator = new UsageSyncCoordinator();
 
-        // 注册所有提供商
+        // 注册所有提供商（使用本地统计版本以避免 OAuth/CLI 问题）
         try {
-          coordinator.register(new AnthropicSync());
+          coordinator.register(new AnthropicLocalSync());
         } catch {}
         try {
-          coordinator.register(new OpenAISync());
+          coordinator.register(new OpenAILocalSync());
         } catch {}
         try {
           coordinator.register(new GitHubSync());
         } catch {}
         try {
-          coordinator.register(new GeminiSync());
+          coordinator.register(new GeminiLocalSync());
         } catch {}
         try {
           coordinator.register(new ZhiPuSync());
