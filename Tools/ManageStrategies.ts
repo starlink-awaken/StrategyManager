@@ -34,6 +34,7 @@ import {
   SiliconFlowSync,
   ConfigLoader,
   type UsageData,
+  type UsageSync,
 } from "./UsageSync";
 
 // ==================== 类型定义 ====================
@@ -1847,64 +1848,55 @@ function deriveQuotaStatusFromUsageData(data: UsageData[]): QuotaStatus[] {
 async function fetchQuotaStatusFromUsageSync(): Promise<QuotaStatus[]> {
   const coordinator = new UsageSyncCoordinator();
   
-  // 加载增强配置（从3个配置文件合并）
   const config = ConfigLoader.loadAll();
 
-  // Anthropic: API优先 → 本地回退
-  try {
-    coordinator.register(new AnthropicSync());
-  } catch {
+  const syncPairs: Array<{
+    provider: string;
+    api: () => UsageSync;
+    local: (() => UsageSync) | null;
+  }> = [
+    { provider: "anthropic", api: () => new AnthropicSync(), local: () => new AnthropicLocalSync() },
+    { provider: "openai", api: () => new OpenAISync(), local: () => new OpenAILocalSync() },
+    { provider: "github", api: () => new GitHubSync(), local: null },
+    { provider: "gemini", api: () => new GeminiSync(), local: () => new GeminiLocalSync() },
+    { provider: "zhipu", api: () => new ZhiPuSync(), local: () => new ZhiPuLocalSync() },
+    { provider: "deepseek", api: () => new DeepSeekSync(), local: null },
+    { provider: "siliconflow", api: () => new SiliconFlowSync(), local: null },
+  ];
+
+  for (const { api, local } of syncPairs) {
     try {
-      coordinator.register(new AnthropicLocalSync());
-    } catch {}
+      coordinator.register(api());
+    } catch {
+      if (local) {
+        try {
+          coordinator.register(local());
+        } catch {}
+      }
+    }
   }
-
-  // OpenAI: API优先 → 本地回退
-  try {
-    coordinator.register(new OpenAISync());
-  } catch {
-    try {
-      coordinator.register(new OpenAILocalSync());
-    } catch {}
-  }
-
-  // GitHub: 仅API
-  try {
-    coordinator.register(new GitHubSync());
-  } catch {}
-
-  // Gemini: API优先 → 本地回退
-  try {
-    coordinator.register(new GeminiSync());
-  } catch {
-    try {
-      coordinator.register(new GeminiLocalSync());
-    } catch {}
-  }
-
-  // ZhiPu: API优先 → 本地回退（处理404）
-  try {
-    coordinator.register(new ZhiPuSync());
-  } catch {
-    try {
-      coordinator.register(new ZhiPuLocalSync());
-    } catch {}
-  }
-
-  // DeepSeek: 仅本地
-  try {
-    coordinator.register(new DeepSeekSync());
-  } catch {}
-
-  // SiliconFlow: 仅本地
-  try {
-    coordinator.register(new SiliconFlowSync());
-  } catch {}
 
   const results = await coordinator.syncAll();
-  const data: UsageData[] = [];
+  const failedProviders = results.results?.filter(r => !r.success && r.provider) || [];
 
-  for (const result of results.results || []) {
+  for (const failed of failedProviders) {
+    const pair = syncPairs.find(p => p.provider === failed.provider);
+    if (pair?.local) {
+      try {
+        const localSync = pair.local();
+        coordinator.unregister(failed.provider);
+        coordinator.register(localSync);
+      } catch {}
+    }
+  }
+
+  let finalResults = results;
+  if (failedProviders.length > 0) {
+    finalResults = await coordinator.syncAll();
+  }
+
+  const data: UsageData[] = [];
+  for (const result of finalResults.results || []) {
     if (result.success && result.data) {
       data.push(...result.data);
     }
@@ -2676,32 +2668,29 @@ if (import.meta.main) {
         error(`成本报告生成失败: ${err}`);
       }
     } else if (command === "sync-usage") {
-      // 使用同步命令
       try {
         const coordinator = new UsageSyncCoordinator();
+        
+        const config = ConfigLoader.loadAll();
 
-        // 注册所有提供商（使用本地统计版本以避免 OAuth/CLI 问题）
-        try {
-          coordinator.register(new AnthropicLocalSync());
-        } catch {}
-        try {
-          coordinator.register(new OpenAILocalSync());
-        } catch {}
-        try {
-          coordinator.register(new GitHubSync());
-        } catch {}
-        try {
-          coordinator.register(new GeminiLocalSync());
-        } catch {}
-        try {
-          coordinator.register(new ZhiPuSync());
-        } catch {}
-        try {
-          coordinator.register(new DeepSeekSync());
-        } catch {}
-        try {
-          coordinator.register(new SiliconFlowSync());
-        } catch {}
+        const syncPairs: Array<{
+          provider: string;
+          local: () => UsageSync;
+        }> = [
+          { provider: "anthropic", local: () => new AnthropicLocalSync() },
+          { provider: "openai", local: () => new OpenAILocalSync() },
+          { provider: "github", local: () => new GitHubSync() },
+          { provider: "gemini", local: () => new GeminiLocalSync() },
+          { provider: "zhipu", local: () => new ZhiPuLocalSync() },
+          { provider: "deepseek", local: () => new DeepSeekSync() },
+          { provider: "siliconflow", local: () => new SiliconFlowSync() },
+        ];
+
+        for (const { local } of syncPairs) {
+          try {
+            coordinator.register(local());
+          } catch {}
+        }
 
         info("正在同步多平台使用数据...");
         const results = await coordinator.syncAll();
