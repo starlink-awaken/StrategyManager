@@ -148,9 +148,9 @@ export class StrategyValidator {
   ): void {
     const knownModels = [
       // Anthropic
-      "anthropic/claude-opus-4-5",
-      "anthropic/claude-sonnet-4-5",
-      "anthropic/claude-haiku-4-5",
+      "anthropic/claude-opus-4.5",
+      "anthropic/claude-sonnet-4.5",
+      "anthropic/claude-haiku-4.5",
       // OpenAI
       "openai/gpt-5.2",
       "openai/gpt-5.2-codex",
@@ -161,8 +161,8 @@ export class StrategyValidator {
       "google/gemini-3-flash",
       "google/antigravity-gemini-3-pro",
       // GitHub Copilot
-      "github-copilot/claude-opus-4-5",
-      "github-copilot/claude-sonnet-4-5",
+      "github-copilot/claude-opus-4.5",
+      "github-copilot/claude-sonnet-4.5",
       "github-copilot/gpt-5.2-codex",
       "github-copilot/gpt-5-mini",
       "github-copilot/gpt-4.1",
@@ -212,8 +212,8 @@ export class StrategyValidator {
     result: ValidationResult,
   ): void {
     const expensiveModels = [
-      "anthropic/claude-opus-4-5",
-      "github-copilot/claude-opus-4-5",
+      "anthropic/claude-opus-4.5",
+      "github-copilot/claude-opus-4.5",
     ];
 
     let expensiveModelCount = 0;

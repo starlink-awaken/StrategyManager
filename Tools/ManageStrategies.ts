@@ -1911,7 +1911,7 @@ const SCENARIO_TEMPLATE_MAP: Record<ScenarioType, string[]> = {
 const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
   quality: {
     models: [
-      "anthropic/claude-sonnet-4-5",
+      "anthropic/claude-sonnet-4.5",
       "openai/gpt-5.2-codex",
       "zhipuai-coding-plan/glm-4.7",
     ],
@@ -1920,13 +1920,13 @@ const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
     models: [
       "zhipuai-coding-plan/glm-4.7",
       "google/gemini-3-flash",
-      "anthropic/claude-haiku-4-5",
+      "anthropic/claude-haiku-4.5",
     ],
   },
   speed: {
     models: [
       "google/gemini-3-flash",
-      "anthropic/claude-haiku-4-5",
+      "anthropic/claude-haiku-4.5",
       "openai/gpt-5.2-codex",
     ],
   },
@@ -1934,7 +1934,7 @@ const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
     models: [
       "openai/gpt-5.2-codex",
       "zhipuai-coding-plan/glm-4.7",
-      "anthropic/claude-haiku-4-5",
+      "anthropic/claude-haiku-4.5",
       "google/gemini-3-flash",
     ],
   },

@@ -27,7 +27,7 @@ function createMockConfig(
   return {
     description: "Test Strategy",
     agents: {
-      default: { model: "anthropic/claude-sonnet-4-5" },
+      default: { model: "anthropic/claude-sonnet-4.5" },
     },
     ...overrides,
   } as StrategyConfig;
@@ -37,12 +37,12 @@ function createCompleteConfig(overrides: Partial<StrategyConfig> = {}) {
   return createMockConfig({
     background_task: {
       modelConcurrency: {
-        "anthropic/claude-sonnet-4-5": 2,
+        "anthropic/claude-sonnet-4.5": 2,
         "github-copilot/gpt-5-mini": 10,
       },
     },
     categories: {
-      default: { model: "anthropic/claude-sonnet-4-5" },
+      default: { model: "anthropic/claude-sonnet-4.5" },
     },
     ...overrides,
   });
@@ -128,7 +128,7 @@ describe("StrategyValidator - Schema Validation", () => {
     const config = createMockConfig({
       agents: undefined,
       categories: {
-        general: { model: "anthropic/claude-sonnet-4-5" },
+        general: { model: "anthropic/claude-sonnet-4.5" },
         coding: { model: "github-copilot/gpt-5-mini" },
       },
     });
@@ -143,7 +143,7 @@ describe("StrategyValidator - Schema Validation", () => {
   it("should accept valid config with both agents and categories", () => {
     const config = createMockConfig({
       agents: {
-        main: { model: "anthropic/claude-opus-4-5" },
+        main: { model: "anthropic/claude-opus-4.5" },
       },
       categories: {
         coding: { model: "github-copilot/gpt-5-mini" },
@@ -169,7 +169,7 @@ describe("StrategyValidator - Model Availability", () => {
   it("should not warn about known models", () => {
     const config = createMockConfig({
       agents: {
-        default: { model: "anthropic/claude-opus-4-5" },
+        default: { model: "anthropic/claude-opus-4.5" },
         coding: { model: "openai/gpt-5.2" },
         research: { model: "google/gemini-3-pro" },
       },
@@ -207,7 +207,7 @@ describe("StrategyValidator - Model Availability", () => {
   it("should handle mix of known and unknown models", () => {
     const config = createMockConfig({
       agents: {
-        known: { model: "anthropic/claude-opus-4-5" },
+        known: { model: "anthropic/claude-opus-4.5" },
         unknown: { model: "unknown/weird-model" },
       },
     });
@@ -232,7 +232,7 @@ describe("StrategyValidator - Cost Reasonableness", () => {
   it("should identify high-cost models", () => {
     const config = createMockConfig({
       agents: {
-        premium: { model: "anthropic/claude-opus-4-5" },
+        premium: { model: "anthropic/claude-opus-4.5" },
       },
     });
 
@@ -248,10 +248,10 @@ describe("StrategyValidator - Cost Reasonableness", () => {
   it("should warn when using too many expensive models", () => {
     const config = createMockConfig({
       agents: {
-        a: { model: "anthropic/claude-opus-4-5" },
-        b: { model: "github-copilot/claude-opus-4-5" },
-        c: { model: "anthropic/claude-opus-4-5" },
-        d: { model: "anthropic/claude-opus-4-5" },
+        a: { model: "anthropic/claude-opus-4.5" },
+        b: { model: "github-copilot/claude-opus-4.5" },
+        c: { model: "anthropic/claude-opus-4.5" },
+        d: { model: "anthropic/claude-opus-4.5" },
       },
     });
 
@@ -269,8 +269,8 @@ describe("StrategyValidator - Cost Reasonableness", () => {
   it("should not warn for balanced cost strategy", () => {
     const config = createMockConfig({
       agents: {
-        premium: { model: "anthropic/claude-opus-4-5" },
-        balanced: { model: "anthropic/claude-sonnet-4-5" },
+        premium: { model: "anthropic/claude-opus-4.5" },
+        balanced: { model: "anthropic/claude-sonnet-4.5" },
         economical: { model: "github-copilot/gpt-4.1" },
       },
     });
@@ -298,7 +298,7 @@ describe("StrategyValidator - Concurrency Configuration", () => {
     const config = createCompleteConfig({
       background_task: {
         modelConcurrency: {
-          "anthropic/claude-opus-4-5": 10, // Too high
+          "anthropic/claude-opus-4.5": 10, // Too high
         },
       },
     });
@@ -318,7 +318,7 @@ describe("StrategyValidator - Concurrency Configuration", () => {
     const config = createCompleteConfig({
       background_task: {
         modelConcurrency: {
-          "github-copilot/claude-sonnet-4-5": 100, // Way too high
+          "github-copilot/claude-sonnet-4.5": 100, // Way too high
         },
       },
     });
@@ -340,7 +340,7 @@ describe("StrategyValidator - Concurrency Configuration", () => {
     const config = createCompleteConfig({
       background_task: {
         modelConcurrency: {
-          "anthropic/claude-opus-4-5": 2,
+          "anthropic/claude-opus-4.5": 2,
           "github-copilot/gpt-5-mini": 20,
         },
       },
@@ -384,10 +384,10 @@ describe("StrategyValidator - GitHub Copilot Usage", () => {
   it("should warn about low GitHub Copilot utilization", () => {
     const config = createMockConfig({
       agents: {
-        a: { model: "anthropic/claude-sonnet-4-5" },
+        a: { model: "anthropic/claude-sonnet-4.5" },
         b: { model: "openai/gpt-5.2" },
         c: { model: "google/gemini-3-pro" },
-        d: { model: "anthropic/claude-sonnet-4-5" },
+        d: { model: "anthropic/claude-sonnet-4.5" },
         e: { model: "github-copilot/gpt-4.1" }, // Only 1/5 = 20%
       },
     });
@@ -406,9 +406,9 @@ describe("StrategyValidator - GitHub Copilot Usage", () => {
   it("should not warn about good GitHub Copilot utilization", () => {
     const config = createMockConfig({
       agents: {
-        a: { model: "github-copilot/claude-opus-4-5" },
+        a: { model: "github-copilot/claude-opus-4.5" },
         b: { model: "github-copilot/gpt-5-mini" },
-        c: { model: "anthropic/claude-sonnet-4-5" },
+        c: { model: "anthropic/claude-sonnet-4.5" },
         d: { model: "github-copilot/gpt-4.1" }, // 3/4 = 75%
       },
     });
@@ -428,7 +428,7 @@ describe("StrategyValidator - GitHub Copilot Usage", () => {
   it("should suggest using free GitHub Copilot models", () => {
     const config = createMockConfig({
       agents: {
-        a: { model: "github-copilot/claude-opus-4-5" },
+        a: { model: "github-copilot/claude-opus-4.5" },
         b: { model: "github-copilot/gpt-5.2" },
         // No free models (gpt-5-mini, gpt-4.1)
       },
@@ -458,15 +458,15 @@ describe("StrategyValidator - Comprehensive Validation", () => {
   it("should accept a complete valid strategy", () => {
     const config = createMockConfig({
       agents: {
-        default: { model: "anthropic/claude-sonnet-4-5" },
+        default: { model: "anthropic/claude-sonnet-4.5" },
         coding: { model: "github-copilot/gpt-5-mini" },
-        research: { model: "anthropic/claude-opus-4-5" },
+        research: { model: "anthropic/claude-opus-4.5" },
       },
       background_task: {
         modelConcurrency: {
-          "anthropic/claude-sonnet-4-5": 3,
+          "anthropic/claude-sonnet-4.5": 3,
           "github-copilot/gpt-5-mini": 20,
-          "anthropic/claude-opus-4-5": 2,
+          "anthropic/claude-opus-4.5": 2,
         },
       },
     });
@@ -519,10 +519,10 @@ describe("StrategyValidator - Comprehensive Validation", () => {
   it("should handle config with many warnings", () => {
     const config = createMockConfig({
       agents: {
-        a: { model: "anthropic/claude-opus-4-5" },
+        a: { model: "anthropic/claude-opus-4.5" },
         b: { model: "unknown/deprecated-model" },
-        c: { model: "anthropic/claude-opus-4-5" },
-        d: { model: "anthropic/claude-opus-4-5" },
+        c: { model: "anthropic/claude-opus-4.5" },
+        d: { model: "anthropic/claude-opus-4.5" },
         e: { model: "github-copilot/gpt-4.1" }, // Low Copilot usage
       },
     });
@@ -642,7 +642,7 @@ describe("StrategyValidator - Edge Cases", () => {
   it("should handle large configurations", () => {
     const agents: Record<string, any> = {};
     for (let i = 0; i < 100; i++) {
-      agents[`agent-${i}`] = { model: "anthropic/claude-sonnet-4-5" };
+      agents[`agent-${i}`] = { model: "anthropic/claude-sonnet-4.5" };
     }
 
     const config = createMockConfig({ agents });
