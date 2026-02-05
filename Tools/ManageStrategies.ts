@@ -188,7 +188,7 @@ const pathManager = defaultPathManager;
 const CONFIG_DIR = pathManager.getConfigDir();
 const STRATEGIES_DIR = pathManager.getStrategiesDir();
 const DYNAMIC_STRATEGIES_DIR = pathManager.getDynamicStrategiesDir();
-const CONFIG_FILE = pathManager.getConfigFile();
+const CONFIG_FILE = pathManager.getConfigFileWithComments();
 const HISTORY_FILE = pathManager.getHistoryFile();
 const RECOMMENDATION_FEEDBACK_FILE =
   pathManager.getRecommendationFeedbackFile();
@@ -584,19 +584,11 @@ export function switchStrategy(strategyName: string): boolean {
     });
   }
 
-  // 创建软链接（同时更新 .json 和 .jsonc）
+  // 创建软链接（只维护 .jsonc）
   try {
-    const configFileJson = pathManager.getConfigFile();
     const configFileJsonc = pathManager.getConfigFileWithComments();
-    
-    // 更新 .json 配置文件
-    execSync(`ln -sf "${targetFile}" "${configFileJson}"`, { stdio: "inherit" });
-    
-    // 同时更新 .jsonc 配置文件（支持注释的版本）
-    if (fileExists(targetFile)) {
-      fs.copyFileSync(targetFile, configFileJsonc);
-      info(`已更新 JSONC 配置: ${configFileJsonc}`);
-    }
+    execSync(`ln -sf "${targetFile}" "${configFileJsonc}"`, { stdio: "inherit" });
+    info(`已更新 JSONC 软链: ${configFileJsonc}`);
 
     success(`已切换到策略: ${strategyName}`);
     info(`软链目标: ${targetFile}`);
