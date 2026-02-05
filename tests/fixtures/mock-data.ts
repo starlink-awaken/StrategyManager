@@ -24,7 +24,7 @@ export const mockStrategies: StrategyMetadata[] = [
     isCurrent: false,
     useCase: "Critical tasks requiring ultimate quality",
     models: [
-      "anthropic/claude-opus-4.5",
+      "anthropic/claude-opus-4-5",
       "openai/gpt-5.2",
       "google/gemini-3-pro",
     ],
@@ -38,7 +38,7 @@ export const mockStrategies: StrategyMetadata[] = [
     version: "1.0.0",
     isCurrent: false,
     useCase: "High-performance tasks",
-    models: ["anthropic/claude-opus-4.5", "openai/gpt-5.2-codex"],
+    models: ["anthropic/claude-opus-4-5", "openai/gpt-5.2-codex"],
     source: "installed",
   },
   {
@@ -49,7 +49,7 @@ export const mockStrategies: StrategyMetadata[] = [
     version: "1.0.0",
     isCurrent: true,
     useCase: "General purpose AI tasks",
-    models: ["anthropic/claude-sonnet-4.5", "github-copilot/gpt-5-mini"],
+    models: ["anthropic/claude-sonnet-4-5", "github-copilot/gpt-5-mini"],
     source: "installed",
   },
   {
@@ -71,7 +71,7 @@ export const mockStrategies: StrategyMetadata[] = [
     version: "1.0.0",
     isCurrent: false,
     useCase: "Content creation and writing",
-    models: ["anthropic/claude-sonnet-4.5", "openai/gpt-5.2"],
+    models: ["anthropic/claude-sonnet-4-5", "openai/gpt-5.2"],
     source: "installed",
   },
   {
@@ -82,7 +82,7 @@ export const mockStrategies: StrategyMetadata[] = [
     version: "1.0.0",
     isCurrent: false,
     useCase: "Deep research and analysis",
-    models: ["anthropic/claude-opus-4.5", "google/gemini-3-pro"],
+    models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
     source: "installed",
   },
 ];
@@ -92,15 +92,15 @@ export const mockStrategies: StrategyMetadata[] = [
 export const validStrategyConfig: StrategyConfig = {
   description: "Test balanced strategy",
   agents: {
-    default: { model: "anthropic/claude-sonnet-4.5" },
+    default: { model: "anthropic/claude-sonnet-4-5" },
     coding: { model: "github-copilot/gpt-5-mini" },
-    research: { model: "anthropic/claude-opus-4.5" },
+    research: { model: "anthropic/claude-opus-4-5" },
   },
   background_task: {
     modelConcurrency: {
-      "anthropic/claude-sonnet-4.5": 3,
+      "anthropic/claude-sonnet-4-5": 3,
       "github-copilot/gpt-5-mini": 20,
-      "anthropic/claude-opus-4.5": 2,
+      "anthropic/claude-opus-4-5": 2,
     },
   },
 };
@@ -108,14 +108,14 @@ export const validStrategyConfig: StrategyConfig = {
 export const expensiveStrategyConfig: StrategyConfig = {
   description: "Test expensive strategy",
   agents: {
-    a: { model: "anthropic/claude-opus-4.5" },
+    a: { model: "anthropic/claude-opus-4-5" },
     b: { model: "github-copilot/claude-opus-4.5" },
-    c: { model: "anthropic/claude-opus-4.5" },
+    c: { model: "anthropic/claude-opus-4-5" },
     d: { model: "openai/gpt-5.2" },
   },
   background_task: {
     modelConcurrency: {
-      "anthropic/claude-opus-4.5": 5, // Too high
+      "anthropic/claude-opus-4-5": 5, // Too high
     },
   },
 };
@@ -271,10 +271,10 @@ export const validationTestCases = [
     config: {
       description: "Expensive",
       agents: {
-        a: { model: "anthropic/claude-opus-4.5" },
-        b: { model: "anthropic/claude-opus-4.5" },
-        c: { model: "anthropic/claude-opus-4.5" },
-        d: { model: "anthropic/claude-opus-4.5" },
+        a: { model: "anthropic/claude-opus-4-5" },
+        b: { model: "anthropic/claude-opus-4-5" },
+        c: { model: "anthropic/claude-opus-4-5" },
+        d: { model: "anthropic/claude-opus-4-5" },
       },
     },
     shouldFail: false,

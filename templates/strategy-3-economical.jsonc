@@ -261,7 +261,7 @@
       "google/gemini-2.5-flash": 15, // Gemini Flash 允许 15 并发
       "google/gemini-3-flash": 18, // Gemini 3 Flash 允许 18 并发
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
-      "anthropic/claude-opus-4.5": 1 // Claude Opus 限制 1 并发（紧急）
+      "anthropic/claude-opus-4-5": 1 // Claude Opus 限制 1 并发（紧急）
     }
   },
   "sisyphus_agent": {

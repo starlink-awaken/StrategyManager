@@ -148,9 +148,9 @@ export class StrategyValidator {
   ): void {
     const knownModels = [
       // Anthropic
-      "anthropic/claude-opus-4.5",
-      "anthropic/claude-sonnet-4.5",
-      "anthropic/claude-haiku-4.5",
+      "anthropic/claude-opus-4-5",
+      "anthropic/claude-sonnet-4-5",
+      "anthropic/claude-haiku-4-5",
       // OpenAI
       "openai/gpt-5.2",
       "openai/gpt-5.2-codex",
@@ -212,7 +212,7 @@ export class StrategyValidator {
     result: ValidationResult,
   ): void {
     const expensiveModels = [
-      "anthropic/claude-opus-4.5",
+      "anthropic/claude-opus-4-5",
       "github-copilot/claude-opus-4.5",
     ];
 

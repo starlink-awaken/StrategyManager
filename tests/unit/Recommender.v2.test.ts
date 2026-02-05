@@ -33,7 +33,7 @@ function createMockStrategy(
     version: "1.0.0",
     isCurrent: false,
     useCase: "General purpose AI tasks",
-    models: ["anthropic/claude-sonnet-4.5", "github-copilot/gpt-5-mini"],
+    models: ["anthropic/claude-sonnet-4-5", "github-copilot/gpt-5-mini"],
     source: "installed",
     ...overrides,
   };
@@ -46,7 +46,7 @@ function createStrategyLibrary(): StrategyMetadata[] {
       description: "Ultimate performance and quality",
       costLevel: "ultra-high",
       models: [
-        "anthropic/claude-opus-4.5",
+        "anthropic/claude-opus-4-5",
         "openai/gpt-5.2",
         "google/gemini-3-pro",
       ],
@@ -55,13 +55,13 @@ function createStrategyLibrary(): StrategyMetadata[] {
       name: "strategy-1-performance",
       description: "High performance strategy",
       costLevel: "high",
-      models: ["anthropic/claude-opus-4.5", "openai/gpt-5.2-codex"],
+      models: ["anthropic/claude-opus-4-5", "openai/gpt-5.2-codex"],
     }),
     createMockStrategy({
       name: "strategy-2-balanced",
       description: "Balanced strategy",
       costLevel: "medium",
-      models: ["anthropic/claude-sonnet-4.5", "github-copilot/gpt-5-mini"],
+      models: ["anthropic/claude-sonnet-4-5", "github-copilot/gpt-5-mini"],
     }),
     createMockStrategy({
       name: "strategy-3-economical",
@@ -73,13 +73,13 @@ function createStrategyLibrary(): StrategyMetadata[] {
       name: "strategy-creative-content",
       description: "Content creation strategy",
       costLevel: "medium-high",
-      models: ["anthropic/claude-sonnet-4.5", "openai/gpt-5.2"],
+      models: ["anthropic/claude-sonnet-4-5", "openai/gpt-5.2"],
     }),
     createMockStrategy({
       name: "strategy-research-thinking",
       description: "Deep research strategy",
       costLevel: "high",
-      models: ["anthropic/claude-opus-4.5", "google/gemini-3-pro"],
+      models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
     }),
   ];
 }

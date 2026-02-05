@@ -31,7 +31,7 @@
       // "agent": "Sisyphus",
 
       // 可选：覆盖模型选择
-      // "model": "anthropic/claude-opus-4.5",
+      // "model": "anthropic/claude-opus-4-5",
 
       // 可选：指定分类
       // "category": "unspecified-high",
@@ -56,7 +56,7 @@
   /*
   "agents": {
     "Sisyphus": {
-      "model": "anthropic/claude-opus-4.5",
+      "model": "anthropic/claude-opus-4-5",
       "temperature": 0.3
     }
   },
@@ -73,7 +73,7 @@
       "description": "成本分析和优化推荐"
     },
     "strategy-recommendation": {
-      "model": "anthropic/claude-opus-4.5",
+      "model": "anthropic/claude-opus-4-5",
       "description": "策略推荐和场景匹配"
     }
   },

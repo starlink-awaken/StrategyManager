@@ -50,7 +50,7 @@
             "description": "创意规划：多样性和新颖性"
         },
         "oracle": {
-            "model": "anthropic/claude-sonnet-4.5",
+            "model": "anthropic/claude-sonnet-4-5",
             "temperature": 0.6,
             "maxTokens": 5000,
             "description": "内容审核：质量把关和优化建议"
@@ -82,13 +82,13 @@
             "description": "多模态：视觉内容描述和创意"
         },
         "metis": {
-            "model": "anthropic/claude-sonnet-4.5",
+            "model": "anthropic/claude-sonnet-4-5",
             "temperature": 0.6,
             "maxTokens": 4000,
             "description": "策略分析：内容规划和受众定位"
         },
         "momus": {
-            "model": "anthropic/claude-sonnet-4.5",
+            "model": "anthropic/claude-sonnet-4-5",
             "temperature": 0.5,
             "maxTokens": 3500,
             "description": "审查者：内容审核和优化"
@@ -108,7 +108,7 @@
             "description": "技术支持（如需代码）"
         },
         "ultrabrain": {
-            "model": "anthropic/claude-sonnet-4.5",
+            "model": "anthropic/claude-sonnet-4-5",
             "temperature": 0.5,
             "maxTokens": 5000,
             "description": "复杂内容策略规划"
@@ -165,7 +165,7 @@
             "github-copilot": 12
         },
         "modelConcurrency": {
-            "anthropic/claude-sonnet-4.5": 4,
+            "anthropic/claude-sonnet-4-5": 4,
             "google/gemini-3-pro": 10,
             "deepseek/deepseek-v3-2": 20,
             "zhipuai-coding-plan/glm-4.7": 25,

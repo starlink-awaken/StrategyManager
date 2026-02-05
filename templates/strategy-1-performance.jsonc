@@ -53,7 +53,7 @@
     },
     // 文档搜索 - Claude Sonnet 4.5 (Claude Pro)
     "librarian": {
-      "model": "anthropic/claude-sonnet-4.5",
+      "model": "anthropic/claude-sonnet-4-5",
       "temperature": 0.1
     },
     // 快速探索 - GLM 4.7 (ZhiPuAI Max，大用量)
@@ -114,7 +114,7 @@
     },
     // 通用高难度 - Claude Opus 4.5 Max (Claude Pro，最强能力)
     "unspecified-high": {
-      "model": "anthropic/claude-opus-4.5",
+      "model": "anthropic/claude-opus-4-5",
       "variant": "max",
       "temperature": 0.3
     },
@@ -138,9 +138,9 @@
     },
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {
-      "anthropic/claude-opus-4.5": 2, // Opus 限制 2 并发（昂贵）
+      "anthropic/claude-opus-4-5": 2, // Opus 限制 2 并发（昂贵）
       "google/antigravity-claude-opus-4.5": 3, // Antigravity Opus 限制 3 并发
-      "anthropic/claude-sonnet-4.5": 3, // Sonnet 限制 3 并发
+      "anthropic/claude-sonnet-4-5": 3, // Sonnet 限制 3 并发
       "openai/gpt-5.2-codex": 2, // GPT-5.2 Codex 限制 2 并发
       "github-copilot/claude-sonnet-4.5": 2, // claude-sonnet-4.5 限制 2 并发（Premium）
       "github-copilot/claude-opus-4.5": 2, // claude-opus-4.5 限制 2 并发（Premium）

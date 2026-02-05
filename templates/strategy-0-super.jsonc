@@ -34,7 +34,7 @@
     // 职责：任务规划、多agent协调、最终决策
     // 配置：完整思考支持，高预算用于复杂推理
     "sisyphus": {
-      "model": "anthropic/claude-opus-4.5",
+      "model": "anthropic/claude-opus-4-5",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -85,7 +85,7 @@
     // 职责：快速代码探索、grep 上下文收集
     // 配置：经济型，用于辅助任务
     "explore": {
-      "model": "anthropic/claude-haiku-4.5",
+      "model": "anthropic/claude-haiku-4-5",
       "temperature": 0.2,
       "maxTokens": 2000
     },
@@ -101,7 +101,7 @@
     // 规划前分析 - Claude Sonnet 4.5 Thinking
     // 职责：需求歧义识别、AI失败点分析
     "metis": {
-      "model": "anthropic/claude-sonnet-4.5",
+      "model": "anthropic/claude-sonnet-4-5",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -120,7 +120,7 @@
     // 深度思考 - Claude Opus 4.5 Thinking
     // 职责：复杂问题的深度分析和思考
     "atlas": {
-      "model": "anthropic/claude-opus-4.5",
+      "model": "anthropic/claude-opus-4-5",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 150000
@@ -172,7 +172,7 @@
     },
     // 通用高难度
     "unspecified-high": {
-      "model": "anthropic/claude-opus-4.5",
+      "model": "anthropic/claude-opus-4-5",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -213,9 +213,9 @@
     },
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {
-      "anthropic/claude-opus-4.5": 2,
-      "anthropic/claude-sonnet-4.5": 2,
-      "anthropic/claude-haiku-4.5": 5,
+      "anthropic/claude-opus-4-5": 2,
+      "anthropic/claude-sonnet-4-5": 2,
+      "anthropic/claude-haiku-4-5": 5,
       "google/antigravity-claude-opus-4.5-thinking": 2,
       "google/gemini-3-pro": 4,
       "google/gemini-3-flash": 8,
