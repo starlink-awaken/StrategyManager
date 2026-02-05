@@ -1899,12 +1899,12 @@ const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
     models: [
       "anthropic/claude-sonnet-4-5",
       "openai/gpt-5.2-codex",
-      "zai-coding-plan/glm-4.7",
+      "zhipuai-coding-plan/glm-4.7",
     ],
   },
   cost: {
     models: [
-      "zai-coding-plan/glm-4.7",
+      "zhipuai-coding-plan/glm-4.7",
       "google/gemini-3-flash",
       "anthropic/claude-haiku-4-5",
     ],
@@ -1919,7 +1919,7 @@ const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
   balanced: {
     models: [
       "openai/gpt-5.2-codex",
-      "zai-coding-plan/glm-4.7",
+      "zhipuai-coding-plan/glm-4.7",
       "anthropic/claude-haiku-4-5",
       "google/gemini-3-flash",
     ],

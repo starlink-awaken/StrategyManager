@@ -77,7 +77,7 @@
     // 职责：快速查询、文档检索、模式匹配
     // 配置：低温度、低成本、高并发
     "librarian": {
-      "model": "zai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.1,
       "maxTokens": 3000
     },
@@ -158,14 +158,14 @@
     },
     // 快速简单任务
     "quick": {
-      "model": "zai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 2000,
       "description": "快速修复、简单功能、格式转换"
     },
     // 通用低难度
     "unspecified-low": {
-      "model": "zai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 3000,
       "description": "文件编辑、代码清理、基础实现"
@@ -207,7 +207,7 @@
       "anthropic": 2,
       "openai": 3,
       "google": 5,
-      "zai-coding-plan": 15,
+      "zhipuai-coding-plan": 15,
       "github-copilot": 2,
       "ark": 8
     },
@@ -220,7 +220,7 @@
       "google/gemini-3-pro": 4,
       "google/gemini-3-flash": 8,
       "openai/gpt-5.2-codex": 2,
-      "zai-coding-plan/glm-4.7": 20
+      "zhipuai-coding-plan/glm-4.7": 20
     }
   },
   // ========== Sisyphus Agent 配置 ==========

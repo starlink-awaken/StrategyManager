@@ -167,7 +167,7 @@ export class StrategyValidator {
       "github-copilot/gpt-5-mini",
       "github-copilot/gpt-4.1",
       // ZhiPu
-      "zai-coding-plan/glm-4.7",
+      "zhipuai-coding-plan/glm-4.7",
       // DeepSeek
       "deepseek/deepseek-v3-2",
     ];

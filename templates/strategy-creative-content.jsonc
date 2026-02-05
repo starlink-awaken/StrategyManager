@@ -62,7 +62,7 @@
             "description": "长文本生成：成本友好的大容量输出"
         },
         "librarian": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.3,
             "maxTokens": 3000,
             "description": "资料查询：快速检索和参考"
@@ -102,7 +102,7 @@
     },
     "categories": {
         "visual-engineering": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.3,
             "maxTokens": 3000,
             "description": "技术支持（如需代码）"
@@ -128,7 +128,7 @@
             "description": "快速草稿：免费模型 + 快速输出"
         },
         "unspecified-low": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.4,
             "maxTokens": 3000,
             "description": "辅助整理和编辑"
@@ -161,14 +161,14 @@
             "anthropic": 4,
             "google": 10,
             "deepseek": 20,
-            "zai-coding-plan": 25,
+            "zhipuai-coding-plan": 25,
             "github-copilot": 12
         },
         "modelConcurrency": {
             "anthropic/claude-sonnet-4-5": 4,
             "google/gemini-3-pro": 10,
             "deepseek/deepseek-v3-2": 20,
-            "zai-coding-plan/glm-4.7": 25,
+            "zhipuai-coding-plan/glm-4.7": 25,
             "github-copilot/gpt-5-mini": 10,
             "github-copilot/claude-sonnet-4-5": 8,
             "github-copilot/gpt-4o": 10

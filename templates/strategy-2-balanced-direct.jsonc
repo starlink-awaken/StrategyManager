@@ -36,7 +36,7 @@
     // ================================================
     "agents": {
         "sisyphus": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.3,
             "maxTokens": 4000,
             "description": "用 ZhiPu 60倍额度作为主编排器"
@@ -59,13 +59,13 @@
             "description": "关键架构决策（直连 OpenAI）"
         },
         "hephaestus": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.3,
             "maxTokens": 4000,
             "description": "深度工作用大额度"
         },
         "librarian": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.1,
             "maxTokens": 2500,
             "description": "快速查询用大额度"
@@ -93,13 +93,13 @@
             "description": "规划前分析"
         },
         "momus": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.2,
             "maxTokens": 3000,
             "description": "规划审查"
         },
         "atlas": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.2,
             "maxTokens": 4000,
             "description": "执行器用大额度"
@@ -138,7 +138,7 @@
             "description": "公文处理、日常工具、娱乐 - 免费快速模型"
         },
         "unspecified-low": {
-            "model": "zai-coding-plan/glm-4.7",
+            "model": "zhipuai-coding-plan/glm-4.7",
             "temperature": 0.3,
             "maxTokens": 2500,
             "description": "文件编辑、代码清理"
@@ -178,7 +178,7 @@
             "anthropic": 3,
             "openai": 3,
             "google": 5,
-            "zai-coding-plan": 25,
+            "zhipuai-coding-plan": 25,
             "ark": 10,
             "github-copilot": 6
         },
@@ -189,7 +189,7 @@
             "google/gemini-3-pro": 3,
             "google/gemini-3-flash": 10,
             "openai/gpt-5.2-codex": 2,
-            "zai-coding-plan/glm-4.7": 30,
+            "zhipuai-coding-plan/glm-4.7": 30,
             "github-copilot/gpt-4o": 10
         }
     },

@@ -402,19 +402,19 @@ StrategyManager/
 
 所有命令都会调用对应的 StrategyManager skill 工作流：
 
-| 命令               | 工作流文件               |
-| ------------------ | ------------------------ |
-| `list`             | `Workflows/List.md`      |
-| `switch`           | `Workflows/Switch.md`    |
-| `fix`              | `Workflows/Fix.md`       |
-| `validate`         | `Workflows/Validate.md`  |
-| `compare`          | `Workflows/Compare.md`   |
-| `history/rollback` | `Workflows/History.md`   |
-| `recommend`        | `Workflows/Recommend.md` |
-| `export`           | `Workflows/Export.md`    |
-| `import`           | `Workflows/Import.md`    |
-| `cost-report`      | `Workflows/CostReport.md`|
-| `sync-usage`       | `Workflows/UsageSync.md` |
+| 命令               | 工作流文件                |
+| ------------------ | ------------------------- |
+| `list`             | `Workflows/List.md`       |
+| `switch`           | `Workflows/Switch.md`     |
+| `fix`              | `Workflows/Fix.md`        |
+| `validate`         | `Workflows/Validate.md`   |
+| `compare`          | `Workflows/Compare.md`    |
+| `history/rollback` | `Workflows/History.md`    |
+| `recommend`        | `Workflows/Recommend.md`  |
+| `export`           | `Workflows/Export.md`     |
+| `import`           | `Workflows/Import.md`     |
+| `cost-report`      | `Workflows/CostReport.md` |
+| `sync-usage`       | `Workflows/UsageSync.md`  |
 
 ### 文件存储位置
 
