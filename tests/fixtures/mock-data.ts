@@ -64,8 +64,8 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-creative-content",
-    filePath: "/mock/strategies/creative-content.jsonc",
+    name: "strategy-4-creative",
+    filePath: "/mock/strategies/4-creative.jsonc",
     description: "创意内容策略 - 优化创意输出",
     costLevel: "medium-high",
     version: "1.0.0",
@@ -75,8 +75,8 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-research-thinking",
-    filePath: "/mock/strategies/research-thinking.jsonc",
+    name: "strategy-5-research",
+    filePath: "/mock/strategies/5-research.jsonc",
     description: "研究思维策略 - 深度分析和推理",
     costLevel: "high",
     version: "1.0.0",
@@ -213,7 +213,7 @@ export const recommendationTestCases = [
         priority: "quality" as const,
       },
     },
-    expectedTopStrategy: "strategy-research-thinking",
+    expectedTopStrategy: "strategy-5-research",
   },
   {
     name: "Creative Content",
@@ -223,7 +223,7 @@ export const recommendationTestCases = [
         priority: "balanced" as const,
       },
     },
-    expectedTopStrategy: "strategy-creative-content",
+    expectedTopStrategy: "strategy-4-creative",
   },
   {
     name: "Urgent Task",

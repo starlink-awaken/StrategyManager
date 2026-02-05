@@ -71,13 +71,13 @@ function createStrategyLibrary(): StrategyMetadata[] {
       models: ["github-copilot/gpt-4.1", "google/gemini-3-flash"],
     }),
     createMockStrategy({
-      name: "strategy-creative-content",
+      name: "strategy-4-creative",
       description: "Content creation strategy",
       costLevel: "medium-high",
       models: ["anthropic/claude-sonnet-4-5", "openai/gpt-5.2"],
     }),
     createMockStrategy({
-      name: "strategy-research-thinking",
+      name: "strategy-5-research",
       description: "Deep research strategy",
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
@@ -124,9 +124,9 @@ describe("SmartRecommender - Scenario Matching", () => {
     const recommendations = recommender.recommend(context);
 
     expect(recommendations.length).toBeGreaterThan(0);
-    // research scenario's best match is strategy-research-thinking
+    // research scenario's best match is strategy-5-research
     const hasResearchStrategy = recommendations.some(
-      (r) => r.strategyName === "strategy-research-thinking",
+      (r) => r.strategyName === "strategy-5-research",
     );
     expect(hasResearchStrategy).toBe(true);
   });
@@ -145,7 +145,7 @@ describe("SmartRecommender - Scenario Matching", () => {
     expect(recommendations.length).toBeGreaterThan(0);
 
     const hasCreativeStrategy = recommendations.some(
-      (r) => r.strategyName === "strategy-creative-content",
+      (r) => r.strategyName === "strategy-4-creative",
     );
     expect(hasCreativeStrategy).toBe(true);
   });
@@ -583,7 +583,7 @@ describe("SmartRecommender - Complete Recommendations", () => {
       },
       history: {
         recentStrategies: [
-          "strategy-research-thinking",
+          "strategy-5-research",
           "strategy-1-performance",
         ],
         frequentScenarios: ["research", "coding"],

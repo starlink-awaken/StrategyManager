@@ -67,7 +67,7 @@ recommend_strategy() {
             ;;
         2)
             strategy="balanced"
-            alternative="creative-content"
+            alternative="4-creative"
             reason="Claude Sonnet 温和耐心，已针对教育场景优化"
             cost="¥15-20/次"
             frequency="每周10-15次"
@@ -94,14 +94,14 @@ recommend_strategy() {
             frequency="项目期间每天"
             ;;
         6)
-            strategy="research-thinking"
+            strategy="5-research"
             alternative="performance"
             reason="Opus + 300k thinking tokens，最强推理能力"
             cost="¥150-250/次"
             frequency="每周1-2次"
             ;;
         7)
-            strategy="research-thinking"
+            strategy="5-research"
             alternative="performance"
             reason="多模型交叉验证，风险意识，审慎分析"
             cost="¥150-250/次"
@@ -122,7 +122,7 @@ recommend_strategy() {
             frequency="每周20-30次"
             ;;
         10)
-            strategy="research-thinking"
+            strategy="5-research"
             alternative="performance"
             reason="系统性深度思考，长期规划需要最强推理"
             cost="¥200-300/次"
@@ -136,21 +136,21 @@ recommend_strategy() {
             frequency="每周10-20次"
             ;;
         12)
-            strategy="creative-content"
+            strategy="4-creative"
             alternative="balanced"
             reason="Sonnet + Gemini 创意组合，高温度配置"
             cost="¥40-60/次"
             frequency="每周5-10次"
             ;;
         13)
-            strategy="creative-content"
+            strategy="4-creative"
             alternative="balanced"
             reason="高质量文笔，专业写作优化"
             cost="¥45-65/次"
             frequency="每周8-12次"
             ;;
         14)
-            strategy="creative-content"
+            strategy="4-creative"
             alternative="balanced"
             reason="创意 + 传播性，吸引力优化"
             cost="¥40-55/次"
@@ -187,11 +187,11 @@ recommend_strategy() {
         "economical")
             strategy_file="${STRATEGY_DIR}/strategy-3-economical.jsonc"
             ;;
-        "research-thinking")
-            strategy_file="${STRATEGY_DIR}/strategy-research-thinking.jsonc"
+        "5-research")
+            strategy_file="${STRATEGY_DIR}/strategy-5-research.jsonc"
             ;;
-        "creative-content")
-            strategy_file="${STRATEGY_DIR}/strategy-creative-content.jsonc"
+        "4-creative")
+            strategy_file="${STRATEGY_DIR}/strategy-4-creative.jsonc"
             ;;
     esac
     
@@ -227,13 +227,13 @@ show_all_strategies() {
         "默认日常（80%场景）"
     
     printf "%-25s %-15s %-15s %-30s\n" \
-        "research-thinking 🧠" \
+        "5-research 🧠" \
         "¥600-1000" \
         "每周1-3次" \
         "深度研究/金融/体系"
     
     printf "%-25s %-15s %-15s %-30s\n" \
-        "creative-content 🎨" \
+        "4-creative 🎨" \
         "¥400-600" \
         "每周10-15次" \
         "创作/写作/新媒体"
@@ -259,8 +259,8 @@ show_all_strategies() {
     echo ""
     echo -e "${YELLOW}💡 建议：${NC}"
     echo "  • 80% 时间使用 balanced"
-    echo "  • 深度研究时用 research-thinking"
-    echo "  • 创意写作时用 creative-content"
+    echo "  • 深度研究时用 5-research"
+    echo "  • 创意写作时用 4-creative"
     echo "  • 成本压力时用 economical"
     echo ""
 }

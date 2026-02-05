@@ -99,16 +99,16 @@ export interface Recommendation {
  * 第一个策略是最佳匹配，第二个是次优选择
  */
 const SCENARIO_MAPPING: Record<ScenarioType, string[]> = {
-  education: ["strategy-2-balanced", "strategy-creative-content"],
-  health: ["strategy-2-balanced", "strategy-research-thinking"],
-  finance: ["strategy-research-thinking", "strategy-1-performance"],
+  education: ["strategy-2-balanced", "strategy-4-creative"],
+  health: ["strategy-2-balanced", "strategy-5-research"],
+  finance: ["strategy-5-research", "strategy-1-performance"],
   coding: ["strategy-2-balanced", "strategy-1-performance"],
-  research: ["strategy-research-thinking", "strategy-1-performance"],
-  creative: ["strategy-creative-content", "strategy-2-balanced"],
+  research: ["strategy-5-research", "strategy-1-performance"],
+  creative: ["strategy-4-creative", "strategy-2-balanced"],
   daily: ["strategy-2-balanced", "strategy-3-economical"],
-  writing: ["strategy-creative-content", "strategy-2-balanced"],
-  multimedia: ["strategy-creative-content", "strategy-2-balanced"],
-  social: ["strategy-creative-content", "strategy-2-balanced"],
+  writing: ["strategy-4-creative", "strategy-2-balanced"],
+  multimedia: ["strategy-4-creative", "strategy-2-balanced"],
+  social: ["strategy-4-creative", "strategy-2-balanced"],
   tools: ["strategy-3-economical", "strategy-2-balanced"],
   entertainment: ["strategy-3-economical", "strategy-2-balanced"],
   documentation: ["strategy-3-economical", "strategy-2-balanced"],
@@ -122,8 +122,8 @@ const COST_LEVELS: Record<string, number> = {
   "strategy-1-performance": 1250,
   "strategy-2-balanced": 550,
   "strategy-3-economical": 100,
-  "strategy-research-thinking": 2150,
-  "strategy-creative-content": 650,
+  "strategy-5-research": 2150,
+  "strategy-4-creative": 650,
 };
 
 /**
@@ -131,9 +131,9 @@ const COST_LEVELS: Record<string, number> = {
  */
 const QUALITY_SCORES: Record<string, number> = {
   "strategy-0-super": 1.0,
-  "strategy-research-thinking": 0.95,
+  "strategy-5-research": 0.95,
   "strategy-1-performance": 0.85,
-  "strategy-creative-content": 0.8,
+  "strategy-4-creative": 0.8,
   "strategy-2-balanced": 0.7,
   "strategy-3-economical": 0.5,
 };

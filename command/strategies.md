@@ -242,8 +242,8 @@ $HOME/.config/opencode/
 │   ├── strategy-2-balanced-copilot.jsonc
 │   ├── strategy-2-balanced-direct.jsonc
 │   ├── strategy-3-economical.jsonc
-│   ├── strategy-creative-content.jsonc
-│   ├── strategy-research-thinking.jsonc
+│   ├── strategy-4-creative.jsonc
+│   ├── strategy-5-research.jsonc
 │   └── strategy-generated-*.jsonc  # 动态生成的策略
 ├── strategy-history.json         # 操作历史记录
 ├── recommendation-feedback.json  # 推荐反馈数据
@@ -262,8 +262,8 @@ Available strategy templates:
 | strategy-2-balanced-copilot | ¥400-700   | GitHub Copilot 优化 | 充分利用 Copilot 额度  |
 | strategy-2-balanced-direct  | ¥400-700   | 直接 API 调用       | 避免 Copilot 路由      |
 | strategy-3-economical       | ¥50-150    | 成本敏感、学习探索  | Haiku + 国产模型       |
-| strategy-creative-content   | ¥500-800   | 创意写作、新媒体    | Sonnet + 高 temp       |
-| strategy-research-thinking  | ¥1800-2500 | 深度研究、金融分析  | Extended thinking 开启 |
+| strategy-4-creative   | ¥500-800   | 创意写作、新媒体    | Sonnet + 高 temp       |
+| strategy-5-research  | ¥1800-2500 | 深度研究、金融分析  | Extended thinking 开启 |
 
 Common workflows:
 

@@ -70,13 +70,13 @@ function createStrategyLibrary(): StrategyMetadata[] {
       models: ["github-copilot/gpt-4.1", "google/gemini-3-flash"],
     }),
     createMockStrategy({
-      name: "strategy-creative-content",
+      name: "strategy-4-creative",
       description: "Content creation strategy",
       costLevel: "medium-high",
       models: ["anthropic/claude-sonnet-4-5", "openai/gpt-5.2"],
     }),
     createMockStrategy({
-      name: "strategy-research-thinking",
+      name: "strategy-5-research",
       description: "Deep research strategy",
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
@@ -264,9 +264,9 @@ describe("Adaptive Weights - 权重自适应", () => {
 
       const recommendations = recommender.recommend(context);
 
-      // 应该推荐 strategy-research-thinking
+      // 应该推荐 strategy-5-research
       expect(recommendations[0].strategyName).toBe(
-        "strategy-research-thinking",
+        "strategy-5-research",
       );
     });
   });
@@ -329,7 +329,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       const recommendations = recommender.recommend(context);
 
       const research = recommendations.find(
-        (r) => r.strategyName === "strategy-research-thinking",
+        (r) => r.strategyName === "strategy-5-research",
       );
       expect(research).toBeDefined();
       expect(research?.score).toBeGreaterThan(75);
@@ -362,7 +362,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       const recommendations = recommender.recommend(context);
 
       const creative = recommendations.find(
-        (r) => r.strategyName === "strategy-creative-content",
+        (r) => r.strategyName === "strategy-4-creative",
       );
       expect(creative).toBeDefined();
     });
@@ -380,7 +380,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
         [
           "strategy-0-super",
           "strategy-1-performance",
-          "strategy-research-thinking",
+          "strategy-5-research",
         ].includes(topRecommendation.strategyName),
       ).toBe(true);
       expect(topRecommendation.score).toBeGreaterThan(70);

@@ -133,8 +133,8 @@ bun run Tools/ManageStrategies.ts switch strategy-2-balanced
 
 ### Added - Specialized Strategies
 
-- `strategy-research-thinking.jsonc`: Deep research with Opus 300k thinking tokens
-- `strategy-creative-content.jsonc`: Creative writing optimization
+- `strategy-5-research.jsonc`: Deep research with Opus 300k thinking tokens
+- `strategy-4-creative.jsonc`: Creative writing optimization
 
 ### Changed
 

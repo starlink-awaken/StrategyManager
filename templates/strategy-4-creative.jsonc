@@ -1,0 +1,201 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "创意写作专用：高温度配置激发创意，Claude + Gemini 组合，用于多媒体创作、个人写作、新媒体运营",
+  "metadata": {
+    "version": "1.0.0",
+    "created": "2026-02-04",
+    "cost_level": "medium",
+    "use_case": "多媒体创作、个人写作发布、新媒体运营",
+    "optimization": "高温度创意激发，流畅表达，风格多样性",
+    "monthly_cost": "¥500-800",
+    "usage_frequency": "中高频（每周10-18次）",
+    "resources_used": [
+      "Anthropic Pro（审核/策略直连）",
+      "Google Pro（创意 - Gemini Pro 多样性）",
+      "DeepSeek 预算（长文本生成）",
+      "ZhiPu 额度（辅助查询）",
+      "GitHub Copilot Pro+（Sonnet + GPT-4o 免费模型）",
+    ],
+    "适用场景": [
+      "个人写作和发布",
+      "新媒体内容运营",
+      "多媒体创作脚本",
+      "创意文案撰写",
+      "品牌传播内容",
+    ],
+    "不适用场景": [
+      "代码开发（用 balanced 或 performance）",
+      "深度研究（用 5-research）",
+      "日常工具（用 economical）",
+    ],
+  },
+  // ================================================
+  // Strategy-4: 创意写作专用 (CREATIVE)
+  // ================================================
+  // 理念：激发创意，流畅表达，风格多样化
+  // 特点：高温度配置，长文本支持，成本可控
+  // ================================================
+  "agents": {
+    "sisyphus": {
+      "model": "github-copilot/claude-sonnet-4.5",
+      "temperature": 0.7,
+      "maxTokens": 6000,
+      "description": "主创作者：流畅表达 + 创意激发",
+    },
+    "prometheus": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.8,
+      "maxTokens": 5000,
+      "description": "创意规划：多样性和新颖性",
+    },
+    "oracle": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.6,
+      "maxTokens": 5000,
+      "description": "内容审核：质量把关和优化建议",
+    },
+    "hephaestus": {
+      "model": "deepseek/deepseek-v3-2",
+      "temperature": 0.75,
+      "maxTokens": 8000,
+      "description": "长文本生成：成本友好的大容量输出",
+    },
+    "librarian": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3,
+      "maxTokens": 3000,
+      "description": "资料查询：快速检索和参考",
+    },
+    "explore": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.8,
+      "maxTokens": 4000,
+      "description": "探索器：创意灵感和多角度思考",
+    },
+    "multimodal-looker": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.7,
+      "maxTokens": 4000,
+      "description": "多模态：视觉内容描述和创意",
+    },
+    "metis": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.6,
+      "maxTokens": 4000,
+      "description": "策略分析：内容规划和受众定位",
+    },
+    "momus": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.5,
+      "maxTokens": 3500,
+      "description": "审查者：内容审核和优化",
+    },
+    "atlas": {
+      "model": "deepseek/deepseek-v3-2",
+      "temperature": 0.7,
+      "maxTokens": 6000,
+      "description": "执行器：批量内容生成",
+    },
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3,
+      "maxTokens": 3000,
+      "description": "技术支持（如需代码）",
+    },
+    "ultrabrain": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.5,
+      "maxTokens": 5000,
+      "description": "复杂内容策略规划",
+    },
+    "artistry": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.85,
+      "maxTokens": 5000,
+      "description": "创意设计：最大创意性和想象力",
+      "systemPrompt": "发挥你的创造力和想象力，打破常规思维，提供新颖独特的创意。考虑视觉冲击、情感共鸣和传播性。",
+    },
+    "quick": {
+      "model": "github-copilot/gpt-4o",
+      "temperature": 0.7,
+      "maxTokens": 4000,
+      "description": "快速草稿：免费模型 + 快速输出",
+    },
+    "unspecified-low": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.4,
+      "maxTokens": 3000,
+      "description": "辅助整理和编辑",
+    },
+    "unspecified-high": {
+      "model": "github-copilot/claude-sonnet-4.5",
+      "temperature": 0.7,
+      "maxTokens": 6000,
+      "description": "复杂内容创作：高质量输出",
+    },
+    "writing": {
+      "model": "github-copilot/claude-sonnet-4.5",
+      "temperature": 0.75,
+      "maxTokens": 6000,
+      "description": "专业写作：流畅文笔 + 创意表达",
+      "systemPrompt": "你是一位专业的内容创作者。注重：1) 文笔流畅自然 2) 观点新颖独特 3) 情感真挚动人 4) 结构清晰有力 5) 符合目标受众的阅读习惯和审美。在创作时保持真诚，避免套路化表达。",
+    },
+    "deep": {
+      "model": "github-copilot/claude-sonnet-4.5",
+      "temperature": 0.6,
+      "maxTokens": 7000,
+      "description": "深度内容：思想深度 + 表达力",
+      "systemPrompt": "创作深度内容时，平衡思想深度与可读性。用故事、类比、实例让抽象概念生动易懂。保持逻辑严谨的同时，注入人文关怀和情感温度。",
+    },
+  },
+  "background_task": {
+    "defaultConcurrency": 15,
+    "staleTimeoutMs": 300000,
+    "providerConcurrency": {
+      "anthropic": 4,
+      "google": 10,
+      "deepseek": 20,
+      "zhipuai-coding-plan": 25,
+      "github-copilot": 12,
+    },
+    "modelConcurrency": {
+      "anthropic/claude-sonnet-4-5": 4,
+      "google/gemini-3-pro": 10,
+      "deepseek/deepseek-v3-2": 20,
+      "zhipuai-coding-plan/glm-4.7": 25,
+      "github-copilot/gpt-5-mini": 10,
+      "github-copilot/claude-sonnet-4.5": 8,
+      "github-copilot/gpt-4o": 10,
+    },
+  },
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true,
+  },
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true,
+  },
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40,
+  },
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+  },
+  "disabled_mcps": [],
+  "disabled_hooks": [],
+}

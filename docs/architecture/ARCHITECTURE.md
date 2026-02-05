@@ -172,14 +172,14 @@ Total Score =
 
 ```typescript
 {
-  education: ['balanced', 'creative-content'],
-  health: ['balanced', 'research-thinking'],
-  finance: ['research-thinking', 'performance'],
+  education: ['balanced', '4-creative'],
+  health: ['balanced', '5-research'],
+  finance: ['5-research', 'performance'],
   coding: ['balanced', 'performance'],
-  research: ['research-thinking', 'performance'],
-  creative: ['creative-content', 'balanced'],
+  research: ['5-research', 'performance'],
+  creative: ['4-creative', 'balanced'],
   daily: ['balanced', 'economical'],
-  writing: ['creative-content', 'balanced']
+  writing: ['4-creative', 'balanced']
 }
 ```
 

@@ -1,0 +1,233 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "深度研究专用：Extended Thinking 最大化配置，多模型交叉验证，用于深度研究报告、金融分析、个人体系搭建",
+  "metadata": {
+    "version": "1.0.0",
+    "created": "2026-02-04",
+    "cost_level": "high",
+    "use_case": "深度研究报告、金融交易分析、个人体系搭建",
+    "optimization": "最强推理能力，Extended Thinking 最大化，多模型验证",
+    "monthly_cost": "¥1800-2500",
+    "usage_frequency": "低频高价值（每周1-3次，每次2-4小时）",
+    "resources_used": [
+      "Anthropic Pro（主力 - Opus + Thinking）",
+      "OpenAI Plus（主力 - GPT-5.2）",
+      "GitHub Copilot Pro+（免费模型）",
+      "Google Pro（多视角验证 - Gemini）",
+    ],
+    "适用场景": [
+      "深度研究报告撰写",
+      "金融股票交易分析",
+      "个人体系搭建",
+      "复杂决策系统性思考",
+      "需要多角度验证的重要分析",
+    ],
+    "不适用场景": [
+      "日常开发（用 balanced）",
+      "快速查询（用 economical）",
+      "创意写作（用 4-creative）",
+    ],
+  },
+  // ================================================
+  // Strategy-5: 深度研究专用 (RESEARCH)
+  // ================================================
+  // 理念：不惜成本追求最高质量的推理和分析
+  // 特点：Extended Thinking 300k, 多模型验证, 严格并发
+  // ================================================
+  "agents": {
+    "sisyphus": {
+      "model": "anthropic/claude-opus-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 300000,
+      },
+      "temperature": 0.1,
+      "maxTokens": 8000,
+      "description": "主编排器：最强推理能力 + 最大 thinking 预算",
+    },
+    "prometheus": {
+      "model": "openai/gpt-5.2",
+      "reasoningEffort": "xhigh",
+      "temperature": 0.15,
+      "maxTokens": 6000,
+      "description": "规划器：数据分析和逻辑验证（GPT 擅长数值推理）",
+    },
+    "oracle": {
+      "model": "anthropic/claude-opus-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 200000,
+      },
+      "temperature": 0.1,
+      "maxTokens": 7000,
+      "description": "架构师：关键决策的二次验证（双 Opus 交叉验证）",
+    },
+    "hephaestus": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 100000,
+      },
+      "temperature": 0.2,
+      "maxTokens": 5000,
+      "description": "执行器：高质量实施（成本适中的强模型）",
+    },
+    "librarian": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.1,
+      "maxTokens": 3000,
+      "description": "资料查询：快速检索（用大额度资源）",
+    },
+    "explore": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.2,
+      "maxTokens": 4000,
+      "description": "探索器：Gemini 提供不同视角",
+    },
+    "multimodal-looker": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.3,
+      "maxTokens": 4000,
+      "description": "多模态：Gemini 图表分析（金融场景）",
+    },
+    "metis": {
+      "model": "google/gemini-3-pro",
+      "variant": "high",
+      "temperature": 0.2,
+      "maxTokens": 5000,
+      "description": "分析师：提供不同视角（多模型验证）",
+    },
+    "momus": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 80000,
+      },
+      "temperature": 0.15,
+      "maxTokens": 4000,
+      "description": "审查者：批判性思维验证",
+    },
+    "atlas": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.2,
+      "maxTokens": 5000,
+      "description": "执行器：任务实施",
+    },
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "openai/gpt-5.2-codex",
+      "reasoningEffort": "high",
+      "temperature": 0.2,
+      "maxTokens": 5000,
+      "description": "代码实现（如有需要）",
+    },
+    "ultrabrain": {
+      "model": "anthropic/claude-opus-4-5",
+      "variant": "max",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 250000,
+      },
+      "temperature": 0.1,
+      "maxTokens": 8000,
+      "description": "架构决策：最大推理能力",
+      "systemPrompt": "进行深度系统性思考，考虑长期影响和多重因素。使用 Extended Thinking 充分探索可能性。",
+    },
+    "artistry": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.5,
+      "maxTokens": 5000,
+      "description": "报告美化（如需要）",
+    },
+    "quick": {
+      "model": "github-copilot/gpt-4o",
+      "temperature": 0.2,
+      "maxTokens": 2000,
+      "description": "快速辅助查询",
+    },
+    "unspecified-low": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2,
+      "maxTokens": 3000,
+      "description": "辅助整理",
+    },
+    "unspecified-high": {
+      "model": "anthropic/claude-opus-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 180000,
+      },
+      "temperature": 0.15,
+      "maxTokens": 7000,
+      "description": "复杂任务：高质量推理",
+    },
+    "writing": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 80000,
+      },
+      "temperature": 0.3,
+      "maxTokens": 6000,
+      "description": "报告撰写：逻辑清晰 + 表达专业",
+    },
+    "deep": {
+      "model": "anthropic/claude-opus-4-5",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 250000,
+      },
+      "temperature": 0.1,
+      "maxTokens": 8000,
+      "description": "深度分析：最强推理 + 最大 thinking",
+      "systemPrompt": "你是一位专业、审慎的深度研究分析师。务必：1) 进行系统性、多角度的深度思考 2) 考虑长期影响和潜在风险 3) 提供充分的论证和数据支持 4) 明确指出不确定性和局限性 5) 在敏感领域（健康、金融）建议咨询专业人士 6) 保持客观、负责的态度。充分利用 Extended Thinking 进行深度推理。",
+    },
+  },
+  "background_task": {
+    "defaultConcurrency": 6,
+    "staleTimeoutMs": 600000,
+    "providerConcurrency": {
+      "anthropic": 3,
+      "openai": 3,
+      "google": 4,
+      "zhipuai-coding-plan": 15,
+      "github-copilot": 3,
+    },
+    "modelConcurrency": {
+      "anthropic/claude-opus-4-5": 2,
+      "anthropic/claude-sonnet-4-5": 3,
+      "openai/gpt-5.2": 3,
+      "openai/gpt-5.2-codex": 2,
+      "google/gemini-3-pro": 4,
+      "zhipuai-coding-plan/glm-4.7": 15,
+      "github-copilot/gpt-4o": 5,
+    },
+  },
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true,
+  },
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true,
+  },
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 65,
+    "main_pane_min_width": 140,
+    "agent_pane_min_width": 50,
+  },
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+  },
+  "disabled_mcps": [],
+  "disabled_hooks": [],
+}

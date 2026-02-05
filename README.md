@@ -47,8 +47,8 @@ StrategyManager 是一个功能强大的策略管理系统，专为管理 AI 模
 | **strategy-1-performance**     | ¥1000-1500 | 重要任务、生产环境   | ⭐⭐⭐⭐   |
 | **strategy-2-balanced** ⭐     | ¥400-700   | 日常工作（默认推荐） | ⭐⭐⭐     |
 | **strategy-3-economical**      | ¥50-150    | 成本敏感、学习探索   | ⭐⭐       |
-| **strategy-research-thinking** | ¥1800-2500 | 深度研究、金融分析   | ⭐⭐⭐⭐⭐ |
-| **strategy-creative-content**  | ¥500-800   | 创意写作、新媒体运营 | ⭐⭐⭐⭐   |
+| **strategy-5-research** | ¥1800-2500 | 深度研究、金融分析   | ⭐⭐⭐⭐⭐ |
+| **strategy-4-creative**  | ¥500-800   | 创意写作、新媒体运营 | ⭐⭐⭐⭐   |
 
 ### 📋 功能验证状态
 
