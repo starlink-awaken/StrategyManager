@@ -73,10 +73,17 @@ export class PathManager {
   }
 
   /**
-   * 获取配置文件路径
+   * 获取配置文件路径（JSON 格式）
    */
   getConfigFile(): string {
     return path.join(this.getConfigDir(), "oh-my-opencode.json");
+  }
+
+  /**
+   * 获取配置文件路径（JSONC 格式，支持注释）
+   */
+  getConfigFileWithComments(): string {
+    return path.join(this.getConfigDir(), "oh-my-opencode.jsonc");
   }
 
   /**
