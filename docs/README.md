@@ -6,56 +6,55 @@
 
 ### [guides/](guides/) - 使用指南
 
-核心用户文档，包含配置、使用、最佳实践等：
+核心用户文档（精简版）：
 
-- [INDEX.md](guides/INDEX.md) - 文档总索引
-- [USAGE_GUIDE.md](guides/USAGE_GUIDE.md) - 完整使用指南
-- [API_REFERENCE.md](guides/API_REFERENCE.md) - API 参考文档
-- [CONFIGURATION.md](guides/CONFIGURATION.md) - 配置指南
-- [BEST_PRACTICES.md](guides/BEST_PRACTICES.md) - 最佳实践
-- [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) - 故障排除
-- [FAQ.md](guides/FAQ.md) - 常见问题解答
-- [CONSISTENCY_CHECKLIST.md](guides/CONSISTENCY_CHECKLIST.md) - 一致性检查清单
+- [overview.md](guides/overview.md) - 总览与快速入口
+- [configuration.md](guides/configuration.md) - 配置指南
+- [api-reference.md](guides/api-reference.md) - API 参考
 
 ### [architecture/](architecture/) - 架构文档
 
 技术架构和设计决策：
 
-- [ARCHITECTURE.md](architecture/ARCHITECTURE.md) - 系统架构文档
+- [architecture.md](architecture/architecture.md) - 系统架构文档
+- [README.md](architecture/README.md) - 架构索引
 
 ### [reports/](reports/) - 分析报告
 
 项目分析和优化报告（当前版本）：
 
-- [GITHUB_COPILOT_UTILIZATION_ANALYSIS.md](reports/GITHUB_COPILOT_UTILIZATION_ANALYSIS.md) - GitHub Copilot 使用分析
-- [OPTIMIZATION_REPORT_BALANCED_2.1.md](reports/OPTIMIZATION_REPORT_BALANCED_2.1.md) - 平衡策略优化报告 v2.1
+- [summary.md](reports/summary.md) - 报告汇总（精简版）
+- [README.md](reports/README.md) - 报告索引
+
+### 更新摘要
+
+- [update-summary.md](update-summary.md) - 文档与功能同步摘要
 
 ### [archive/](archive/) - 历史存档
 
 开发过程中的历史文档和报告：
 
-- **archive/phase1/** - 第一阶段验证文档和脚本（已归档）
-- **archive/dev-reports/** - 开发过程报告（已归档）
+- [summary.md](archive/summary.md) - 历史归档摘要
+- [README.md](archive/README.md) - 归档索引
+- **archive/legacy-guides/** - 已废弃/过期指南（已归档）
 
 ---
 
 ## 🚀 快速开始
 
-1. 新用户请先阅读 [USAGE_GUIDE.md](guides/USAGE_GUIDE.md)
-2. 配置说明请查看 [CONFIGURATION.md](guides/CONFIGURATION.md)
-3. 遇到问题请参考 [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) 和 [FAQ.md](guides/FAQ.md)
+1. 新用户请先阅读 [overview.md](guides/overview.md)
+2. 配置说明请查看 [configuration.md](guides/configuration.md)
+3. API 参考请查看 [api-reference.md](guides/api-reference.md)
 
 ## 📖 开发者
 
-- 架构了解：[ARCHITECTURE.md](architecture/ARCHITECTURE.md)
-- API 参考：[API_REFERENCE.md](guides/API_REFERENCE.md)
-- 一致性检查：[CONSISTENCY_CHECKLIST.md](guides/CONSISTENCY_CHECKLIST.md)
+- 架构了解：[architecture.md](architecture/architecture.md)
+- API 参考：[api-reference.md](guides/api-reference.md)
 
 ## 📦 归档说明
 
 `archive/` 目录包含历史开发文档，主要用于项目历史追溯：
 
-- `phase1/` - 第一阶段的验证脚本和报告
-- `dev-reports/` - 开发过程中的日报、周报和里程碑报告
+- `legacy-guides/` - 过期或不再维护的指南文档
 
 这些文档已不再维护，仅供参考。

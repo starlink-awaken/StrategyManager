@@ -398,7 +398,7 @@ interface ValidationError {
 ### Adding a New Strategy
 
 1. Create template in `templates/strategy-<name>.jsonc`
-2. Document in `docs/guides/USAGE_GUIDE.md`
+2. Document in `docs/guides/overview.md`
 3. Add scenario mapping in `Recommender.ts` (if specialized)
 4. Update `CHANGELOG.md`
 

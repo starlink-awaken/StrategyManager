@@ -14,18 +14,21 @@ triggers:
 
 ## Workflow Routing
 
-| Trigger example | Workflow |
-|-----------------|----------|
-| "compare strategies" | `Workflows/Compare.md` |
-| "export strategy" | `Workflows/Export.md` |
-| "import strategy" | `Workflows/Import.md` |
-| "list strategies" | `Workflows/List.md` |
-| "recommend strategy" | `Workflows/Recommend.md` |
-| "feedback report" | `Workflows/FeedbackReport.md` |
-| "switch strategy" | `Workflows/Switch.md` |
-| "fix strategies" | `Workflows/Fix.md` |
-| "validate strategy" | `Workflows/Validate.md` |
-| "strategy history" / "rollback strategy" | `Workflows/History.md` |
+| Trigger example                          | Workflow                      |
+| ---------------------------------------- | ----------------------------- |
+| "list strategies"                        | `Workflows/List.md`           |
+| "switch strategy"                        | `Workflows/Switch.md`         |
+| "compare strategies"                     | `Workflows/Compare.md`        |
+| "validate strategy"                      | `Workflows/Validate.md`       |
+| "fix strategies"                         | `Workflows/Fix.md`            |
+| "export strategy"                        | `Workflows/Export.md`         |
+| "import strategy"                        | `Workflows/Import.md`         |
+| "strategy history" / "rollback strategy" | `Workflows/History.md`        |
+| "recommend strategy"                     | `Workflows/Recommend.md`      |
+| "feedback report"                        | `Workflows/FeedbackReport.md` |
+| "generate dynamic strategy"              | `Workflows/Generate.md`       |
+| "sync usage" / "usage report"            | `Workflows/UsageSync.md`      |
+| "cost report"                            | `Workflows/CostReport.md`     |
 
 ## Quick Reference
 

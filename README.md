@@ -27,13 +27,16 @@ StrategyManager 是一个功能强大的策略管理系统，专为管理 AI 模
 
 ### ✨ 核心特性
 
-- 🎯 **智能推荐系统** - 基于场景、预算、质量需求的多因素智能推荐
+- 🎯 **智能推荐系统** - 基于场景、预算、质量需求的多因素智能推荐，支持配额感知
 - 📦 **模板管理** - 策略模板与用户配置分离，安全可靠
 - 🔍 **策略比较** - 可视化对比两个策略的差异
 - 💰 **成本优化** - GitHub Copilot 使用分析和优化建议
-- 📜 **历史管理** - 完整的操作历史记录，支持一键回滚
+- 📋 **历史管理** - 完整的操作历史记录，支持一键回滚
 - 🔄 **安全切换** - 自动备份，软链接机制，零风险切换
 - ✅ **增强验证** - 多层次验证（错误/警告/信息），自动修复建议
+- 📊 **使用同步** - 多平台 AI 服务使用情况同步和成本跟踪
+- 🎭 **动态生成** - 基于场景和配额状态动态生成优化策略
+- 📝 **反馈报告** - 推荐采纳率分析和时间趋势统计
 - 📊 **友好界面** - 彩色终端输出，清晰的表格展示
 
 ### 🎯 策略概览
@@ -59,6 +62,8 @@ StrategyManager 是一个功能强大的策略管理系统，专为管理 AI 模
 | 生产就绪 | 🟡 条件性   | 修复配置后 100% 就绪    |
 
 **详细验证报告**: [docs/archive/phase1/VERIFICATION.md](docs/archive/phase1/VERIFICATION.md)
+
+参考：https://github.com/code-yeongyu/oh-my-opencode/blob/dev/docs/configurations.md
 
 ---
 
@@ -128,6 +133,36 @@ bash scripts/install.sh
 
 # 推荐反馈报告（按周分桶）
 /strategies feedback-report --bucket week --format json
+
+# 生成动态策略
+/strategies generate "日常开发" --priority balanced
+
+# 生成动态策略（含配额感知）
+/strategies generate "深度研究" --priority quality --with-usage-sync
+
+# 列出策略（含动态）
+/strategies list --include-dynamic
+
+# 固化动态策略
+/strategies save-dynamic strategy-generated-coding-202602051430 my-custom-strategy
+
+# 同步使用数据
+/strategies usage-sync
+
+# 同步特定提供商
+/strategies usage-sync --providers anthropic,openai
+
+# 查看使用报告
+/strategies usage-report
+
+# 生成成本报告
+/strategies cost-report
+
+# 成本报告（指定时间范围）
+/strategies cost-report --start 2026-02-01 --end 2026-02-05
+
+# 成本报告（包含 Copilot 分析）
+/strategies cost-report --copilot --format json
 ```
 
 ---

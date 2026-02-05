@@ -10,47 +10,59 @@
 - 定时任务：周期性评估（例如：每日/每小时）
 - 配置变更：策略集合、权重或使用场景发生变更时
 - 运行时信号：检测到使用模式突变（高频使用、低延迟需求增加、冷启动等）
+- 动态生成：作为动态策略生成的基础
 
 ## 输入数据
 
-- 场景描述（scene）: 当前使用场景或上下文
-- 历史使用统计（usageStats）: 频次、成功率、延迟、失败率
-- 配额状态（quotaStatus）: 各厂商剩余额度/使用百分比（可选）
-- 策略元数据（strategies）: 可选策略列表、能力标签、成本/延迟预估
-- 用户/客户偏好与约束（constraints）: 可用资源、SLA、合规要求
+### RecommendationInput 接口
+
+```typescript
+interface RecommendationInput {
+  description: string; // 场景描述
+  priority?: Priority; // 优先级 (quality|cost|speed|balanced)
+  budget?: BudgetConfig; // 预算配置
+  history?: HistoryData; // 历史使用数据
+  quotaStatus?: QuotaStatus[]; // 配额状态
+  includeDynamic?: boolean; // 是否包含动态策略
+}
+```
+
+### RecommendationContext 接口
+
+```typescript
+interface RecommendationContext {
+  scenario?: {
+    // 场景信息
+    type: ScenarioType; // 场景类型
+    priority?: Priority; // 优先级
+  };
+  budget?: BudgetConfig; // 预算配置
+  history?: HistoryData; // 历史数据
+  quotaStatus?: QuotaStatus[]; // 配额状态
+}
+```
 
 ## 输出
 
-- 推荐结果（recommendedStrategy）: 单个或候选策略列表，包含推荐理由与评分
-- 推荐反馈记录（feedback）: 记录推荐结果与最终选择（可选）
-- 反馈报告（optional）: 转化漏斗、时间分桶统计
+### Recommendation 接口
 
-## 执行步骤
+```typescript
+interface Recommendation {
+  strategyName: string; // 推荐的策略名称
+  reason: string; // 推荐理由
+  score: number; // 匹配分数 (0-100)
+  alternatives?: Array<{
+    // 备选策略
+    strategyName: string;
+    reason: string;
+    score: number;
+  }>;
+}
+```
 
-1. 数据收集
-   - 从监控/指标服务读取 usageStats（频次、延迟分布、错误率）
-   - 加载当前可用的 strategies 元数据与能力标签
-   - 读取用户/场景约束
-
-2. 特征工程与评分
-   - 计算关键特征：callRate、p95Latency、successRate、recentTrend（上升/下降）
-   - 对策略进行初步过滤（过滤不满足 constraints 的策略）
-   - 为每个候选策略计算评分：
-     - 匹配度得分（scenario match）
-     - 性能得分（基于历史延迟/成功率）
-     - 成本/资源得分
-     - 配额压力得分（quotaStatus 可用时）
-   - 新鲜度/探索得分（鼓励试验性策略）
-   - 合成最终分数并排序
-
-3. 规则与策略安全检查
-   - 确保结果满足硬性约束（例如合规、SLA）
-   - 若分数接近或不确定，标记为需要人工复核或 A/B 测试
-
-4. 生成推荐与解释
-   - 输出 top-N 策略与每项的评分构成（为什么被选中）
-   - 记录推荐反馈（推荐 → 实际选择）
-   - 若启用，生成迁移/回滚建议与风险说明
+- 输出 top-N 策略与每项的评分构成（为什么被选中）
+- 记录推荐反馈（推荐 → 实际选择）
+- 若启用，生成迁移/回滚建议与风险说明
 
 5. 应用与监控（可选）
    - 将推荐应用到在线流量（灰度/全量）或导出为配置变更
