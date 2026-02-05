@@ -2399,6 +2399,14 @@ function printCliHelp(): void {
   console.log(
     "    可选: --bucket day|week|month",
   );
+  console.log(
+    "  bun run Tools/ManageStrategies.ts cost-report [--output ./report.txt]",
+  );
+  console.log("    成本分析报告");
+  console.log(
+    "  bun run Tools/ManageStrategies.ts sync-usage [--output ./usage.txt]",
+  );
+  console.log("    同步多平台使用数据");
   console.log("");
 }
 
@@ -2567,6 +2575,125 @@ if (import.meta.main) {
         success(`已写入反馈报告: ${output}`);
       } else {
         console.log(content);
+      }
+    } else if (command === "cost-report") {
+      // 成本报告命令
+      try {
+        const { CostReport } = await import("./CostReport");
+        const coordinator = new UsageSyncCoordinator();
+
+        // 注册所有提供商
+        try {
+          coordinator.register(new AnthropicSync());
+        } catch {}
+        try {
+          coordinator.register(new OpenAISync());
+        } catch {}
+        try {
+          coordinator.register(new GitHubSync());
+        } catch {}
+        try {
+          coordinator.register(new GeminiSync());
+        } catch {}
+        try {
+          coordinator.register(new ZhiPuSync());
+        } catch {}
+        try {
+          coordinator.register(new DeepSeekSync());
+        } catch {}
+        try {
+          coordinator.register(new SiliconFlowSync());
+        } catch {}
+
+        const results = await coordinator.syncAll();
+        const usageData: UsageData[] = [];
+
+        for (const result of results.results || []) {
+          if (result.success && result.data) {
+            usageData.push(...result.data);
+          }
+        }
+
+        if (usageData.length === 0) {
+          warning("未获取到使用数据，请检查 API 密钥配置");
+          return;
+        }
+
+        const now = new Date();
+        const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endDate = now;
+
+        const report = new CostReport(usageData, { start: startDate, end: endDate });
+        const content = report.generateTextReport();
+
+        const output =
+          typeof flags.output === "string" ? flags.output : undefined;
+
+        if (output) {
+          fs.writeFileSync(output, content, "utf-8");
+          success(`已写入成本报告: ${output}`);
+        } else {
+          console.log(content);
+        }
+      } catch (err) {
+        error(`成本报告生成失败: ${err}`);
+      }
+    } else if (command === "sync-usage") {
+      // 使用同步命令
+      try {
+        const coordinator = new UsageSyncCoordinator();
+
+        // 注册所有提供商
+        try {
+          coordinator.register(new AnthropicSync());
+        } catch {}
+        try {
+          coordinator.register(new OpenAISync());
+        } catch {}
+        try {
+          coordinator.register(new GitHubSync());
+        } catch {}
+        try {
+          coordinator.register(new GeminiSync());
+        } catch {}
+        try {
+          coordinator.register(new ZhiPuSync());
+        } catch {}
+        try {
+          coordinator.register(new DeepSeekSync());
+        } catch {}
+        try {
+          coordinator.register(new SiliconFlowSync());
+        } catch {}
+
+        info("正在同步多平台使用数据...");
+        const results = await coordinator.syncAll();
+
+        console.log();
+        info("同步结果:");
+        console.log();
+
+        const headers = ["提供商", "状态", "数据量", "说明"];
+        const rows: string[][] = [];
+
+        for (const result of results.results || []) {
+          const status = result.success ? colorize("✓", "green") : colorize("✗", "red");
+          const dataCount = result.data?.length || 0;
+          const message = result.error || (result.success ? "成功" : "失败");
+
+          rows.push([result.provider, status, dataCount.toString(), message]);
+        }
+
+        console.log(formatTable(headers, rows));
+        console.log();
+
+        const totalData = (results.results || []).reduce(
+          (sum, r) => sum + (r.data?.length || 0),
+          0,
+        );
+        success(`同步完成: 共获取 ${totalData} 条使用记录`);
+      } catch (err) {
+        error(`使用同步失败: ${err}`);
       }
     } else {
       printCliHelp();
