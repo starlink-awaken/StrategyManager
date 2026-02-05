@@ -24,7 +24,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # 配置目录
 OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
 COMMANDS_DIR="$OPENCODE_CONFIG_DIR/commands"
-STRATEGY_COMMAND_TEMPLATE="$PROJECT_ROOT/templates/opencode-commands/strategies.md"
+STRATEGY_COMMAND_TEMPLATE="$PROJECT_ROOT/command/strategies.md"
 STRATEGY_COMMAND_DEST="$COMMANDS_DIR/strategies.md"
 
 ##############################################################################

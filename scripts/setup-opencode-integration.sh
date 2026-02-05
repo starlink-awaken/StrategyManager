@@ -160,8 +160,7 @@ EOF
     if grep -q '"StrategyManager"' "$CONFIG_FILE"; then
       print_success "StrategyManager 配置已存在"
     else
-      print_warning "StrategyManager 配置缺失，请手动添加或重新运行此脚本"
-      print_info "可以复制 templates/oh-my-opencode-config.jsonc 中的配置"
+      print_warning "StrategyManager 配置缺失，请重新运行此脚本"
     fi
   fi
 }
@@ -256,9 +255,6 @@ main() {
   echo ""
   echo "配置文件位置："
   echo "  $CONFIG_FILE"
-  echo ""
-  echo "配置模板："
-  echo "  $PROJECT_ROOT/templates/oh-my-opencode-config.jsonc"
   echo ""
   echo "文档："
   echo "  $PROJECT_ROOT/docs/guides/opencode-integration.md"

@@ -41,14 +41,14 @@ StrategyManager 是一个功能强大的策略管理系统，专为管理 AI 模
 
 ### 🎯 策略概览
 
-| 策略                           | 成本/月    | 适用场景             | 质量       |
-| ------------------------------ | ---------- | -------------------- | ---------- |
-| **strategy-0-super**           | ¥2000-3000 | 关键项目、必须成功   | ⭐⭐⭐⭐⭐ |
-| **strategy-1-performance**     | ¥1000-1500 | 重要任务、生产环境   | ⭐⭐⭐⭐   |
-| **strategy-2-balanced** ⭐     | ¥400-700   | 日常工作（默认推荐） | ⭐⭐⭐     |
-| **strategy-3-economical**      | ¥50-150    | 成本敏感、学习探索   | ⭐⭐       |
-| **strategy-5-research** | ¥1800-2500 | 深度研究、金融分析   | ⭐⭐⭐⭐⭐ |
-| **strategy-4-creative**  | ¥500-800   | 创意写作、新媒体运营 | ⭐⭐⭐⭐   |
+| 策略                       | 成本/月    | 适用场景             | 质量       |
+| -------------------------- | ---------- | -------------------- | ---------- |
+| **strategy-0-super**       | ¥2000-3000 | 关键项目、必须成功   | ⭐⭐⭐⭐⭐ |
+| **strategy-1-performance** | ¥1000-1500 | 重要任务、生产环境   | ⭐⭐⭐⭐   |
+| **strategy-2-balanced** ⭐ | ¥400-700   | 日常工作（默认推荐） | ⭐⭐⭐     |
+| **strategy-3-economical**  | ¥50-150    | 成本敏感、学习探索   | ⭐⭐       |
+| **strategy-5-research**    | ¥1800-2500 | 深度研究、金融分析   | ⭐⭐⭐⭐⭐ |
+| **strategy-4-creative**    | ¥500-800   | 创意写作、新媒体运营 | ⭐⭐⭐⭐   |
 
 ### 📋 功能验证状态
 
@@ -128,8 +128,6 @@ bash scripts/setup-opencode-integration.sh
 ```bash
 # 自动配置（推荐）
 bash scripts/setup-opencode-integration.sh
-
-# 或手动配置：复制 templates/oh-my-opencode-config.jsonc 中的配置到 ~/.config/opencode/oh-my-opencode.json
 ```
 
 配置后可用的命令和工作流请参考：[📚 完整使用指南](docs/guides/overview.md)
