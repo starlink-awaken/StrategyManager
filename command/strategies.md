@@ -1,6 +1,126 @@
 ---
 description: Manage and operate strategies (list, switch, fix, validate, compare, history, recommend, generate, export, import, cost-report, usage-sync, feedback, help)
+argument-hint: [list|switch|recommend|compare|validate|import|export|history|generate|feedback|help]
+allowed-tools:
+  - bash
+  - read_file
+  - grep_search
 ---
+
+# StrategyManager Command Handler
+
+## 路径配置
+
+```bash
+# Skill 路径（自动解析软链接）
+SKILL_PATH="${HOME}/.config/opencode/skills/StrategyManager"
+if [ -L "$SKILL_PATH" ]; then
+  SKILL_PATH="$(readlink -f "$SKILL_PATH" 2>/dev/null || readlink "$SKILL_PATH")"
+fi
+
+# 切换到 skill 目录
+cd "$SKILL_PATH" || {
+  echo "错误: 无法找到 StrategyManager skill 路径: $SKILL_PATH"
+  exit 1
+}
+```
+
+## 用户输入
+
+{{{args}}}
+
+## 命令执行
+
+根据用户输入解析并执行相应的命令：
+
+### 执行逻辑
+
+```bash
+#!/bin/bash
+
+# 解析 Skill 路径（支持软链接）
+SKILL_PATH="${HOME}/.config/opencode/skills/StrategyManager"
+if [ -L "$SKILL_PATH" ]; then
+  # macOS/BSD 风格
+  REAL_PATH="$(readlink "$SKILL_PATH" 2>/dev/null)"
+  if [ -z "$REAL_PATH" ]; then
+    # Linux 风格
+    REAL_PATH="$(readlink -f "$SKILL_PATH" 2>/dev/null)"
+  fi
+  [ -n "$REAL_PATH" ] && SKILL_PATH="$REAL_PATH"
+fi
+
+# 验证路径
+if [ ! -d "$SKILL_PATH" ]; then
+  echo "错误: StrategyManager skill 未找到"
+  echo "路径: $SKILL_PATH"
+  echo "请先安装: bash scripts/install.sh"
+  exit 1
+fi
+
+# 切换到 skill 目录
+cd "$SKILL_PATH" || exit 1
+
+# 解析用户输入并执行
+USER_INPUT="{{{args}}}"
+
+# 命令路由
+case "$USER_INPUT" in
+  list*)
+    bun run Tools/ManageStrategies.ts list ${USER_INPUT#list}
+    ;;
+  switch*)
+    bun run Tools/ManageStrategies.ts switch ${USER_INPUT#switch}
+    ;;
+  recommend*)
+    bun run Tools/ManageStrategies.ts recommend ${USER_INPUT#recommend}
+    ;;
+  generate*)
+    bun run Tools/ManageStrategies.ts generate ${USER_INPUT#generate}
+    ;;
+  compare*)
+    bun run Tools/ManageStrategies.ts compare ${USER_INPUT#compare}
+    ;;
+  validate*)
+    bun run Tools/ManageStrategies.ts validate ${USER_INPUT#validate}
+    ;;
+  fix*)
+    bun run Tools/ManageStrategies.ts fix ${USER_INPUT#fix}
+    ;;
+  history*)
+    bun run Tools/ManageStrategies.ts history ${USER_INPUT#history}
+    ;;
+  rollback*)
+    bun run Tools/ManageStrategies.ts rollback ${USER_INPUT#rollback}
+    ;;
+  export*)
+    bun run Tools/ManageStrategies.ts export ${USER_INPUT#export}
+    ;;
+  import*)
+    bun run Tools/ManageStrategies.ts import ${USER_INPUT#import}
+    ;;
+  feedback-report*)
+    bun run Tools/ManageStrategies.ts feedback-report ${USER_INPUT#feedback-report}
+    ;;
+  feedback*)
+    bun run Tools/ManageStrategies.ts feedback ${USER_INPUT#feedback}
+    ;;
+  save-dynamic*)
+    bun run Tools/ManageStrategies.ts save-dynamic ${USER_INPUT#save-dynamic}
+    ;;
+  cleanup-dynamic*)
+    bun run Tools/ManageStrategies.ts cleanup-dynamic ${USER_INPUT#cleanup-dynamic}
+    ;;
+  help|--help|-h|"")
+    bun run Tools/ManageStrategies.ts --help
+    ;;
+  *)
+    echo "未知命令: $USER_INPUT"
+    echo "使用 /strategies help 查看帮助"
+    exit 1
+    ;;
+esac
+```
 
 Usage: /strategies <subcommand> [options]
 
@@ -270,6 +390,7 @@ Common workflows:
 1. **首次使用**：
 
    ```bash
+   cd "${HOME}/.config/opencode/skills/StrategyManager" || cd "$(readlink -f "${HOME}/.config/opencode/skills/StrategyManager")"
    bun run Tools/ManageStrategies.ts list
    bun run Tools/ManageStrategies.ts switch strategy-2-balanced
    ```
@@ -277,6 +398,7 @@ Common workflows:
 2. **智能推荐**：
 
    ```bash
+   cd "${HOME}/.config/opencode/skills/StrategyManager" || cd "$(readlink -f "${HOME}/.config/opencode/skills/StrategyManager")"
    bun run Tools/ManageStrategies.ts recommend "日常开发" --priority balanced
    bun run Tools/ManageStrategies.ts recommend "深度研究" --with-usage-sync
    ```
@@ -284,6 +406,7 @@ Common workflows:
 3. **动态生成**：
 
    ```bash
+   cd "${HOME}/.config/opencode/skills/StrategyManager" || cd "$(readlink -f "${HOME}/.config/opencode/skills/StrategyManager")"
    bun run Tools/ManageStrategies.ts generate "学生学习" --priority cost
    bun run Tools/ManageStrategies.ts cleanup-dynamic --retention 7
    ```
@@ -291,6 +414,7 @@ Common workflows:
 4. **配额监控**：
 
    ```bash
+   cd "${HOME}/.config/opencode/skills/StrategyManager" || cd "$(readlink -f "${HOME}/.config/opencode/skills/StrategyManager")"
    # 通过独立工具进行使用同步
    bun run Tools/UsageSync/CLI.ts sync anthropic
    bun run Tools/UsageSync/CLI.ts sync --all
@@ -301,6 +425,7 @@ Common workflows:
 
 5. **反馈分析**：
    ```bash
+   cd "${HOME}/.config/opencode/skills/StrategyManager" || cd "$(readlink -f "${HOME}/.config/opencode/skills/StrategyManager")"
    bun run Tools/ManageStrategies.ts feedback "日常开发" "strategy-2-balanced" "strategy-2-balanced" --score 90
    bun run Tools/ManageStrategies.ts feedback-report --bucket week
    ```
@@ -327,3 +452,35 @@ Notes:
 - 动态策略默认 7 天后自动清理，可通过 --retention 参数调整。
 - 推荐反馈数据用于改进推荐算法，建议定期查看 feedback-report。
 - 配额同步需要配置相应的 API 密钥，参考 Tools/UsageSync/setup_auth.ts。
+
+## 路径解析说明
+
+此命令文档被安装到 `~/.config/opencode/commands/strategies.md` 后，会自动解析 StrategyManager skill 的实际路径：
+
+1. **软链接支持**: 自动跟随 `~/.config/opencode/skills/StrategyManager` 软链接到实际项目目录
+2. **跨平台兼容**: 同时支持 macOS/BSD 和 Linux 的 readlink 命令
+3. **错误处理**: 如果路径无效，会给出清晰的错误提示
+
+### 安装方式
+
+```bash
+# 方式 1: 使用安装脚本（推荐）
+bash scripts/install-slash-command.sh
+
+# 方式 2: 手动软链接
+ln -sf "$(pwd)/command/strategies.md" ~/.config/opencode/commands/strategies.md
+```
+
+### 验证安装
+
+```bash
+# 检查命令文件
+ls -la ~/.config/opencode/commands/strategies.md
+
+# 检查 skill 软链接
+ls -la ~/.config/opencode/skills/StrategyManager
+
+# 验证路径解析
+readlink -f ~/.config/opencode/skills/StrategyManager 2>/dev/null || \
+  readlink ~/.config/opencode/skills/StrategyManager
+```
