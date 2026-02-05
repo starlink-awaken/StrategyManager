@@ -9,7 +9,8 @@
 核心用户文档（精简版）：
 
 - [overview.md](guides/overview.md) - 总览与快速入口
-- [configuration.md](guides/configuration.md) - 配置指南
+- **[opencode-integration.md](guides/opencode-integration.md)** - **🆕 OpenCode 集成配置指南**
+- [configuration.md](guides/configuration.md) - 环境变量和配置
 - [api-reference.md](guides/api-reference.md) - API 参考
 
 ### [architecture/](architecture/) - 架构文档

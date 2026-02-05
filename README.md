@@ -85,39 +85,98 @@ bash scripts/install.sh
 
 ### 2. 基本使用
 
+#### 方式 1：在终端中使用
+
 ```bash
 # 列出所有可用策略
-/strategies list
-
-# 查看策略详细信息
-/strategies list --json
+bun run Tools/ManageStrategies.ts list
 
 # 切换到指定策略
-/strategies switch blue-ocean
+bun run Tools/ManageStrategies.ts switch strategy-2-balanced
+
+# 获取推荐
+bun run Tools/ManageStrategies.ts recommend "日常开发"
 
 # 比较两个策略
-/strategies compare blue-ocean green-field
+bun run Tools/ManageStrategies.ts compare strategy-1-performance strategy-2-balanced
+
+# 成本报告
+bun run Tools/ManageStrategies.ts cost-report
+```
+
+#### 方式 2：在 Claude Code 中使用（推荐）
+
+**第1步：配置 OpenCode 集成**
+
+```bash
+bash scripts/setup-opencode-integration.sh
+```
+
+**第2步：在 Claude Code 中使用**
+
+- 自然语言触发：`@StrategyManager 推荐适合日常开发的策略`
+- 命令触发（配置后）：`/strategies list`、`/strategies recommend "日常开发"`
+
+详细指南：[📖 docs/guides/opencode-integration.md](docs/guides/opencode-integration.md)
+
+---
+
+## 🔗 OpenCode 集成
+
+将 StrategyManager 配置为 oh-my-opencode 的 skill，在 Claude Code 中使用 `/strategies` 命令和工作流：
+
+```bash
+# 自动配置（推荐）
+bash scripts/setup-opencode-integration.sh
+
+# 或手动配置：复制 templates/oh-my-opencode-config.jsonc 中的配置到 ~/.config/opencode/oh-my-opencode.json
+```
+
+配置后可用的命令和工作流请参考：[📚 完整使用指南](docs/guides/overview.md)
+
+---
+
+## 📚 文档目录
+
+| 文档                                                     | 说明                            |
+| -------------------------------------------------------- | ------------------------------- |
+| [快速概览](docs/guides/overview.md)                      | 1分钟快速入门                   |
+| **[OpenCode 集成](docs/guides/opencode-integration.md)** | **如何配置 `/strategies` 命令** |
+| [配置指南](docs/guides/configuration.md)                 | 环境变量和配置                  |
+| [API 参考](docs/guides/api-reference.md)                 | 编程接口                        |
+| [工作流指南](Workflows/)                                 | 详细的操作工作流                |
+
+---
+
+## 高级用法
+
+在 Claude Code 中的高级命令示例：
+
+```bash
+# 查看策略详细信息
+/strategies list --json
 
 # 导出策略
 /strategies export my-strategy ./output.json
 
 # 导入策略
-/strategies import ./strategy.jsonc --validate
+/strategies import ./strategy.jsonc
 
 # 验证策略
-/strategies validate my-strategy --strict
+/strategies validate ./strategy.jsonc
 
 # 查看历史记录
-/strategies history 50
+/strategies history
 
 # 回滚到历史版本
-/strategies rollback 2024-02-01T12:00:00Z
+/strategies rollback <timestamp>
 
-# 获取策略推荐（含配额感知 + 预算约束）
-/strategies recommend --context "生产环境高并发场景" \
-	--budget-monthly 120 \
-	--budget-spent 30 \
-	--budget-alert 0.8
+# 成本分析（支持多个平台）
+/strategies cost-report --start 2026-01-01 --end 2026-02-05
+
+# 使用同步（从多个 AI 服务同步成本数据）
+/strategies sync-usage
+
 
 # 生成动态策略（含配额感知）
 /strategies generate "日常开发" --priority balanced --with-usage-sync

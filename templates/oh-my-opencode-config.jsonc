@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+
+  /*
+   * StrategyManager OpenCode 配置模板
+   *
+   * 使用说明：
+   * 1. 复制此文件内容
+   * 2. 编辑 ~/.config/opencode/oh-my-opencode.json（如果不存在则创建）
+   * 3. 粘贴以下配置（与已有配置合并）
+   * 4. 重启 OpenCode
+   *
+   * 然后在 OpenCode 中使用 /strategies 命令或自然语言触发
+   */
+
+  // ============================================================================
+  // 必要配置：启用 StrategyManager Skill
+  // ============================================================================
+  "skills": {
+    "sources": [{ "path": "~/.config/opencode/skills", "recursive": true }],
+    "enable": ["StrategyManager"],
+
+    // StrategyManager 配置
+    "StrategyManager": {
+      "description": "管理和操作 AI 模型策略集：列表、切换、对比、推荐、成本分析、历史管理、导入导出、动态生成、使用同步。",
+
+      // 工作流模板 - 指导 AI 助手如何使用 StrategyManager
+      "template": "你是 StrategyManager 策略管理专家。用户请求了一个策略相关的操作。\n\n根据用户的请求类型，调用相应的工作流：\n- 用户想要列表/查看 → Workflows/List.md\n- 用户想要切换策略 → Workflows/Switch.md\n- 用户想要对比两个策略 → Workflows/Compare.md\n- 用户想要获取推荐 → Workflows/Recommend.md\n- 用户想要生成动态策略 → Workflows/Generate.md\n- 用户想要导入策略 → Workflows/Import.md\n- 用户想要导出策略 → Workflows/Export.md\n- 用户想要查看历史或回滚 → Workflows/History.md\n- 用户想要验证策略 → Workflows/Validate.md\n- 用户想要修复问题 → Workflows/Fix.md\n- 用户想要查看成本报告 → Workflows/CostReport.md\n- 用户想要同步使用数据 → Workflows/UsageSync.md\n- 用户想要反馈报告 → Workflows/FeedbackReport.md\n\n优先使用用户指定的特定工作流，否则根据请求内容推断最合适的工作流。",
+
+      // 可选：指定使用的 Agent
+      // "agent": "Sisyphus",
+
+      // 可选：覆盖模型选择
+      // "model": "anthropic/claude-opus-4-5",
+
+      // 可选：指定分类
+      // "category": "unspecified-high",
+
+      // 允许的工具
+      "allowed-tools": [
+        "bash",
+        "read",
+        "edit",
+        "grep",
+        "lsp_diagnostics",
+        "lsp_rename",
+        "lsp_code_actions",
+      ],
+    },
+  },
+
+  // ============================================================================
+  // 可选配置：代理模型选择
+  // ============================================================================
+  // 如果需要为策略操作指定特定的 Agent 或模型，在这里配置
+  /*
+  "agents": {
+    "Sisyphus": {
+      "model": "anthropic/claude-opus-4-5",
+      "temperature": 0.3
+    }
+  },
+  */
+
+  // ============================================================================
+  // 可选配置：任务分类
+  // ============================================================================
+  // 为不同的策略操作优化模型选择
+  /*
+  "categories": {
+    "strategy-cost-analysis": {
+      "model": "openai/gpt-5.2",
+      "description": "成本分析和优化推荐"
+    },
+    "strategy-recommendation": {
+      "model": "anthropic/claude-opus-4-5",
+      "description": "策略推荐和场景匹配"
+    }
+  },
+  */
+
+  // ============================================================================
+  // 注意事项
+  // ============================================================================
+  //
+  // 1. 如果使用成本报告功能，确保设置了相应的 API Key：
+  //    - export ANTHROPIC_API_KEY="..."
+  //    - export OPENAI_API_KEY="..."
+  //    - export GITHUB_TOKEN="..."
+  //    - export GOOGLE_API_KEY="..."
+  //    - export ZHIPU_API_KEY="..."
+  //
+  // 2. StrategyManager 会自动在以下目录查找策略文件：
+  //    - ~/.config/opencode/strategies/
+  //    - ~/.config/opencode/dynamic-strategies/
+  //
+  // 3. 历史记录保存在：
+  //    - ~/.config/opencode/strategy-history.json
+  //
+  // 4. 如需禁用某些 Skill，在 "disable" 字段中添加：
+  //    "disable": ["some-skill"]
+  //
+}

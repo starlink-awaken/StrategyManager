@@ -1,4 +1,0 @@
-[test]
-testMatch = ["**/*.test.ts"]
-testTimeout = 10000
-

@@ -7,15 +7,14 @@ triggers:
   - "import strategy"
   - "export strategy"
 ---
-
 # StrategyManager
 
 简洁路由器：将自然语言意图映射到具体工作流。采用动态加载：SKILL.md 保持最小，工作流按需加载。
 
 ## Workflow Routing
 
-| Trigger example                          | Workflow                      |
-| ---------------------------------------- | ----------------------------- |
+| Trigger example                          | Workflow                        |
+| ---------------------------------------- | ------------------------------- |
 | "list strategies"                        | `Workflows/List.md`           |
 | "switch strategy"                        | `Workflows/Switch.md`         |
 | "compare strategies"                     | `Workflows/Compare.md`        |
@@ -39,4 +38,4 @@ triggers:
 ## Quick Commands
 
 - Skill 匹配："Compare strategies" → Compare.md
-- 导入："Import strategy from <path>" → Import.md
+- 导入："Import strategy from `<path>`" → Import.md
