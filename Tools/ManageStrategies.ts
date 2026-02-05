@@ -591,6 +591,10 @@ export function switchStrategy(strategyName: string): boolean {
     success(`已切换到策略: ${strategyName}`);
     info(`软链目标: ${targetFile}`);
     info(`描述: ${config.description}`);
+    
+    // 重启提醒
+    console.log();
+    console.log(colorize("⚠️  请重启 Claude Code 或 OpenCode 使新策略生效", "yellow"));
 
     // 添加新历史记录
     addHistoryEntry({
