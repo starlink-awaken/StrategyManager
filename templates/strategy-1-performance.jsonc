@@ -13,8 +13,8 @@
       "Anthropic Pro",
       "OpenAI Plus",
       "Google Pro",
-      "ZhiPu CodingPlan Max",
-    ],
+      "ZhiPu CodingPlan Max"
+    ]
   },
   // ========================================
   // 方案一：极致性能型
@@ -31,9 +31,9 @@
       "variant": "max",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 200000,
+        "budgetTokens": 200000
       },
-      "temperature": 0.3,
+      "temperature": 0.3
     },
     // 规划器 - Claude Opus 4.5 (Gemini antigravity, Thinking 模式)
     "prometheus": {
@@ -41,45 +41,45 @@
       "variant": "max",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 150000,
+        "budgetTokens": 150000
       },
-      "temperature": 0.2,
+      "temperature": 0.2
     },
     // 架构/调试 - GPT-4.1 (ChatGPT Plus / Github Copilot Premium)
     "oracle": {
       "model": "github-copilot/gpt-5-2-codex",
       "reasoningEffort": "high",
-      "temperature": 0.3,
+      "temperature": 0.3
     },
     // 文档搜索 - Claude Sonnet 4.5 (Claude Pro)
     "librarian": {
       "model": "anthropic/claude-sonnet-4-5",
-      "temperature": 0.1,
+      "temperature": 0.1
     },
     // 快速探索 - GLM 4.7 (ZhiPuAI Max，大用量)
     "explore": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.2,
+      "temperature": 0.2
     },
     // 多模态 - Gemini 3 Pro (Gemini Pro，多模态能力强)
     "multimodal-looker": {
       "model": "google/gemini-3-pro",
-      "variant": "high",
+      "variant": "high"
     },
     // 规划顾问 - Claude Sonnet 4.5 Thinking (github-copilot)
     "metis": {
       "model": "github-copilot/claude-sonnet-4.5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 100000,
-      },
+        "budgetTokens": 100000
+      }
     },
     // 规划审查 - GPT-5.2 (OpenAI Plus)
     "momus": {
       "model": "openai/gpt-5.2-codex",
       "variant": "medium",
-      "reasoningEffort": "medium",
-    },
+      "reasoningEffort": "medium"
+    }
   },
   // ========== Category 配置 ==========
   "categories": {
@@ -87,42 +87,42 @@
     "visual-engineering": {
       "model": "google/gemini-3-pro",
       "variant": "high",
-      "temperature": 0.4,
+      "temperature": 0.4
     },
     // 深度逻辑推理 - GPT-5.2 Codex XHigh (ChatGPT Plus，顶级推理)
     "ultrabrain": {
       "model": "openai/gpt-5.2-codex",
       "variant": "xhigh",
       "reasoningEffort": "xhigh",
-      "temperature": 0.2,
+      "temperature": 0.2
     },
     // 创意任务 - Gemini 3 Pro Max (Gemini Pro，创意能力强)
     "artistry": {
       "model": "google/gemini-3-pro",
       "variant": "max",
-      "temperature": 0.7,
+      "temperature": 0.7
     },
     // 简单任务 - GLM 4.7 (ZhiPuAI Max，60倍用量，适合高频)
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3,
+      "temperature": 0.3
     },
     // 通用低难度 - GLM 4.7 (ZhiPuAI Max，性价比高)
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3,
+      "temperature": 0.3
     },
     // 通用高难度 - Claude Opus 4.5 Max (Claude Pro，最强能力)
     "unspecified-high": {
       "model": "anthropic/claude-opus-4-5",
       "variant": "max",
-      "temperature": 0.3,
+      "temperature": 0.3
     },
     // 文档写作 - Gemini 3 Flash (Gemini Pro，快速便宜)
     "writing": {
       "model": "google/gemini-3-flash",
-      "temperature": 0.5,
-    },
+      "temperature": 0.5
+    }
   },
   // ========== 并发控制 ==========
   "background_task": {
@@ -134,7 +134,7 @@
       "openai": 5, // ChatGPT Plus 限制 5 并发
       "google": 8, // Gemini Pro x2 允许 8 并发
       "zhipuai-coding-plan": 15, // ZhiPuAI 60x quota 允许 15 并发
-      "github-copilot": 5, // Github Copilot Premium
+      "github-copilot": 5 // Github Copilot Premium
     },
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {
@@ -147,21 +147,21 @@
       "github-copilot/gpt-5.2-codex": 2, // GPT-5.2 Codex（Copilot）
       "google/gemini-3-pro": 5, // Gemini 3 Pro 允许 5 并发
       "google/gemini-3-flash": 10, // Gemini 3 Flash 允许 10 并发
-      "zhipuai-coding-plan/glm-4.7": 20, // GLM 4.7 允许 20 并发（大用量）
-    },
+      "zhipuai-coding-plan/glm-4.7": 20 // GLM 4.7 允许 20 并发（大用量）
+    }
   },
   // ========== 其他配置 ==========
   "git_master": {
     "commit_footer": true,
-    "include_co_authored_by": true,
+    "include_co_authored_by": true
   },
   "tmux": {
     "enabled": true,
     "layout": "main-vertical",
-    "main_pane_size": 60,
+    "main_pane_size": 60
   },
   "experimental": {
     "aggressive_truncation": false, // 性能优先，不激进截断
-    "auto_resume": true,
-  },
+    "auto_resume": true
+  }
 }

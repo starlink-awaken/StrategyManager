@@ -14,7 +14,7 @@
       "Anthropic Pro（备用）",
       "Google Pro",
       "OpenAI Plus（备用）",
-      "GitHub Copilot Pro+ (免费+高级模型主力)",
+      "GitHub Copilot Pro+ (免费+高级模型主力)"
     ],
     "scene_coverage": "79%",
     "scene_mapping": {
@@ -28,8 +28,8 @@
       "娱乐": "quick (免费)",
       "常规写作": "writing (Copilot Sonnet)",
       "多媒体创作": "artistry (Copilot Sonnet)",
-      "新媒体运营": "writing + artistry",
-    },
+      "新媒体运营": "writing + artistry"
+    }
   },
   // ================================================
   // Strategy-2: 平衡型 (BALANCED) - Copilot优先
@@ -39,71 +39,71 @@
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 4000,
-      "description": "用 ZhiPu 60倍额度作为主编排器",
+      "description": "用 ZhiPu 60倍额度作为主编排器"
     },
     "prometheus": {
       "model": "github-copilot/claude-sonnet-4.5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 80000,
+        "budgetTokens": 80000
       },
       "temperature": 0.2,
       "maxTokens": 4500,
-      "description": "规划器保持高质量（Copilot优先）",
+      "description": "规划器保持高质量（Copilot优先）"
     },
     "oracle": {
       "model": "github-copilot/gpt-5.2-codex",
       "reasoningEffort": "medium",
       "temperature": 0.3,
       "maxTokens": 5000,
-      "description": "关键架构决策（Copilot Codex）",
+      "description": "关键架构决策（Copilot Codex）"
     },
     "hephaestus": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 4000,
-      "description": "深度工作用大额度",
+      "description": "深度工作用大额度"
     },
     "librarian": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.1,
       "maxTokens": 2500,
-      "description": "快速查询用大额度",
+      "description": "快速查询用大额度"
     },
     "explore": {
       "model": "anthropic/claude-haiku-4-5",
       "temperature": 0.2,
       "maxTokens": 2000,
-      "description": "轻量级探索",
+      "description": "轻量级探索"
     },
     "multimodal-looker": {
       "model": "google/gemini-3-flash",
       "temperature": 0.3,
       "maxTokens": 3000,
-      "description": "多模态用 Flash",
+      "description": "多模态用 Flash"
     },
     "metis": {
       "model": "github-copilot/claude-sonnet-4.5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 50000,
+        "budgetTokens": 50000
       },
       "temperature": 0.2,
       "maxTokens": 3500,
-      "description": "规划前分析（Copilot优先）",
+      "description": "规划前分析（Copilot优先）"
     },
     "momus": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.2,
       "maxTokens": 3000,
-      "description": "规划审查",
+      "description": "规划审查"
     },
     "atlas": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.2,
       "maxTokens": 4000,
-      "description": "执行器用大额度",
-    },
+      "description": "执行器用大额度"
+    }
   },
   "categories": {
     "visual-engineering": {
@@ -111,65 +111,65 @@
       "reasoningEffort": "medium",
       "temperature": 0.3,
       "maxTokens": 4000,
-      "description": "个人项目开发、AI探索 - 代码专精模型",
+      "description": "个人项目开发、AI探索 - 代码专精模型"
     },
     "ultrabrain": {
       "model": "github-copilot/claude-opus-4.5",
       "variant": "max",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 80000,
+        "budgetTokens": 80000
       },
       "temperature": 0.2,
       "maxTokens": 5000,
-      "description": "复杂架构决策（Copilot Opus）",
+      "description": "复杂架构决策（Copilot Opus）"
     },
     "artistry": {
       "model": "github-copilot/claude-sonnet-4.5",
       "temperature": 0.7,
       "maxTokens": 4500,
       "description": "子女教育、多媒体创作 - 温和耐心+创意",
-      "systemPrompt": "在处理教育相关话题时，展现耐心和同理心，因材施教，关注心理健康。在创意内容时，发挥想象力和表达力。",
+      "systemPrompt": "在处理教育相关话题时，展现耐心和同理心，因材施教，关注心理健康。在创意内容时，发挥想象力和表达力。"
     },
     "quick": {
       "model": "github-copilot/gpt-4o",
       "temperature": 0.3,
       "maxTokens": 2000,
-      "description": "公文处理、日常工具、娱乐 - 免费快速模型",
+      "description": "公文处理、日常工具、娱乐 - 免费快速模型"
     },
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 2500,
-      "description": "文件编辑、代码清理",
+      "description": "文件编辑、代码清理"
     },
     "unspecified-high": {
       "model": "github-copilot/claude-sonnet-4.5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 50000,
+        "budgetTokens": 50000
       },
       "temperature": 0.3,
       "maxTokens": 5000,
-      "description": "复杂功能实现、架构设计",
+      "description": "复杂功能实现、架构设计"
     },
     "writing": {
       "model": "github-copilot/claude-sonnet-4.5",
       "temperature": 0.6,
       "maxTokens": 4000,
-      "description": "个人写作、新媒体、技术文章 - 专业文笔",
+      "description": "个人写作、新媒体、技术文章 - 专业文笔"
     },
     "deep": {
       "model": "github-copilot/claude-opus-4.5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 120000,
+        "budgetTokens": 120000
       },
       "temperature": 0.2,
       "maxTokens": 6000,
       "description": "健康管理、深度分析、重要决策 - 最强推理+专业提示",
-      "systemPrompt": "在处理健康、金融等敏感领域时，务必：1) 明确你的局限性 2) 建议咨询专业人士 3) 提供多种可能性和风险评估 4) 保持审慎和负责的态度。",
-    },
+      "systemPrompt": "在处理健康、金融等敏感领域时，务必：1) 明确你的局限性 2) 建议咨询专业人士 3) 提供多种可能性和风险评估 4) 保持审慎和负责的态度。"
+    }
   },
   "background_task": {
     "defaultConcurrency": 12,
@@ -180,7 +180,7 @@
       "google": 5,
       "zhipuai-coding-plan": 25,
       "ark": 10,
-      "github-copilot": 12,
+      "github-copilot": 12
     },
     "modelConcurrency": {
       "anthropic/claude-opus-4-5": 1,
@@ -193,31 +193,31 @@
       "github-copilot/claude-opus-4.5": 2,
       "github-copilot/claude-sonnet-4.5": 4,
       "github-copilot/gpt-5.2-codex": 4,
-      "github-copilot/gpt-4o": 10,
-    },
+      "github-copilot/gpt-4o": 10
+    }
   },
   "sisyphus_agent": {
     "disabled": false,
     "default_builder_enabled": false,
     "planner_enabled": true,
-    "replace_plan": true,
+    "replace_plan": true
   },
   "git_master": {
     "commit_footer": true,
-    "include_co_authored_by": true,
+    "include_co_authored_by": true
   },
   "tmux": {
     "enabled": true,
     "layout": "main-vertical",
     "main_pane_size": 60,
     "main_pane_min_width": 120,
-    "agent_pane_min_width": 40,
+    "agent_pane_min_width": 40
   },
   "experimental": {
     "aggressive_truncation": false,
     "auto_resume": true,
-    "truncate_all_tool_outputs": false,
+    "truncate_all_tool_outputs": false
   },
   "disabled_mcps": [],
-  "disabled_hooks": [],
+  "disabled_hooks": []
 }

@@ -14,8 +14,8 @@
       "OpenAI Plus",
       "Google Pro",
       "ZhiPu CodingPlan Max",
-      "方舟 CodingPlan Pro",
-    ],
+      "方舟 CodingPlan Pro"
+    ]
   },
   // ================================================
   // Strategy-0: 极致性能型 (SUPER)
@@ -38,10 +38,10 @@
       "variant": "max",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 200000,
+        "budgetTokens": 200000
       },
       "temperature": 0.3,
-      "maxTokens": 8000,
+      "maxTokens": 8000
     },
     // 规划器 - Claude Opus 4.5 Thinking (Google Antigravity)
     // 职责：战略规划、需求分析、工作流设计
@@ -51,10 +51,10 @@
       "variant": "max",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 150000,
+        "budgetTokens": 150000
       },
       "temperature": 0.2,
-      "maxTokens": 6000,
+      "maxTokens": 6000
     },
     // 架构/代码审查 - GPT-5.2-Codex
     // 职责：架构决策、代码审查、设计模式评估
@@ -63,7 +63,7 @@
       "model": "openai/gpt-5.2-codex",
       "reasoningEffort": "xhigh",
       "temperature": 0.3,
-      "maxTokens": 6000,
+      "maxTokens": 6000
     },
     // 深度工作者 - GPT-5.2-Codex
     // 职责：自主完成复杂开发任务，执行细节实现
@@ -71,7 +71,7 @@
       "model": "openai/gpt-5.2-codex",
       "reasoningEffort": "high",
       "temperature": 0.3,
-      "maxTokens": 8000,
+      "maxTokens": 8000
     },
     // 文档/知识查询 - GLM 4.7 (ZhiPu 60倍额度)
     // 职责：快速查询、文档检索、模式匹配
@@ -79,7 +79,7 @@
     "librarian": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.1,
-      "maxTokens": 3000,
+      "maxTokens": 3000
     },
     // 快速探索 - Claude Haiku 4.5
     // 职责：快速代码探索、grep 上下文收集
@@ -87,7 +87,7 @@
     "explore": {
       "model": "anthropic/claude-haiku-4-5",
       "temperature": 0.2,
-      "maxTokens": 2000,
+      "maxTokens": 2000
     },
     // 多模态分析 - Gemini 3 Pro
     // 职责：图像分析、UI 评审、多模态任务
@@ -96,7 +96,7 @@
       "model": "google/gemini-3-pro",
       "variant": "high",
       "temperature": 0.3,
-      "maxTokens": 4000,
+      "maxTokens": 4000
     },
     // 规划前分析 - Claude Sonnet 4.5 Thinking
     // 职责：需求歧义识别、AI失败点分析
@@ -104,10 +104,10 @@
       "model": "anthropic/claude-sonnet-4-5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 80000,
+        "budgetTokens": 80000
       },
       "temperature": 0.2,
-      "maxTokens": 4000,
+      "maxTokens": 4000
     },
     // 规划审查 - GPT-5.2-Codex
     // 职责：计划验证、完整性检查、可验证性评估
@@ -115,7 +115,7 @@
       "model": "openai/gpt-5.2-codex",
       "reasoningEffort": "medium",
       "temperature": 0.2,
-      "maxTokens": 4000,
+      "maxTokens": 4000
     },
     // 深度思考 - Claude Opus 4.5 Thinking
     // 职责：复杂问题的深度分析和思考
@@ -123,11 +123,11 @@
       "model": "anthropic/claude-opus-4-5",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 150000,
+        "budgetTokens": 150000
       },
       "temperature": 0.2,
-      "maxTokens": 6000,
-    },
+      "maxTokens": 6000
+    }
   },
   // ========== Category 配置 ==========
   "categories": {
@@ -137,7 +137,7 @@
       "variant": "high",
       "temperature": 0.4,
       "maxTokens": 5000,
-      "description": "UI/UX 设计、前端实现、样式优化",
+      "description": "UI/UX 设计、前端实现、样式优化"
     },
     // 深度逻辑推理
     "ultrabrain": {
@@ -146,7 +146,7 @@
       "reasoningEffort": "xhigh",
       "temperature": 0.2,
       "maxTokens": 8000,
-      "description": "复杂架构决策、深度逻辑推理、算法设计",
+      "description": "复杂架构决策、深度逻辑推理、算法设计"
     },
     // 创意任务
     "artistry": {
@@ -154,21 +154,21 @@
       "variant": "max",
       "temperature": 0.7,
       "maxTokens": 6000,
-      "description": "创意文案、设计创意、新颖想法生成",
+      "description": "创意文案、设计创意、新颖想法生成"
     },
     // 快速简单任务
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 2000,
-      "description": "快速修复、简单功能、格式转换",
+      "description": "快速修复、简单功能、格式转换"
     },
     // 通用低难度
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 3000,
-      "description": "文件编辑、代码清理、基础实现",
+      "description": "文件编辑、代码清理、基础实现"
     },
     // 通用高难度
     "unspecified-high": {
@@ -176,18 +176,18 @@
       "variant": "max",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 100000,
+        "budgetTokens": 100000
       },
       "temperature": 0.3,
       "maxTokens": 8000,
-      "description": "复杂功能实现、架构设计、系统优化",
+      "description": "复杂功能实现、架构设计、系统优化"
     },
     // 文档/技术写作
     "writing": {
       "model": "google/gemini-3-pro",
       "temperature": 0.5,
       "maxTokens": 5000,
-      "description": "文档编写、技术文章、API 文档",
+      "description": "文档编写、技术文章、API 文档"
     },
     // 深度分析
     "deep": {
@@ -195,8 +195,8 @@
       "reasoningEffort": "xhigh",
       "temperature": 0.2,
       "maxTokens": 8000,
-      "description": "系统分析、性能优化、问题诊断",
-    },
+      "description": "系统分析、性能优化、问题诊断"
+    }
   },
   // ========== 并发控制 ==========
   "background_task": {
@@ -209,7 +209,7 @@
       "google": 5,
       "zhipuai-coding-plan": 15,
       "github-copilot": 2,
-      "ark": 8,
+      "ark": 8
     },
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {
@@ -220,20 +220,20 @@
       "google/gemini-3-pro": 4,
       "google/gemini-3-flash": 8,
       "openai/gpt-5.2-codex": 2,
-      "zhipuai-coding-plan/glm-4.7": 20,
-    },
+      "zhipuai-coding-plan/glm-4.7": 20
+    }
   },
   // ========== Sisyphus Agent 配置 ==========
   "sisyphus_agent": {
     "disabled": false,
     "default_builder_enabled": false,
     "planner_enabled": true,
-    "replace_plan": true,
+    "replace_plan": true
   },
   // ========== Git 配置 ==========
   "git_master": {
     "commit_footer": true,
-    "include_co_authored_by": true,
+    "include_co_authored_by": true
   },
   // ========== Tmux 集成 ==========
   "tmux": {
@@ -241,7 +241,7 @@
     "layout": "main-vertical",
     "main_pane_size": 60,
     "main_pane_min_width": 120,
-    "agent_pane_min_width": 40,
+    "agent_pane_min_width": 40
   },
   // ========== 实验性功能 ==========
   "experimental": {
@@ -249,11 +249,11 @@
     "auto_resume": true,
     "truncate_all_tool_outputs": false,
     "dynamic_context_pruning": {
-      "enabled": false,
-    },
+      "enabled": false
+    }
   },
   // ========== MCP 配置 ==========
   "disabled_mcps": [],
   // ========== Hooks 配置 ==========
-  "disabled_hooks": [],
+  "disabled_hooks": []
 }
