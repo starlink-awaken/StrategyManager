@@ -303,6 +303,26 @@ bash scripts/setup-opencode-integration.sh
 /strategies rollback 2024-02-01T12:00:00Z
 ```
 
+#### 成本分析
+
+```bash
+# 生成成本报告
+/strategies cost-report
+
+# 保存为文件
+/strategies cost-report --output ./cost-report.txt
+```
+
+#### 使用数据同步
+
+```bash
+# 同步所有平台使用数据
+/strategies sync-usage
+
+# 保存为文件
+/strategies sync-usage --output ./usage-data.txt
+```
+
 #### 策略修复
 
 ```bash
@@ -321,14 +341,18 @@ bash scripts/setup-opencode-integration.sh
 StrategyManager/
 ├── Workflows/           # 工作流定义
 │   ├── Compare.md      # 策略比较工作流
+│   ├── CostReport.md   # 成本报告工作流
 │   ├── Export.md       # 策略导出工作流
+│   ├── FeedbackReport.md # 反馈报告工作流
+│   ├── Fix.md          # 策略修复工作流
+│   ├── Generate.md     # 动态生成工作流
+│   ├── History.md      # 历史管理工作流
 │   ├── Import.md       # 策略导入工作流
 │   ├── List.md         # 策略列表工作流
 │   ├── Recommend.md    # 策略推荐工作流
 │   ├── Switch.md       # 策略切换工作流
-│   ├── Fix.md          # 策略修复工作流
-│   ├── Validate.md     # 策略验证工作流
-│   └── History.md      # 历史管理工作流
+│   ├── UsageSync.md    # 使用同步工作流
+│   └── Validate.md     # 策略验证工作流
 ├── Tools/              # 工具和脚本
 │   ├── ManageStrategies.ts
 │   └── tsconfig.json
@@ -389,6 +413,8 @@ StrategyManager/
 | `recommend`        | `Workflows/Recommend.md` |
 | `export`           | `Workflows/Export.md`    |
 | `import`           | `Workflows/Import.md`    |
+| `cost-report`      | `Workflows/CostReport.md`|
+| `sync-usage`       | `Workflows/UsageSync.md` |
 
 ### 文件存储位置
 
