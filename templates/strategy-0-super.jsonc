@@ -3,7 +3,7 @@
   "description": "极致性能型：最强模型负责关键决策，大用量资源承担主力，思考预算充足",
   "metadata": {
     "version": "2.0.0",
-    "updated": "2026-02-04",
+    "updated": "2026-02-08",
     "cost_level": "high",
     "use_case": "关键项目、复杂架构设计、深度推理任务",
     "optimization": "最高性能优先，不考虑成本",
@@ -22,19 +22,19 @@
   // ================================================
   // 理念：用最强的模型做最重要的事，充分利用思考预算
   // 关键特性：
-  //   1. Sisyphus 用 Opus 4.5，完整思考支持
-  //   2. 规划器用 Opus 4.5 (Antigravity)，思考预算充足
+  //   1. Sisyphus 用 Opus 4.6，完整思考支持
+  //   2. 规划器用 Opus 4.6 (Antigravity)，思考预算充足
   //   3. 架构评审用 GPT-5.2-Codex 高级推理
   //   4. 快速任务用 ZhiPu GLM 4.7（60倍额度）
   //   5. 严格并发控制，避免超限
   // ================================================
   // ========== Agent 配置 ==========
   "agents": {
-    // 主编排器 - Claude Opus 4.5 (Anthropic/GitHub Copilot)
+    // 主编排器 - Claude Opus 4.6 (Anthropic/GitHub Copilot)
     // 职责：任务规划、多agent协调、最终决策
     // 配置：完整思考支持，高预算用于复杂推理
     "sisyphus": {
-      "model": "github-copilot/claude-opus-4.5",
+      "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -43,11 +43,11 @@
       "temperature": 0.3,
       "maxTokens": 8000
     },
-    // 规划器 - Claude Opus 4.5 Thinking (Google Antigravity)
+    // 规划器 - Claude Opus 4.6 Thinking (Google Antigravity)
     // 职责：战略规划、需求分析、工作流设计
     // 配置：通过 Antigravity 访问，充足思考预算
     "prometheus": {
-      "model": "google/antigravity-claude-opus-4.5-thinking",
+      "model": "google/antigravity-claude-opus-4.6-thinking",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -117,10 +117,10 @@
       "temperature": 0.2,
       "maxTokens": 4000
     },
-    // 深度思考 - Claude Opus 4.5 Thinking (Github Copilot)
+    // 深度思考 - Claude Opus 4.6 Thinking (Github Copilot)
     // 职责：复杂问题的深度分析和思考
     "atlas": {
-      "model": "github-copilot/claude-opus-4.5",
+      "model": "github-copilot/claude-opus-4.6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 150000
@@ -172,7 +172,7 @@
     },
     // 通用高难度
     "unspecified-high": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "anthropic/claude-opus-4-6",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -213,13 +213,13 @@
     },
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {
-      "anthropic/claude-opus-4-5": 2,
+      "anthropic/claude-opus-4-6": 2,
       "anthropic/claude-sonnet-4-5": 2,
       "anthropic/claude-haiku-4-5": 5,
-      "github-copilot/claude-opus-4.5": 2,
+      "github-copilot/claude-opus-4.6": 2,
       "github-copilot/claude-sonnet-4.5": 2,
       "github-copilot/claude-haiku-4.5": 5,
-      "google/antigravity-claude-opus-4-5-thinking": 2,
+      "google/antigravity-claude-opus-4-6-thinking": 2,
       "google/gemini-3-pro": 4,
       "google/gemini-3-flash": 8,
       "openai/gpt-5.2-codex": 2,

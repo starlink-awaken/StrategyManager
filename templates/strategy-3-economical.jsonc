@@ -3,7 +3,7 @@
   "description": "经济型：最大化利用免费和额度资源，极低月度成本",
   "metadata": {
     "version": "2.0.0",
-    "updated": "2026-02-04",
+    "updated": "2026-02-08",
     "cost_level": "ultra-low",
     "use_case": "探索、学习、快速迭代、成本压力大",
     "optimization": "最大化利用免费和额度资源",
@@ -124,7 +124,7 @@
       "google/gemini-2.5-flash": 15, // Gemini Flash 允许 15 并发
       "google/gemini-3-flash": 18, // Gemini 3 Flash 允许 18 并发
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
-      "anthropic/claude-opus-4-5": 1 // Claude Opus 限制 1 并发（紧急）
+      "anthropic/claude-opus-4-6": 1 // Claude Opus 限制 1 并发（紧急）
     }
   }
 }

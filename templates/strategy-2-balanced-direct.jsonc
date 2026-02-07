@@ -3,7 +3,7 @@
   "description": "平衡型（直连优先）：关键推理/审查直连 Anthropic/OpenAI，Copilot 仅用于免费与高频通道",
   "metadata": {
     "version": "2.1.0-direct",
-    "updated": "2026-02-04",
+    "updated": "2026-02-08",
     "cost_level": "low",
     "use_case": "默认日常策略（直连优先，覆盖80%场景）",
     "optimization": "直连高质量 + Copilot免费模型兜底",
@@ -114,7 +114,7 @@
       "description": "个人项目开发、AI探索 - 代码专精模型"
     },
     "ultrabrain": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "anthropic/claude-opus-4-6",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -160,7 +160,7 @@
       "description": "个人写作、新媒体、技术文章 - 专业文笔"
     },
     "deep": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "anthropic/claude-opus-4-6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 120000
@@ -183,7 +183,7 @@
       "github-copilot": 6
     },
     "modelConcurrency": {
-      "anthropic/claude-opus-4-5": 1,
+      "anthropic/claude-opus-4-6": 1,
       "anthropic/claude-sonnet-4-5": 2,
       "anthropic/claude-haiku-4-5": 4,
       "google/gemini-3-pro": 3,

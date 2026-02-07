@@ -3,7 +3,7 @@
   "description": "平衡型（Copilot优先）：在默认场景下最大化使用 GitHub Copilot 高级模型，直连模型作为补充",
   "metadata": {
     "version": "2.1.0-copilot",
-    "updated": "2026-02-04",
+    "updated": "2026-02-08",
     "cost_level": "low",
     "use_case": "默认日常策略（Copilot优先，覆盖80%场景）",
     "optimization": "Copilot优先+免费模型兜底，减少直连资源占用",
@@ -114,7 +114,7 @@
       "description": "个人项目开发、AI探索 - 代码专精模型"
     },
     "ultrabrain": {
-      "model": "github-copilot/claude-opus-4.5",
+      "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -160,7 +160,7 @@
       "description": "个人写作、新媒体、技术文章 - 专业文笔"
     },
     "deep": {
-      "model": "github-copilot/claude-opus-4.5",
+      "model": "github-copilot/claude-opus-4.6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 120000
@@ -183,14 +183,14 @@
       "github-copilot": 12
     },
     "modelConcurrency": {
-      "anthropic/claude-opus-4-5": 1,
+      "anthropic/claude-opus-4-6": 1,
       "anthropic/claude-sonnet-4-5": 2,
       "anthropic/claude-haiku-4-5": 4,
       "google/gemini-3-pro": 3,
       "google/gemini-3-flash": 10,
       "openai/gpt-5.2-codex": 2,
       "zhipuai-coding-plan/glm-4.7": 30,
-      "github-copilot/claude-opus-4.5": 2,
+      "github-copilot/claude-opus-4.6": 2,
       "github-copilot/claude-sonnet-4.5": 4,
       "github-copilot/gpt-5.2-codex": 4,
       "github-copilot/gpt-4o": 10
