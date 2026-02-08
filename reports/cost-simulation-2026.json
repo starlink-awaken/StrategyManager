@@ -1,0 +1,40 @@
+{
+  "generated": "2026-02-08T00:00:00Z",
+  "strategies": {
+    "strategy-1": {
+      "monthly_cost": 67.5,
+      "savings": 75,
+      "optimizations": [
+        "Oracle: GPT-5.2-Codex → GPT-5-mini",
+        "Ultrabrain: GPT-5.2-Codex → GPT-5-mini",
+        "Momus: GPT-5.2-Codex → GPT-5-mini"
+      ]
+    },
+    "strategy-2": {
+      "monthly_cost": 120,
+      "savings": 80,
+      "optimizations": [
+        "Oracle: GPT-5.2-Codex → GPT-5-mini",
+        "Visual-engineering: GPT-5.2-Codex → GPT-5-mini"
+      ]
+    },
+    "strategy-6": {
+      "monthly_cost": 96,
+      "savings": 84,
+      "optimizations": [
+        "Prometheus: GPT-5.2-Codex → GPT-5-mini",
+        "Oracle: GPT-5.2-Codex",
+        "Hephaestus: GPT-5-mini",
+        "Other agents: GLM-4.7"
+      ]
+    }
+  },
+  "summary": {
+    "total_savings": 79.67,
+    "recommendations": [
+      "Strategy-6 offers the best balance of cost and performance.",
+      "Strategy-2 is ideal for daily balanced tasks.",
+      "Strategy-1 is suitable for partial optimizations."
+    ]
+  }
+}
