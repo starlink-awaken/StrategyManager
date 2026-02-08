@@ -70,6 +70,10 @@ const DEFAULT_CONFIG: KeywordWeightConfig = {
       ],
       weight: 0.7, // 降低权重
     },
+    "agent-heavy": {
+      "primary": ["代理", "重负载", "agent", "heavy-duty"],
+      "weight": 0.8
+    },
     health: {
       primary: [
         "健康",
@@ -275,6 +279,7 @@ export class KeywordWeightEngine {
   identifyScenarios(description: string): ScenarioScores {
     const lowerDesc = this.normalizeText(description);
     const tokens = this.tokenize(lowerDesc);
+console.log('Tokens:', tokens);
     const scores = {} as Record<ScenarioType, number>;
 
     // 初始化所有场景分数
@@ -346,7 +351,7 @@ export class KeywordWeightEngine {
     });
 
     const sorted = normalized
-      .filter(([_, score]) => score > 0.01) // 下降阈值以保留更多secondary
+      .filter(([_, score]) => score > 0.005) // 下降阈值以保留更多secondary
       .sort((a, b) => b[1] - a[1]);
 
     const primary: [ScenarioType, number] = sorted[0] || ["daily", 0.5];

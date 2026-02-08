@@ -154,6 +154,7 @@ export class StrategyValidator {
       // OpenAI
       "openai/gpt-5.2",
       "openai/gpt-5.2-codex",
+      "openai/gpt-5.1-codex-max",
       "openai/gpt-5-mini",
       "openai/gpt-4.1",
       // Google
@@ -163,6 +164,8 @@ export class StrategyValidator {
       // GitHub Copilot
       "github-copilot/claude-opus-4.5",
       "github-copilot/claude-sonnet-4.5",
+      "github-copilot/grok-code-fast-1",
+      "github-copilot/raptor-mini",
       "github-copilot/gpt-5.2-codex",
       "github-copilot/gpt-5-mini",
       "github-copilot/gpt-4.1",
