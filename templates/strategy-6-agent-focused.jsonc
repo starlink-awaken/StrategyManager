@@ -1,0 +1,113 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "智能体任务专用策略: 多agent协作、代码生成、架构决策",
+  "metadata": {
+    "version": "1.0.0",
+    "updated": "2026-02-08",
+    "cost_level": "medium-high",
+    "use_case": "智能体密集型任务:多agent协作、代码生成、架构决策",
+    "optimization": "智能体专用: GPT-5.2-Codex/Mini 混合,GLM-4.7 大量兜底",
+    "monthly_cost": "¥800-1200"
+  },
+  "agents": {
+    "sisyphus": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "variant": "max",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 200000
+      },
+      "temperature": 0.3
+    },
+    "prometheus": {
+      "model": "openai/gpt-5-mini",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "智能体任务优化 - GPT-4o/GLM-4.7 双层兜底",
+      "temperature": 0.2
+    },
+    "oracle": {
+      "model": "openai/gpt-5.2-codex",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "智能体任务优化 - GPT-4o/GLM-4.7 双层兜底",
+      "reasoningEffort": "high",
+      "temperature": 0.3
+    },
+    "hephaestus": {
+      "model": "openai/gpt-5-mini",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "智能体任务优化 - GPT-4o/GLM-4.7 双层兜底",
+      "temperature": 0.3
+    },
+    "librarian": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2
+    },
+    "explore": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2
+    },
+    "multimodal-looker": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2
+    },
+    "metis": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 100000
+      }
+    },
+    "momus": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3
+    },
+    "atlas": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "openai/gpt-5-mini",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "智能体任务优化 - GPT-4o/GLM-4.7 双层兜底",
+      "temperature": 0.4
+    },
+    "unspecified-high": {
+      "model": "anthropic/claude-sonnet-4.5",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "智能体任务优化 - GPT-4o/GLM-4.7 双层兜底",
+      "temperature": 0.3
+    },
+    "unspecified-low": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3
+    },
+    "quick": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3
+    },
+    "writing": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.5
+    },
+    "deep": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2
+    }
+  },
+  "background_task": {
+    "defaultConcurrency": 10,
+    "staleTimeoutMs": 300000,
+    "providerConcurrency": {
+      "openai": 5,
+      "zhipuai-coding-plan": 15,
+      "github-copilot": 5
+    },
+    "modelConcurrency": {
+      "openai/gpt-5.2-codex": 2,
+      "openai/gpt-5-mini": 5,
+      "zhipuai-coding-plan/glm-4.7": 20
+    }
+  }
+}
