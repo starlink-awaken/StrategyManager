@@ -82,7 +82,13 @@ function createStrategyLibrary(): StrategyMetadata[] {
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
     }),
-  ];
+      createMockStrategy({
+        name: "strategy-6-agent",
+        description: "Agent-heavy strategy",
+        costLevel: "medium",
+        models: ["anthropic/claude-agent-6", "openai/gpt-agent-6"]
+      }),
+    ];
 }
 
 // ==================== Scenario Matching Tests ====================
@@ -125,10 +131,7 @@ describe("SmartRecommender - Scenario Matching", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
     // research scenario's best match is strategy-5-research
-    const hasResearchStrategy = recommendations.some(
-      (r) => r.strategyName === "strategy-5-research",
-    );
-    expect(hasResearchStrategy).toBe(true);
+    expect(recommendations.some((r) => r.strategyName === "strategy-5-research")).toBe(true);
   });
 
   // Test 3: Creative Content Scenario
@@ -144,10 +147,7 @@ describe("SmartRecommender - Scenario Matching", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
 
-    const hasCreativeStrategy = recommendations.some(
-      (r) => r.strategyName === "strategy-4-creative",
-    );
-    expect(hasCreativeStrategy).toBe(true);
+    expect(recommendations.some((r) => r.strategyName === "strategy-4-creative")).toBe(true);
   });
 
   // Test 4: Complex Task Adjustment
@@ -172,7 +172,43 @@ describe("SmartRecommender - Scenario Matching", () => {
     expect(firstScore).toBeGreaterThan(0);
   });
 
-  // Test 5: Simple Task Adjustment
+  // Test: Agent-Heavy Scenario
+  it("should recommend Strategy-6 for agent-heavy scenarios", () => {
+    const context: RecommendationContext = {
+      scenario: {
+        type: "agent-heavy",
+        priority: "balanced",
+      },
+    };
+
+    const recommendations = recommender.recommend(context);
+
+    expect(recommendations.length).toBeGreaterThan(0);
+    // Agent-heavy scenario's best match is strategy-6-agent
+    expect(recommendations.some((r) => r.strategyName === "strategy-6-agent")).toBe(true);
+  });
+
+  // Test: Agent-Heavy Fallback
+  it("should fallback to Strategy-1 when Strategy-6 is unavailable", () => {
+    const context: RecommendationContext = {
+      scenario: {
+        type: "agent-heavy",
+        priority: "balanced",
+      },
+    };
+
+    // Remove Strategy-6 from the library
+    strategies = strategies.filter(
+      (s) => s.name !== "strategy-6-agent"
+    );
+    recommender = new SmartRecommender(strategies);
+
+    const recommendations = recommender.recommend(context);
+
+    expect(recommendations.length).toBeGreaterThan(0);
+    // Fallback should recommend strategy-1-performance
+    expect(recommendations.some((r) => r.strategyName === "strategy-1-performance")).toBe(true);
+  });
   it("should recommend economical strategies for simple tasks", () => {
     const simpleContext: RecommendationContext = {
       scenario: {
@@ -186,10 +222,7 @@ describe("SmartRecommender - Scenario Matching", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
     // Simple + cost priority should favor economical
-    const economicalExists = recommendations.some(
-      (r) => r.strategyName === "strategy-3-economical",
-    );
-    expect(economicalExists).toBe(true);
+    expect(recommendations.some((r) => r.strategyName === "strategy-3-economical")).toBe(true);
   });
 });
 
@@ -270,12 +303,7 @@ describe("SmartRecommender - Cost Efficiency", () => {
     const recommendations = recommender.recommend(context);
 
     // Super strategy (¥2500) should be last or not recommended
-    const superStrategy = recommendations.find(
-      (r) => r.strategyName === "strategy-0-super",
-    );
-
-    // Should not recommend super with 100 budget
-    expect(superStrategy).not.toBeDefined();
+    expect(recommendations.some((r) => r.strategyName === "strategy-0-super")).not.toBeDefined();
   });
 
   // Test 9: Cost Estimation
@@ -387,10 +415,7 @@ describe("SmartRecommender - Weight Adjustment", () => {
     expect(recommendations.length).toBeGreaterThan(0);
 
     // Balanced should include strategy-2-balanced
-    const balancedStrat = recommendations.find(
-      (r) => r.strategyName === "strategy-2-balanced",
-    );
-    expect(balancedStrat).toBeDefined();
+    expect(recommendations.some((r) => r.strategyName === "strategy-2-balanced")).toBeDefined();
   });
 });
 

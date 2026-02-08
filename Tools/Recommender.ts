@@ -20,6 +20,7 @@ export interface StrategyMetadata {
 // ==================== 类型定义 ====================
 
 export type ScenarioType =
+  | "agent-heavy"
   | "education" // 教育场景
   | "health" // 健康管理
   | "finance" // 金融交易
@@ -99,6 +100,7 @@ export interface Recommendation {
  * 第一个策略是最佳匹配，第二个是次优选择
  */
 const SCENARIO_MAPPING: Record<ScenarioType, string[]> = {
+  "agent-heavy": ["strategy-6-agent", "strategy-1-performance"],
   education: ["strategy-2-balanced", "strategy-4-creative"],
   health: ["strategy-2-balanced", "strategy-5-research"],
   finance: ["strategy-5-research", "strategy-1-performance"],
@@ -136,6 +138,7 @@ const QUALITY_SCORES: Record<string, number> = {
   "strategy-4-creative": 0.8,
   "strategy-2-balanced": 0.7,
   "strategy-3-economical": 0.5,
+  "strategy-6-agent": 0.85,
 };
 
 /**
@@ -236,7 +239,12 @@ export class SmartRecommender {
     const matchingStrategies = SCENARIO_MAPPING[scenario.type] || [];
 
     // 完美匹配
-    if (matchingStrategies[0] === strategy.name) return 1.0;
+    if (matchingStrategies[0] === strategy.name) {
+  if (scenario?.type === "agent-heavy") {
+    return 1.2; // Boost for Strategy-6 in agent-heavy scenarios
+  }
+  return 1.0;
+}
 
     // 次优匹配
     if (matchingStrategies[1] === strategy.name) return 0.7;
@@ -497,6 +505,7 @@ export class SmartRecommender {
     // 场景匹配
     if (scores.scenario > 0.7 && context.scenario) {
       const scenarioNames: Record<ScenarioType, string> = {
+  "agent-heavy": "多智能体协作", // Added for agent-heavy scenario
         education: "教育",
         health: "健康管理",
         finance: "金融分析",
@@ -697,6 +706,7 @@ export function parseRecommendationContext(
 
   // 场景识别
   const scenarioKeywords: Record<ScenarioType, string[]> = {
+  "agent-heavy": ["智能体", "协作", "agent", "multi-agent", "collaboration"],
     education: ["教育", "学习", "子女", "学生", "education", "learning"],
     health: ["健康", "医疗", "养生", "health", "medical"],
     finance: ["金融", "股票", "交易", "投资", "finance", "trading"],
