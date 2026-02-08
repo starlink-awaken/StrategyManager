@@ -193,6 +193,8 @@ export class SmartRecommender {
     strategy: StrategyMetadata,
     context: RecommendationContext,
   ): Recommendation {
+    // Debug: Scoring strategy logging
+    console.log(`Scoring strategy: ${strategy.name}`);
     const scores = {
       scenario: this.calculateScenarioMatch(strategy, context.scenario),
       cost: this.calculateCostEfficiency(strategy, context.budget),
@@ -278,7 +280,10 @@ export class SmartRecommender {
     strategy: StrategyMetadata,
     budget?: BudgetConfig,
   ): number {
-    if (!budget) return 0.5; // 默认中等效率
+    if (!budget) {
+      console.log(`No budget provided. Default cost efficiency: 0.5`);
+      return 0.5; // 默认中等效率
+    }
 
     const strategyCost = COST_LEVELS[strategy.name] || 500;
     const remaining = budget.monthly - budget.currentSpent;
@@ -287,6 +292,7 @@ export class SmartRecommender {
     if (strategyCost > remaining) return 0.1;
 
     // 成本占剩余预算的比例
+    console.log(`Cost calculation for ${strategy.name}: strategyCost=${strategyCost}, remaining=${remaining}`);
     const ratio = strategyCost / remaining;
 
     if (ratio < 0.3) return 1.0; // 成本很低，优秀
