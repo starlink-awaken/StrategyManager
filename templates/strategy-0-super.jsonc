@@ -43,11 +43,11 @@
       "temperature": 0.3,
       "maxTokens": 8000
     },
-    // 规划器 - Claude Opus 4.6 Thinking (Google Antigravity)
+    // 规划器 - Claude Opus 4.5 Thinking (Google Antigravity)
     // 职责：战略规划、需求分析、工作流设计
     // 配置：通过 Antigravity 访问，充足思考预算
     "prometheus": {
-      "model": "google/antigravity-claude-opus-4.6-thinking",
+      "model": "google/antigravity-claude-opus-4.5-thinking",
       "variant": "max",
       "thinking": {
         "type": "enabled",
