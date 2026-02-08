@@ -6,8 +6,8 @@
     "updated": "2026-02-08",
     "cost_level": "low",
     "use_case": "默认日常策略（Copilot优先，覆盖80%场景）",
-    "optimization": "Copilot优先+免费模型兜底，减少直连资源占用",
-    "monthly_cost": "¥400-700",
+    "optimization": "GPT-5 mini 替代高成本模型(oracle + visual-engineering)",
+    "monthly_cost": "¥280-490",
     "resources_used": [
       "ZhiPu CodingPlan Max (60倍)",
       "方舟 CodingPlan Pro (20倍)",
@@ -52,7 +52,9 @@
       "description": "规划器保持高质量（Copilot优先）"
     },
     "oracle": {
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "openai/gpt-5-mini",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "成本优化 - GPT-4o 免费兜底",
       "reasoningEffort": "medium",
       "temperature": 0.3,
       "maxTokens": 5000,
@@ -107,7 +109,9 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "openai/gpt-5-mini",
+      "fallback": "github-copilot/gpt-4o",
+      "fallbackReason": "成本优化 - GPT-4o 免费兜底",
       "reasoningEffort": "medium",
       "temperature": 0.3,
       "maxTokens": 4000,
