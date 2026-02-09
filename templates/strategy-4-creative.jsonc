@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "创意写作专用：高温度配置激发创意，Claude + Gemini 组合，用于多媒体创作、个人写作、新媒体运营",
   "metadata": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "created": "2026-02-04",
     "updated": "2026-02-08",
     "cost_level": "medium",
@@ -52,6 +52,7 @@
     },
     "oracle": {
       "model": "anthropic/claude-sonnet-4-5",
+      "fallback": "google/gemini-3-pro",
       "temperature": 0.6,
       "maxTokens": 5000,
       "description": "内容审核：质量把关和优化建议"
@@ -109,9 +110,10 @@
       "description": "技术支持（如需代码）"
     },
     "ultrabrain": {
-      "model": "anthropic/claude-sonnet-4-5",
+      "model": "google/gemini-3-pro",
+      "variant": "high",
       "temperature": 0.5,
-      "maxTokens": 5000,
+      "maxTokens": 100000,
       "description": "复杂内容策略规划"
     },
     "artistry": {
@@ -149,6 +151,7 @@
     },
     "deep": {
       "model": "github-copilot/claude-sonnet-4.5",
+      "fallback": "google/gemini-3-pro",
       "temperature": 0.6,
       "maxTokens": 7000,
       "description": "深度内容：思想深度 + 表达力",

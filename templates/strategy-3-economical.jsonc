@@ -2,8 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "经济型：最大化利用免费和额度资源，极低月度成本",
   "metadata": {
-    "version": "2.0.0",
-    "updated": "2026-02-08",
+    "version": "1.1.0",
+    "updated": "2026-02-10",
+    "scene_coverage": "70%",
     "cost_level": "ultra-low",
     "use_case": "探索、学习、快速迭代、成本压力大",
     "optimization": "最大化利用免费和额度资源",
@@ -30,9 +31,9 @@
       "model": "github-copilot/gpt-4o",
       "temperature": 0.3
     },
-    // 规划器 - GPT-4o (Github Copilot Free)
+    // 规划器 - GPT-5-mini (Copilot Free，免费但更强)
     "prometheus": {
-      "model": "github-copilot/gpt-4o",
+      "model": "copilot/gpt-5-mini",
       "temperature": 0.2
     },
     // 架构/调试 - GLM 4.7 (ZhiPuAI Max，大用量兜底)
@@ -71,16 +72,24 @@
       "model": "google/gemini-2.5-flash",
       "temperature": 0.4
     },
-    // 深度逻辑推理 - GLM 4.7 (ZhiPuAI Max)
-    // 触发顶级模型条件：连续 5 次失败 + 明确需要深度推理
+    // 深度逻辑推理 - GPT-5-mini (Copilot Free，免费且支持 thinking)
     "ultrabrain": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "copilot/gpt-5-mini",
       "temperature": 0.2
     },
     // 创意任务 - Gemini 2.5 Flash (Gemini Pro)
     "artistry": {
       "model": "google/gemini-2.5-flash",
       "temperature": 0.7
+    },
+    // 深度思考 - GPT-5-mini (Copilot Free)
+    // 紧急 fallback: Claude Sonnet 4-5 (2并发)
+    "deep": {
+      "model": "copilot/gpt-5-mini",
+      "fallback": {
+        "model": "anthropic/claude-sonnet-4-5",
+        "condition": "紧急"
+      }
     },
     // 简单任务 - GPT-5-mini (Github Copilot Free)
     "quick": {
@@ -124,7 +133,7 @@
       "google/gemini-2.5-flash": 15, // Gemini Flash 允许 15 并发
       "google/gemini-3-flash": 18, // Gemini 3 Flash 允许 18 并发
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
-      "anthropic/claude-opus-4-6": 1 // Claude Opus 限制 1 并发（紧急）
+      "anthropic/claude-sonnet-4-5": 2 // Claude Sonnet 限制 2 并发（紧急）
     }
   }
 }

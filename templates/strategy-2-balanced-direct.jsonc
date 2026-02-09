@@ -2,10 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "平衡型（直连优先）：关键推理/审查直连 Anthropic/OpenAI，Copilot 仅用于免费与高频通道",
   "metadata": {
-    "version": "2.1.0-direct",
-    "updated": "2026-02-08",
+    "version": "2.2.0-direct",
+    "updated": "2026-02-09",
     "cost_level": "low",
-    "use_case": "默认日常策略（直连优先，覆盖80%场景）",
+    "use_case": "默认日常策略（直连 API 优先，适合生产环境）",
     "optimization": "直连高质量 + Copilot免费模型兜底",
     "monthly_cost": "¥400-700",
     "resources_used": [
@@ -52,7 +52,9 @@
       "description": "规划器保持高质量"
     },
     "oracle": {
-      "model": "openai/gpt-5.2-codex",
+      "model": "openai/gpt-5.3-codex",
+      "fallback": "anthropic/claude-sonnet-4-5",
+      "fallbackReason": "直连 Anthropic 备用 - 相同质量保证",
       "reasoningEffort": "medium",
       "temperature": 0.3,
       "maxTokens": 5000,
@@ -107,7 +109,7 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "openai/gpt-5.2-codex",
+      "model": "openai/gpt-5.3-codex",
       "reasoningEffort": "medium",
       "temperature": 0.3,
       "maxTokens": 4000,
@@ -116,6 +118,8 @@
     "ultrabrain": {
       "model": "anthropic/claude-opus-4-6",
       "variant": "max",
+      "fallback": "openai/gpt-5-mini",
+      "fallbackReason": "直连 OpenAI 高性价比备选 - xhigh 质量",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -126,6 +130,8 @@
     },
     "artistry": {
       "model": "anthropic/claude-sonnet-4-5",
+      "fallback": "google/gemini-3-pro",
+      "fallbackReason": "直连 Google 多模态备选 - 创意能力强",
       "temperature": 0.7,
       "maxTokens": 4500,
       "description": "子女教育、多媒体创作 - 温和耐心+创意",
@@ -161,6 +167,8 @@
     },
     "deep": {
       "model": "anthropic/claude-opus-4-6",
+      "fallback": "openai/gpt-5.3-codex",
+      "fallbackReason": "直连 OpenAI 备用 - 推理能力强",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 120000
@@ -188,7 +196,7 @@
       "anthropic/claude-haiku-4-5": 4,
       "google/gemini-3-pro": 3,
       "google/gemini-3-flash": 10,
-      "openai/gpt-5.2-codex": 2,
+      "openai/gpt-5.3-codex": 2,
       "zhipuai-coding-plan/glm-4.7": 30,
       "github-copilot/gpt-4o": 10
     }
