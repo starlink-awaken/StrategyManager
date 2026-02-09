@@ -2,12 +2,13 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "智能体任务专用策略: 多agent协作、代码生成、架构决策",
   "metadata": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "updated": "2026-02-08",
     "cost_level": "medium-high",
     "use_case": "智能体密集型任务:多agent协作、代码生成、架构决策",
-    "optimization": "智能体专用: GPT-5.2-Codex/Mini 混合,GLM-4.7 大量兜底",
-    "monthly_cost": "¥800-1200"
+    "optimization": "智能体专用: GPT-5.3-Codex/Mini 混合,GLM-4.7 大量兜底",
+    "monthly_cost": "¥800-1200",
+    "scene_coverage": 75
   },
   "agents": {
     "sisyphus": {
@@ -26,7 +27,7 @@
       "temperature": 0.2
     },
     "oracle": {
-      "model": "openai/gpt-5.2-codex",
+      "model": "openai/gpt-5.3-codex",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-4.7 双层兜底",
       "reasoningEffort": "high",
@@ -91,9 +92,23 @@
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.5
     },
+    "artistry": {
+      "model": "github-copilot/claude-sonnet-4.5",
+      "temperature": 0.7
+    },
+    "ultrabrain": {
+      "model": "openai/gpt-5-mini",
+      "fallback": "github-copilot/claude-opus-4.6",
+      "fallbackReason": "智能体任务优化 - Claude Opus/GLM-4.7 双层兜底",
+      "temperature": 0.3
+    },
     "deep": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.2
+      "temperature": 0.2,
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 100000
+      }
     }
   },
   "background_task": {
@@ -105,7 +120,7 @@
       "github-copilot": 5
     },
     "modelConcurrency": {
-      "openai/gpt-5.2-codex": 2,
+      "openai/gpt-5.3-codex": 2,
       "openai/gpt-5-mini": 5,
       "zhipuai-coding-plan/glm-4.7": 20
     }
