@@ -1,9 +1,9 @@
 {
-  "active_plan": "/Volumes/Model/Workspace/Skills/local/StrategyManager/.sisyphus/plans/strategy-optimization-2026.md",
-  "started_at": "2026-02-08T02:52:18.756Z",
+  "active_plan": "/Volumes/Model/Workspace/Skills/local/StrategyManager/.sisyphus/plans/strategy-upgrade-all.md",
+  "started_at": "2026-02-09T15:38:22.681Z",
   "session_ids": [
-    "ses_3c516ae6cfferQv8fGNCOiOE6R"
+    "ses_3bd07216effeP7df37WD0qEHcV"
   ],
-  "plan_name": "strategy-optimization-2026",
+  "plan_name": "strategy-upgrade-all",
   "agent": "atlas"
 }
