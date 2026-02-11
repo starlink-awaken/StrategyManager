@@ -1,0 +1,247 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  // ============================================================
+  // 策略 7: 国产优先 (China-First) 策略
+  // 适用场景：国内网络环境优先，低延迟，充分利用国内订阅
+  // 主力：方舟 CodingPlan + 智谱 + MiniMax (全订阅制)
+  // 兜底：GitHub Copilot → API 额度 (DeepSeek/硅基/OpenRouter)
+  // ============================================================
+  "metadata": {
+    "name": "国产优先 (China-First)",
+    "version": "3.0.0",
+    "description": "国内 AI 服务优先策略，最大化利用方舟/智谱/MiniMax 订阅，低延迟直连，Copilot 作为国际兜底。Zero-premium China-first strategy: all Copilot fallbacks use 0x models",
+    "author": "strategy-manager",
+    "cost_tier": "low",
+    "priority": "china-latency",
+    "resources_used": [
+      "方舟 CodingPlan Pro (季度订阅)",
+      "智谱 Coding Plan Pro (年订阅)",
+      "MiniMax Coding Plan Pro (年订阅)",
+      "GitHub Copilot Pro+ (年订阅, 兜底)",
+      "DeepSeek API ¥300 (最终兜底)",
+      "硅基流动 ¥200 (最终兜底)",
+      "OpenRouter $100 (最终兜底)"
+    ],
+    "rate_limits_note": "方舟 6000req/5h, 智谱 ~600/5h, MiniMax 300/5h, Copilot 无限"
+  },
+  "agents": {
+    // sisyphus - 主执行者，高频任务，方舟主力（6000/5h 额度最高）
+    "sisyphus": {
+      "model": "ark-coding-plan/doubao-seed-code",
+      "context_length": "high",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "minimax-coding-plan/MiniMax-M2.1",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // prometheus - 规划推理，需要强思考能力
+    "prometheus": {
+      "model": "ark-coding-plan/kimi-k2-thinking",
+      "context_length": "max",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "minimax-coding-plan/MiniMax-M2.1",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // oracle - 顾问角色，需要多样化视角
+    "oracle": {
+      "model": "minimax-coding-plan/MiniMax-M2.1",
+      "context_length": "high",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "ark-coding-plan/doubao-seed-code",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // hephaestus - 构建工具，高频工作，方舟主力
+    "hephaestus": {
+      "model": "ark-coding-plan/doubao-seed-code",
+      "context_length": "medium",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "zhipuai-coding-plan/glm-4.5-air",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // librarian - 文档检索，快速响应
+    "librarian": {
+      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "context_length": "medium",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // explore - 代码探索，快速响应
+    "explore": {
+      "model": "minimax-coding-plan/MiniMax-M2.1-lightning",
+      "context_length": "medium",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.5-air",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // multimodal - 多模态处理
+    "multimodal-looker": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "context_length": "high",
+      "fallback": [
+        "ark-coding-plan/doubao-seed-code",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // metis - 元分析
+    "metis": {
+      "model": "ark-coding-plan/ark-code-latest",
+      "context_length": "medium",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // momus - 代码审查
+    "momus": {
+      "model": "minimax-coding-plan/MiniMax-M2.1",
+      "context_length": "high",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "ark-coding-plan/doubao-seed-code",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // atlas - 快速探索，轻量任务
+    "atlas": {
+      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "context_length": "medium",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "ark-coding-plan/doubao-seed-code",
+        "github-copilot/gpt-4o"
+      ]
+    }
+  },
+  "categories": {
+    // 视觉工程 - 方舟主力 + 智谱兜底
+    "visual-engineering": {
+      "model": "ark-coding-plan/doubao-seed-code",
+      "context_length": "high",
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // 超级推理 - 方舟 Kimi 思考 + MiniMax 推理
+    "ultrabrain": {
+      "model": "ark-coding-plan/kimi-k2-thinking",
+      "context_length": "max",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1",
+        "zhipuai-coding-plan/glm-4.7",
+        "deepseek/deepseek-v3-2"
+      ]
+    },
+    // 创意 - MiniMax + 方舟
+    "artistry": {
+      "model": "minimax-coding-plan/MiniMax-M2.1",
+      "context_length": "high",
+      "fallback": [
+        "ark-coding-plan/doubao-seed-code",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // 快速响应 - 智谱 Air 极速
+    "quick": {
+      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "context_length": "low",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // 通用低优先级 - 智谱 Air
+    "unspecified-low": {
+      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "context_length": "low",
+      "fallback": [
+        "ark-coding-plan/ark-code-latest",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // 通用高优先级 - 智谱旗舰 + 方舟
+    "unspecified-high": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "context_length": "high",
+      "fallback": [
+        "ark-coding-plan/kimi-k2-thinking",
+        "minimax-coding-plan/MiniMax-M2.1",
+        "deepseek/deepseek-v3-2"
+      ]
+    },
+    // 写作 - 方舟 + MiniMax
+    "writing": {
+      "model": "ark-coding-plan/doubao-seed-code",
+      "context_length": "high",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    // 深度分析 - 方舟 Kimi 思考 + MiniMax 推理
+    "deep": {
+      "model": "ark-coding-plan/kimi-k2-thinking",
+      "context_length": "max",
+      "fallback": [
+        "minimax-coding-plan/MiniMax-M2.1",
+        "zhipuai-coding-plan/glm-4.7",
+        "deepseek/deepseek-v3-2"
+      ]
+    }
+  },
+  "background_task": {
+    "defaultConcurrency": 5,
+    "staleTimeoutMs": 300000,
+    "providerConcurrency": {
+      "ark-coding-plan": 25,
+      "zhipuai-coding-plan": 10,
+      "minimax-coding-plan": 10,
+      "github-copilot": 5,
+      "deepseek": 3,
+      "siliconflow": 3,
+      "openrouter": 3
+    },
+    "modelConcurrency": {
+      "ark-coding-plan/doubao-seed-code": 15,
+      "ark-coding-plan/kimi-k2-thinking": 8,
+      "ark-coding-plan/ark-code-latest": 10,
+      "zhipuai-coding-plan/glm-4.7": 6,
+      "zhipuai-coding-plan/glm-4.5-air": 8,
+      "minimax-coding-plan/MiniMax-M2.1": 6,
+      "minimax-coding-plan/MiniMax-M2.1-lightning": 8,
+      "github-copilot/gpt-4o": 5,
+      "deepseek/deepseek-v3-2": 3,
+      "siliconflow/deepseek-v3": 3,
+      "openrouter/deepseek/deepseek-chat-v3": 3
+    }
+  },
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true
+  },
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  "tmux": {
+    "enabled": true,
+    "min_width": 200
+  },
+  "experimental": {
+    "truncate_all": true
+  },
+  "disabled_mcps": [],
+  "disabled_hooks": []
+}
