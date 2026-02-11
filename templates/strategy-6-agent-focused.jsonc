@@ -48,8 +48,12 @@
       "temperature": 0.2
     },
     "multimodal-looker": {
-      "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.2
+      "model": "google/gemini-3-pro",
+      "fallback": "google/gemini-3-flash",
+      "fallbackReason": "极致稳定 - Gemini Flash 3 多模态互备",
+      "variant": "high",
+      "temperature": 0.3,
+      "maxTokens": 4000
     },
     "metis": {
       "model": "zhipuai-coding-plan/glm-4.7",
