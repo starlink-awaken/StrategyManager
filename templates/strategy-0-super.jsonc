@@ -241,7 +241,7 @@
       "google": 5,
       "zhipuai-coding-plan": 15,
       "github-copilot": 2,
-      "ark": 8
+      "ark-coding-plan": 8
     },
     // 模型级别并发限制（优先级更高）
     "modelConcurrency": {

@@ -187,7 +187,7 @@
       "openai": 3,
       "google": 5,
       "zhipuai-coding-plan": 25,
-      "ark": 10,
+      "ark-coding-plan": 10,
       "github-copilot": 6
     },
     "modelConcurrency": {
