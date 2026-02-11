@@ -1,9 +1,7 @@
 {
-  "active_plan": "/Volumes/Model/Workspace/Skills/local/StrategyManager/.sisyphus/plans/strategy-upgrade-all.md",
-  "started_at": "2026-02-09T15:38:22.681Z",
-  "session_ids": [
-    "ses_3bd07216effeP7df37WD0qEHcV"
+  "active_plan": null,
+  "completed_plans": [
+    "strategy-template-fixes.md"
   ],
-  "plan_name": "strategy-upgrade-all",
-  "agent": "atlas"
+  "last_updated": "2026-02-11T00:00:00Z"
 }
