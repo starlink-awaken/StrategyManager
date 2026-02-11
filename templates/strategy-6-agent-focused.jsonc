@@ -7,7 +7,7 @@
     "cost_level": "medium-high",
     "use_case": "智能体密集型任务:多agent协作、代码生成、架构决策",
     "optimization": "智能体专用: GPT-5.3-Codex/Mini 混合,GLM-4.7 大量兜底",
-    "monthly_cost": "¥800-1200",
+    "monthly_cost": "¥100-300",
     "scene_coverage": 75
   },
   "agents": {
@@ -40,7 +40,7 @@
       "temperature": 0.3
     },
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "minimax-coding-plan/MiniMax-M2.1",
       "temperature": 0.2
     },
     "explore": {
@@ -115,6 +115,33 @@
       }
     }
   },
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true
+  },
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40
+  },
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+    "dynamic_context_pruning": {
+      "enabled": false
+    }
+  },
+  "disabled_mcps": [],
+
   "background_task": {
     "defaultConcurrency": 10,
     "staleTimeoutMs": 300000,

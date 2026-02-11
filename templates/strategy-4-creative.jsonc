@@ -59,6 +59,7 @@
     },
     "hephaestus": {
       "model": "deepseek/deepseek-v3-2",
+      "fallback": "github-copilot/gpt-4o",
       "temperature": 0.75,
       "maxTokens": 8000,
       "description": "长文本生成：成本友好的大容量输出"
@@ -85,6 +86,7 @@
     },
     "metis": {
       "model": "anthropic/claude-sonnet-4-5",
+      "fallback": "google/gemini-3-pro",
       "temperature": 0.6,
       "maxTokens": 4000,
       "description": "策略分析：内容规划和受众定位"

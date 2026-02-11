@@ -96,6 +96,8 @@
     // 配置：经济型，用于辅助任务
     "explore": {
       "model": "anthropic/claude-haiku-4-5",
+      "fallback": "google/gemini-3-pro",
+      
       "temperature": 0.2,
       "maxTokens": 2000
     },

@@ -28,7 +28,6 @@
     // sisyphus - 主执行者，高频任务，方舟主力（6000/5h 额度最高）
     "sisyphus": {
       "model": "ark-coding-plan/doubao-seed-code",
-      "context_length": "high",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7",
         "minimax-coding-plan/MiniMax-M2.1",
@@ -38,7 +37,6 @@
     // prometheus - 规划推理，需要强思考能力
     "prometheus": {
       "model": "ark-coding-plan/kimi-k2-thinking",
-      "context_length": "max",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7",
         "minimax-coding-plan/MiniMax-M2.1",
@@ -48,7 +46,6 @@
     // oracle - 顾问角色，需要多样化视角
     "oracle": {
       "model": "minimax-coding-plan/MiniMax-M2.1",
-      "context_length": "high",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7",
         "ark-coding-plan/doubao-seed-code",
@@ -58,7 +55,6 @@
     // hephaestus - 构建工具，高频工作，方舟主力
     "hephaestus": {
       "model": "ark-coding-plan/doubao-seed-code",
-      "context_length": "medium",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1-lightning",
         "zhipuai-coding-plan/glm-4.5-air",
@@ -68,7 +64,6 @@
     // librarian - 文档检索，快速响应
     "librarian": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
-      "context_length": "medium",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1-lightning",
         "github-copilot/gpt-4o"
@@ -77,7 +72,6 @@
     // explore - 代码探索，快速响应
     "explore": {
       "model": "minimax-coding-plan/MiniMax-M2.1-lightning",
-      "context_length": "medium",
       "fallback": [
         "zhipuai-coding-plan/glm-4.5-air",
         "github-copilot/gpt-4o"
@@ -86,7 +80,6 @@
     // multimodal - 多模态处理
     "multimodal-looker": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "context_length": "high",
       "fallback": [
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
@@ -95,7 +88,6 @@
     // metis - 元分析
     "metis": {
       "model": "ark-coding-plan/ark-code-latest",
-      "context_length": "medium",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7",
         "github-copilot/gpt-4o"
@@ -104,7 +96,6 @@
     // momus - 代码审查
     "momus": {
       "model": "minimax-coding-plan/MiniMax-M2.1",
-      "context_length": "high",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7",
         "ark-coding-plan/doubao-seed-code",
@@ -114,7 +105,6 @@
     // atlas - 快速探索，轻量任务
     "atlas": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
-      "context_length": "medium",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1-lightning",
         "ark-coding-plan/doubao-seed-code",
@@ -126,7 +116,6 @@
     // 视觉工程 - 方舟主力 + 智谱兜底
     "visual-engineering": {
       "model": "ark-coding-plan/doubao-seed-code",
-      "context_length": "high",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7",
         "github-copilot/gpt-4o"
@@ -135,7 +124,6 @@
     // 超级推理 - 方舟 Kimi 思考 + MiniMax 推理
     "ultrabrain": {
       "model": "ark-coding-plan/kimi-k2-thinking",
-      "context_length": "max",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1",
         "zhipuai-coding-plan/glm-4.7",
@@ -145,7 +133,6 @@
     // 创意 - MiniMax + 方舟
     "artistry": {
       "model": "minimax-coding-plan/MiniMax-M2.1",
-      "context_length": "high",
       "fallback": [
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
@@ -154,7 +141,6 @@
     // 快速响应 - 智谱 Air 极速
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
-      "context_length": "low",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1-lightning",
         "github-copilot/gpt-4o"
@@ -163,7 +149,6 @@
     // 通用低优先级 - 智谱 Air
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
-      "context_length": "low",
       "fallback": [
         "ark-coding-plan/ark-code-latest",
         "github-copilot/gpt-4o"
@@ -172,7 +157,6 @@
     // 通用高优先级 - 智谱旗舰 + 方舟
     "unspecified-high": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "context_length": "high",
       "fallback": [
         "ark-coding-plan/kimi-k2-thinking",
         "minimax-coding-plan/MiniMax-M2.1",
@@ -182,7 +166,6 @@
     // 写作 - 方舟 + MiniMax
     "writing": {
       "model": "ark-coding-plan/doubao-seed-code",
-      "context_length": "high",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1",
         "github-copilot/gpt-4o"
@@ -191,7 +174,6 @@
     // 深度分析 - 方舟 Kimi 思考 + MiniMax 推理
     "deep": {
       "model": "ark-coding-plan/kimi-k2-thinking",
-      "context_length": "max",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.1",
         "zhipuai-coding-plan/glm-4.7",
