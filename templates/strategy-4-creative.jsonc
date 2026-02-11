@@ -113,7 +113,7 @@
       "model": "google/gemini-3-pro",
       "variant": "high",
       "temperature": 0.5,
-      "maxTokens": 100000,
+      "maxTokens": 20000,
       "description": "复杂内容策略规划"
     },
     "artistry": {

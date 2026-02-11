@@ -153,10 +153,6 @@
     },
     "unspecified-high": {
       "model": "github-copilot/claude-sonnet-4.5",
-      "thinking": {
-        "type": "enabled",
-        "budgetTokens": 50000
-      },
       "temperature": 0.3,
       "maxTokens": 5000,
       "description": "复杂功能实现、架构设计"
@@ -201,9 +197,7 @@
       "openai/gpt-5.3-codex": 2,
       "zhipuai-coding-plan/glm-4.7": 30,
       "github-copilot/claude-opus-4.6": 2,
-      "github-copilot/claude-sonnet-4.5": 4,
-      "github-copilot/gpt-5.2-codex": 4,
-      "github-copilot/gpt-4o": 10
+      "github-copilot/claude-sonnet-4.5": 4,      "github-copilot/gpt-4o": 10
     }
   },
   "sisyphus_agent": {
