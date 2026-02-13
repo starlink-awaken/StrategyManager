@@ -65,13 +65,13 @@
 - `templates/strategy-7-china-first.jsonc` - GLM + Minimax 升级
 
 ### Definition of Done
-- [ ] 所有 `glm-4.7` 替换为 `glm-5`
-- [ ] 所有 `MiniMax-M2.1` 替换为 `MiniMax-M2.5`
-- [ ] 所有 `MiniMax-M2.1-lightning` 替换为 `MiniMax-M2.5-lightning`
-- [ ] `glm-4.5-air` 保持不变
-- [ ] 所有策略文件通过 `validate` 命令
-- [ ] 现有测试套件通过
-- [ ] 策略可正常加载（`list` 命令）
+- [x] 所有 `glm-4.7` 替换为 `glm-5`
+- [x] 所有 `MiniMax-M2.1` 替换为 `MiniMax-M2.5`
+- [x] 所有 `MiniMax-M2.1-lightning` 替换为 `MiniMax-M2.5-lightning`
+- [x] `glm-4.5-air` 保持不变
+- [x] 所有策略文件通过 `validate` 命令
+- [x] 现有测试套件通过
+- [x] 策略可正常加载（`list` 命令）
 
 ### Must Have
 - 所有 GLM 和 Minimax 模型名称准确更新
@@ -572,7 +572,7 @@ Parallel Speedup: ~70% faster than sequential
 
 ---
 
-- [ ] 11. Phase 3: 全量验证
+- [x] 11. Phase 3: 全量验证
 
   **What to do**:
   - 运行完整的验证套件
@@ -697,12 +697,12 @@ bun run Tools/ManageStrategies.ts list
 ```
 
 ### Final Checklist
-- [ ] 所有 "Must Have" 存在（模型升级完成）
-- [ ] 所有 "Must NOT Have" 缺失（无范围蔓延）
-- [ ] 所有测试通过
-- [ ] 所有策略验证通过
-- [ ] 无旧模型名称残留
-- [ ] `glm-4.5-air` 已保留
-- [ ] Deprecated 文件未修改
-- [ ] 所有版本号已递增
-- [ ] 所有日期已更新
+- [x] 所有 "Must Have" 存在（模型升级完成）
+- [x] 所有 "Must NOT Have" 缺失（无范围蔓延）
+- [x] 所有测试通过
+- [x] 所有策略验证通过
+- [x] 无旧模型名称残留
+- [x] `glm-4.5-air` 已保留
+- [x] Deprecated 文件未修改
+- [x] 所有版本号已递增
+- [x] 所有日期已更新

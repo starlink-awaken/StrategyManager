@@ -58,13 +58,13 @@
       "model": "ark-coding-plan/doubao-seed-code",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.5-lightning",
-        "zhipuai-coding-plan/glm-4.5-air",
+        "zhipuai-coding-plan/glm-4.7-flash",
         "github-copilot/gpt-4o"
       ]
     },
     // librarian - 文档检索，快速响应
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "model": "zhipuai-coding-plan/glm-4.7-flash",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.5-lightning",
         "github-copilot/gpt-4o"
@@ -74,7 +74,7 @@
     "explore": {
       "model": "minimax-coding-plan/MiniMax-M2.5-lightning",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.5-air",
+        "zhipuai-coding-plan/glm-4.7-flash",
         "github-copilot/gpt-4o"
       ]
     },
@@ -105,7 +105,7 @@
     },
     // atlas - 快速探索，轻量任务
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "model": "zhipuai-coding-plan/glm-4.7-flash",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.5-lightning",
         "ark-coding-plan/doubao-seed-code",
@@ -141,7 +141,7 @@
     },
     // 快速响应 - 智谱 Air 极速
     "quick": {
-      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "model": "zhipuai-coding-plan/glm-4.7-flash",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.5-lightning",
         "github-copilot/gpt-4o"
@@ -149,7 +149,7 @@
     },
     // 通用低优先级 - 智谱 Air
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "model": "zhipuai-coding-plan/glm-4.7-flash",
       "fallback": [
         "ark-coding-plan/ark-code-latest",
         "github-copilot/gpt-4o"
@@ -199,7 +199,7 @@
       "ark-coding-plan/kimi-k2-thinking": 8,
       "ark-coding-plan/ark-code-latest": 10,
       "zhipuai-coding-plan/glm-5": 6,
-      "zhipuai-coding-plan/glm-4.5-air": 8,
+      "zhipuai-coding-plan/glm-4.7-flash": 8,
       "minimax-coding-plan/MiniMax-M2.5": 6,
       "minimax-coding-plan/MiniMax-M2.5-lightning": 8,
       "github-copilot/gpt-4o": 5,
