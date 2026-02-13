@@ -12,7 +12,7 @@
     "description": "国内 AI 服务优先策略，最大化利用方舟/智谱/MiniMax 订阅，低延迟直连，Copilot 作为国际兜底。Zero-premium China-first strategy: all Copilot fallbacks use 0x models",
     "author": "strategy-manager",
     "updated": "2026-02-13",
-    "cost_tier": "low",
+    "cost_level": "low",
     "priority": "china-latency",
     "resources_used": [
       "方舟 CodingPlan Pro (季度订阅)",

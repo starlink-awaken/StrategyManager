@@ -490,7 +490,7 @@ export function getCurrentStrategy(): StrategyMetadata | null {
       return {
         name,
         filePath: target,
-        description: config.description || "无描述",
+        description: config.metadata?.description || config.description || "无描述",
         costLevel: config.metadata?.cost_level || "unknown",
         version: config.metadata?.version,
         isCurrent: true,
@@ -662,7 +662,7 @@ export function listStrategiesWithOptions(options?: {
         strategies.push({
           name,
           filePath,
-          description: config.description || "无描述",
+          description: config.metadata?.description || config.description || "无描述",
           costLevel: config.metadata?.cost_level || "unknown",
           version: config.metadata?.version,
           isCurrent:
