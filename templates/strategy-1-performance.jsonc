@@ -29,7 +29,8 @@
   "agents": {
     // 主编排器 - Claude sonnet 4.5 (Github copilot)
     "sisyphus": {
-      "model": "github-copilot/claude-sonnet-4.5","fallback": "minimax-coding-plan/MiniMax-M2.5",
+      "model": "github-copilot/claude-sonnet-4.5",
+      "fallback": "minimax-coding-plan/MiniMax-M2.5",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -39,7 +40,8 @@
     },
     // 规划器 - Claude Opus 4.5 (Gemini antigravity, Thinking 模式)
     "prometheus": {
-      "model": "google/antigravity-claude-opus-4-5-thinking","fallback": "ark-coding-plan/kimi-k2-thinking",
+      "model": "google/antigravity-claude-opus-4-5-thinking",
+      "fallback": "ark-coding-plan/kimi-k2-thinking",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -49,7 +51,7 @@
     },
     // 架构/调试 - GPT-4.1 (ChatGPT Plus / Github Copilot Premium)
     "oracle": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
       "reasoningEffort": "high",
@@ -57,22 +59,26 @@
     },
     // 文档搜索 - Claude Sonnet 4.5 (Claude Pro)
     "librarian": {
-      "model": "anthropic/claude-sonnet-4-5","fallback": "minimax-coding-plan/MiniMax-M2.5",
+      "model": "anthropic/claude-sonnet-4-5",
+      "fallback": "minimax-coding-plan/MiniMax-M2.5",
       "temperature": 0.1
     },
     // 快速探索 - GLM 5 (ZhiPuAI Max，大用量)
     "explore": {
-      "model": "zhipuai-coding-plan/glm-5","fallback": "github-copilot/gpt-4o",
+      "model": "zhipuai-coding-plan/glm-5",
+      "fallback": "github-copilot/gpt-4o",
       "temperature": 0.2
     },
     // 多模态 - Gemini 3 Pro (Gemini Pro，多模态能力强)
     "multimodal-looker": {
-      "model": "google/gemini-3-pro","fallback": "google/gemini-3-flash",
+      "model": "google/gemini-3-pro",
+      "fallback": "google/gemini-3-flash",
       "variant": "high"
     },
     // 规划顾问 - Claude Sonnet 4.5 Thinking (github-copilot)
     "metis": {
-      "model": "github-copilot/claude-sonnet-4.5","fallback": "ark-coding-plan/doubao-seed-code",
+      "model": "github-copilot/claude-sonnet-4.5",
+      "fallback": "ark-coding-plan/doubao-seed-code",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 100000
@@ -80,7 +86,7 @@
     },
     // 规划审查 - GPT-5.2 (OpenAI Plus)
     "momus": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
       "variant": "medium",
@@ -88,7 +94,7 @@
     },
     // 深度工作者 - GPT-5 mini (OpenAI Plus)
     "hephaestus": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
       "reasoningEffort": "high",
@@ -96,7 +102,8 @@
     },
     // 深度思考 - GLM 5 (ZhiPuAI Max)
     "atlas": {
-      "model": "zhipuai/glm-5","fallback": "minimax-coding-plan/MiniMax-M2.5",
+      "model": "zhipuai-coding-plan/glm-5",
+      "fallback": "minimax-coding-plan/MiniMax-M2.5",
       "temperature": 0.2
     }
   },
@@ -110,7 +117,7 @@
     },
     // 深度逻辑推理 - GPT-5.2 Codex XHigh (ChatGPT Plus，顶级推理)
     "ultrabrain": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
       "variant": "xhigh",
