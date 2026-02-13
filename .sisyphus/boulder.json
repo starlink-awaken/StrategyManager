@@ -1,7 +1,10 @@
 {
-  "active_plan": null,
+  "active_plan": "/Users/xiamingxing/Workspace/Skills/StrategyManager/.sisyphus/plans/strategy-model-upgrade.md",
+  "started_at": "2026-02-13T02:13:12.727Z",
+  "session_ids": ["ses_3ab4d7c98ffeFDNp3laN4iyJht"],
+  "plan_name": "strategy-model-upgrade",
   "completed_plans": [
     "strategy-template-fixes.md"
   ],
-  "last_updated": "2026-02-11T00:00:00Z"
+  "last_updated": "2026-02-13T02:13:12.727Z"
 }

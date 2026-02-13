@@ -2,14 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "平衡型（直连优先）：关键推理/审查直连 Anthropic/OpenAI，Copilot 仅用于免费与高频通道",
   "metadata": {
-    "version": "2.2.0-direct",
-    "updated": "2026-02-09",
+    "version": "2.2.1-direct",
+    "updated": "2026-02-13",
     "cost_level": "low",
     "use_case": "默认日常策略（直连 API 优先，适合生产环境）",
     "optimization": "直连高质量 + Copilot免费模型兜底",
     "monthly_cost": "¥400-700",
     "resources_used": [
-      "ZhiPu CodingPlan Max (60倍)",
+      "ZhiPu CodingPlan Max (60倍) - GLM-5",
       "方舟 CodingPlan Pro (20倍)",
       "Anthropic Pro（主力）",
       "Google Pro",
@@ -24,7 +24,7 @@
       "健康管理": "deep (Anthropic Opus)",
       "AI项目探索": "visual-engineering + ultrabrain",
       "日常工具": "quick (免费)",
-      "笔记管理": "unspecified-low (GLM高并发)",
+      "笔记管理": "unspecified-low (GLM-5高并发)",
       "娱乐": "quick (免费)",
       "常规写作": "writing (Anthropic Sonnet)",
       "多媒体创作": "artistry (Anthropic Sonnet)",
@@ -36,10 +36,10 @@
   // ================================================
   "agents": {
     "sisyphus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 4000,
-      "description": "用 ZhiPu 60倍额度作为主编排器"
+      "description": "用 ZhiPu GLM-5 60倍额度作为主编排器"
     },
     "prometheus": {
       "model": "anthropic/claude-sonnet-4-5",
@@ -61,13 +61,13 @@
       "description": "关键架构决策（直连 OpenAI）"
     },
     "hephaestus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "深度工作用大额度"
     },
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.1,
       "maxTokens": 2500,
       "description": "快速查询用大额度"
@@ -95,13 +95,13 @@
       "description": "规划前分析"
     },
     "momus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.2,
       "maxTokens": 3000,
       "description": "规划审查"
     },
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.2,
       "maxTokens": 4000,
       "description": "执行器用大额度"
@@ -144,7 +144,7 @@
       "description": "公文处理、日常工具、娱乐 - 免费快速模型"
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 2500,
       "description": "文件编辑、代码清理"
@@ -197,7 +197,7 @@
       "google/gemini-3-pro": 3,
       "google/gemini-3-flash": 10,
       "openai/gpt-5.3-codex": 2,
-      "zhipuai-coding-plan/glm-4.7": 30,
+      "zhipuai-coding-plan/glm-5": 30,
       "github-copilot/gpt-4o": 10
     }
   },

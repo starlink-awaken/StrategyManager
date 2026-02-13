@@ -2,8 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "经济型：最大化利用免费和额度资源，极低月度成本",
   "metadata": {
-    "version": "1.1.0",
-    "updated": "2026-02-10",
+    "version": "1.1.1",
+    "updated": "2026-02-13",
     "scene_coverage": "70%",
     "cost_level": "ultra-low",
     "use_case": "探索、学习、快速迭代、成本压力大",
@@ -36,10 +36,10 @@
       "model": "copilot/gpt-5-mini",
       "temperature": 0.2
     },
-    // 架构/调试 - GLM 4.7 (ZhiPuAI Max，大用量兜底)
+    // 架构/调试 - GLM-5 (ZhiPuAI Max，大用量兜底)
     // 仅不可替代场景才调用顶级模型（每日配额 5 次）
     "oracle": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3
     },
     // 文档搜索 - GPT-5-mini (Github Copilot Free)
@@ -101,9 +101,9 @@
       "model": "github-copilot/gpt-4o",
       "temperature": 0.3
     },
-    // 通用高难度 - GLM 4.7 (ZhiPuAI Max)
+    // 通用高难度 - GLM-5 (ZhiPuAI Max)
     "unspecified-high": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3
     },
     // 文档写作 - Gemini 3 Flash (Gemini Pro)
@@ -156,7 +156,7 @@
     "modelConcurrency": {
       "github-copilot/gpt-4o": 25, // GPT-4o 允许 25 并发（主力）
       "github-copilot/gpt-5-mini": 35, // GPT-5-mini 允许 35 并发（主力）
-      "zhipuai-coding-plan/glm-4.7": 18, // GLM 4.7 允许 18 并发
+      "zhipuai-coding-plan/glm-5": 18, // GLM-5 允许 18 并发
       "google/gemini-3-flash": 15, // Gemini Flash 允许 15 并发
       "google/gemini-3-flash": 18, // Gemini 3 Flash 允许 18 并发
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发

@@ -2,8 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "平衡型（Premium安全版）：近零Premium消耗，优先使用免费和低成本Copilot模型",
   "metadata": {
-    "version": "3.0.0",
-    "updated": "2026-02-10",
+    "version": "3.0.1",
+    "updated": "2026-02-13",
     "cost_level": "very-low",
     "use_case": "Premium额度紧张时的保守策略（<50 premium/month）",
     "optimization": "所有Copilot模型限制为0x/0.33x multiplier，月消耗<50 premium requests",
@@ -36,7 +36,7 @@
   // ================================================
   "agents": {
     "sisyphus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "用 ZhiPu 60倍额度作为主编排器"
@@ -61,13 +61,13 @@
       "description": "关键架构决策（Copilot Codex）"
     },
     "hephaestus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "深度工作用大额度"
     },
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.1,
       "maxTokens": 2500,
       "description": "快速查询用大额度"
@@ -97,13 +97,13 @@
       "description": "规划前分析（Premium安全版：Haiku 0.33x）"
     },
     "momus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.2,
       "maxTokens": 3000,
       "description": "规划审查"
     },
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.2,
       "maxTokens": 4000,
       "description": "执行器用大额度"
@@ -146,7 +146,7 @@
       "description": "公文处理、日常工具、娱乐 - 免费快速模型"
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 2500,
       "description": "文件编辑、代码清理"
@@ -199,7 +199,7 @@
       "google/gemini-3-pro": 3,
       "google/gemini-3-flash": 10,
       "openai/gpt-5.3-codex": 2,
-      "zhipuai-coding-plan/glm-4.7": 30,
+      "zhipuai-coding-plan/glm-5": 30,
       "github-copilot/claude-haiku-4.5": 8,
       "github-copilot/gpt-5.2-codex": 4,
       "github-copilot/gpt-4o": 15

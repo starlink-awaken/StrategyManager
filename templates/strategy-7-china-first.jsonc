@@ -8,15 +8,16 @@
   // ============================================================
   "metadata": {
     "name": "国产优先 (China-First)",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "国内 AI 服务优先策略，最大化利用方舟/智谱/MiniMax 订阅，低延迟直连，Copilot 作为国际兜底。Zero-premium China-first strategy: all Copilot fallbacks use 0x models",
     "author": "strategy-manager",
+    "updated": "2026-02-13",
     "cost_tier": "low",
     "priority": "china-latency",
     "resources_used": [
       "方舟 CodingPlan Pro (季度订阅)",
-      "智谱 Coding Plan Pro (年订阅)",
-      "MiniMax Coding Plan Pro (年订阅)",
+      "智谱 Coding Plan Pro (年订阅, GLM-5 + GLM-4.5-air)",
+      "MiniMax Coding Plan Pro (年订阅, M2.5 + M2.5-lightning)",
       "GitHub Copilot Pro+ (年订阅, 兜底)",
       "DeepSeek API ¥300 (最终兜底)",
       "硅基流动 ¥200 (最终兜底)",
@@ -29,8 +30,8 @@
     "sisyphus": {
       "model": "ark-coding-plan/doubao-seed-code",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
-        "minimax-coding-plan/MiniMax-M2.1",
+        "zhipuai-coding-plan/glm-5",
+        "minimax-coding-plan/MiniMax-M2.5",
         "github-copilot/gpt-4o"
       ]
     },
@@ -38,16 +39,16 @@
     "prometheus": {
       "model": "ark-coding-plan/kimi-k2-thinking",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
-        "minimax-coding-plan/MiniMax-M2.1",
+        "zhipuai-coding-plan/glm-5",
+        "minimax-coding-plan/MiniMax-M2.5",
         "github-copilot/gpt-4o"
       ]
     },
     // oracle - 顾问角色，需要多样化视角
     "oracle": {
-      "model": "minimax-coding-plan/MiniMax-M2.1",
+      "model": "minimax-coding-plan/MiniMax-M2.5",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
+        "zhipuai-coding-plan/glm-5",
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
       ]
@@ -56,7 +57,7 @@
     "hephaestus": {
       "model": "ark-coding-plan/doubao-seed-code",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "minimax-coding-plan/MiniMax-M2.5-lightning",
         "zhipuai-coding-plan/glm-4.5-air",
         "github-copilot/gpt-4o"
       ]
@@ -65,13 +66,13 @@
     "librarian": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "minimax-coding-plan/MiniMax-M2.5-lightning",
         "github-copilot/gpt-4o"
       ]
     },
     // explore - 代码探索，快速响应
     "explore": {
-      "model": "minimax-coding-plan/MiniMax-M2.1-lightning",
+      "model": "minimax-coding-plan/MiniMax-M2.5-lightning",
       "fallback": [
         "zhipuai-coding-plan/glm-4.5-air",
         "github-copilot/gpt-4o"
@@ -79,7 +80,7 @@
     },
     // multimodal - 多模态处理
     "multimodal-looker": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "fallback": [
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
@@ -89,15 +90,15 @@
     "metis": {
       "model": "ark-coding-plan/ark-code-latest",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
+        "zhipuai-coding-plan/glm-5",
         "github-copilot/gpt-4o"
       ]
     },
     // momus - 代码审查
     "momus": {
-      "model": "minimax-coding-plan/MiniMax-M2.1",
+      "model": "minimax-coding-plan/MiniMax-M2.5",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
+        "zhipuai-coding-plan/glm-5",
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
       ]
@@ -106,7 +107,7 @@
     "atlas": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "minimax-coding-plan/MiniMax-M2.5-lightning",
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
       ]
@@ -117,7 +118,7 @@
     "visual-engineering": {
       "model": "ark-coding-plan/doubao-seed-code",
       "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
+        "zhipuai-coding-plan/glm-5",
         "github-copilot/gpt-4o"
       ]
     },
@@ -125,14 +126,14 @@
     "ultrabrain": {
       "model": "ark-coding-plan/kimi-k2-thinking",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1",
-        "zhipuai-coding-plan/glm-4.7",
+        "minimax-coding-plan/MiniMax-M2.5",
+        "zhipuai-coding-plan/glm-5",
         "deepseek/deepseek-v3-2"
       ]
     },
     // 创意 - MiniMax + 方舟
     "artistry": {
-      "model": "minimax-coding-plan/MiniMax-M2.1",
+      "model": "minimax-coding-plan/MiniMax-M2.5",
       "fallback": [
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
@@ -142,7 +143,7 @@
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.5-air",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1-lightning",
+        "minimax-coding-plan/MiniMax-M2.5-lightning",
         "github-copilot/gpt-4o"
       ]
     },
@@ -156,10 +157,10 @@
     },
     // 通用高优先级 - 智谱旗舰 + 方舟
     "unspecified-high": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "fallback": [
         "ark-coding-plan/kimi-k2-thinking",
-        "minimax-coding-plan/MiniMax-M2.1",
+        "minimax-coding-plan/MiniMax-M2.5",
         "deepseek/deepseek-v3-2"
       ]
     },
@@ -167,7 +168,7 @@
     "writing": {
       "model": "ark-coding-plan/doubao-seed-code",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1",
+        "minimax-coding-plan/MiniMax-M2.5",
         "github-copilot/gpt-4o"
       ]
     },
@@ -175,8 +176,8 @@
     "deep": {
       "model": "ark-coding-plan/kimi-k2-thinking",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.1",
-        "zhipuai-coding-plan/glm-4.7",
+        "minimax-coding-plan/MiniMax-M2.5",
+        "zhipuai-coding-plan/glm-5",
         "deepseek/deepseek-v3-2"
       ]
     }
@@ -197,10 +198,10 @@
       "ark-coding-plan/doubao-seed-code": 15,
       "ark-coding-plan/kimi-k2-thinking": 8,
       "ark-coding-plan/ark-code-latest": 10,
-      "zhipuai-coding-plan/glm-4.7": 6,
+      "zhipuai-coding-plan/glm-5": 6,
       "zhipuai-coding-plan/glm-4.5-air": 8,
-      "minimax-coding-plan/MiniMax-M2.1": 6,
-      "minimax-coding-plan/MiniMax-M2.1-lightning": 8,
+      "minimax-coding-plan/MiniMax-M2.5": 6,
+      "minimax-coding-plan/MiniMax-M2.5-lightning": 8,
       "github-copilot/gpt-4o": 5,
       "deepseek/deepseek-v3-2": 3,
       "siliconflow/deepseek-v3": 3,

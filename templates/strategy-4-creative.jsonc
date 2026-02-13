@@ -2,9 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "创意写作专用：高温度配置激发创意，Claude + Gemini 组合，用于多媒体创作、个人写作、新媒体运营",
   "metadata": {
-    "version": "1.1.0",
+    "version": "1.1.1",
     "created": "2026-02-04",
-    "updated": "2026-02-08",
+    "updated": "2026-02-13",
     "cost_level": "medium",
     "use_case": "多媒体创作、个人写作发布、新媒体运营",
     "optimization": "高温度创意激发，流畅表达，风格多样性",
@@ -14,7 +14,7 @@
       "Anthropic Pro（审核/策略直连）",
       "Google Pro（创意 - Gemini Pro 多样性）",
       "DeepSeek 预算（长文本生成）",
-      "ZhiPu 额度（辅助查询）",
+      "ZhiPu 额度（GLM-5 辅助查询）",
       "GitHub Copilot Pro+（Sonnet + GPT-4o 免费模型）"
     ],
     "适用场景": [
@@ -65,7 +65,7 @@
       "description": "长文本生成：成本友好的大容量输出"
     },
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 3000,
       "description": "资料查询：快速检索和参考"
@@ -106,7 +106,7 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.3,
       "maxTokens": 3000,
       "description": "技术支持（如需代码）"
@@ -133,7 +133,7 @@
       "description": "快速草稿：免费模型 + 快速输出"
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "zhipuai-coding-plan/glm-5",
       "temperature": 0.4,
       "maxTokens": 3000,
       "description": "辅助整理和编辑"
@@ -174,7 +174,7 @@
       "anthropic/claude-sonnet-4-5": 4,
       "google/gemini-3-pro": 10,
       "deepseek/deepseek-v3-2": 20,
-      "zhipuai-coding-plan/glm-4.7": 25,
+      "zhipuai-coding-plan/glm-5": 25,
       "github-copilot/gpt-5-mini": 10,
       "github-copilot/claude-sonnet-4.5": 8,
       "github-copilot/gpt-4o": 10
