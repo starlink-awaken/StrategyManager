@@ -3,7 +3,7 @@
 ## 2026-02-13: strategy-2-balanced.jsonc Update (Pilot)
 
 ### Changes Made
-✅ Successfully upgraded all 7 occurrences of `zhipuai-coding-plan/glm-4.7` to `zhipuai-coding-plan/glm-5`:
+✅ Successfully upgraded all 7 occurrences of `zhipuai-coding-plan/glm-4.7` to `zhipuai-coding-plan/glm-4.7`:
 - Line 39: sisyphus agent model
 - Line 64: hephaestus agent model
 - Line 70: librarian agent model

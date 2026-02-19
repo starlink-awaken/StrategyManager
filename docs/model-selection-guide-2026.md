@@ -25,8 +25,8 @@
 
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
-| Oracle | `openai/gpt-5-mini` | `github-copilot/gpt-4o` | ¥280-490 |
-| Visual-engineering | `openai/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
+| Oracle | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | ¥280-490 |
+| Visual-engineering | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
 | Sisyphus | `zhipuai-coding-plan/glm-4.7` | - | 几乎免费 |
 
 **适用场景**:
@@ -76,9 +76,9 @@
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
 | Sisyphus | `zhipuai-coding-plan/glm-4.7` | - | ¥800-1200 |
-| Prometheus | `openai/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
+| Prometheus | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
 | Oracle | `openai/gpt-5.2-codex` | `github-copilot/gpt-4o` | (包含在内) |
-| Hephaestus | `openai/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
+| Hephaestus | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
 | 其他 agents | `zhipuai-coding-plan/glm-4.7` | - | (包含在内) |
 
 **适用场景**:
@@ -276,7 +276,7 @@
 
 | 渠道 | Model ID 格式 | 示例 | 功能差异 |
 |------|---------------|------|----------|
-| **直连 API** | `openai/{model-name}` | `openai/gpt-5-mini`<br>`openai/gpt-5.2-codex` | ✅ 完整功能<br>✅ 最新模型<br>✅ 无限流 |
+| **直连 API** | `openai/{model-name}` | `github-copilot/gpt-5-mini`<br>`openai/gpt-5.2-codex` | ✅ 完整功能<br>✅ 最新模型<br>✅ 无限流 |
 | **GitHub Copilot** | `github-copilot/{model-name}` | `github-copilot/gpt-5-mini`<br>`github-copilot/gpt-4o` (免费) | ⚠️ 可能限流<br>⚠️ 集成化<br>✅ 部分免费 |
 
 **注意事项**:
@@ -335,7 +335,7 @@
 ```jsonc
 {
   "oracle": {
-    "model": "openai/gpt-5-mini",
+    "model": "github-copilot/gpt-5-mini",
     "fallback": "github-copilot/gpt-4o",
     "fallbackReason": "成本优化 - GPT-4o 免费兜底"
   }
@@ -420,7 +420,7 @@ bun run Tools/ManageStrategies.ts switch strategy-2-balanced
 ```jsonc
 {
   "oracle": {
-    "model": "openai/gpt-5-mini",           // 主模型
+    "model": "github-copilot/gpt-5-mini",           // 主模型
     "fallback": "github-copilot/gpt-4o"    // 一级 Fallback（免费）
     // 未来支持: "secondaryFallback": "zhipuai-coding-plan/glm-4.7"
   }
@@ -432,7 +432,7 @@ bun run Tools/ManageStrategies.ts switch strategy-2-balanced
 ```jsonc
 // 日常开发 - 免费 Fallback
 "visual-engineering": {
-  "model": "openai/gpt-5-mini",
+  "model": "github-copilot/gpt-5-mini",
   "fallback": "github-copilot/gpt-4o"
 }
 

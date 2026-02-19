@@ -24,7 +24,7 @@ Task 0 (模型可用性验证) 无法完成,原因如下:
    - ❌ `github-copilot/grok-code-fast-1` - 不存在
    - ❌ `github-copilot/raptor-mini` - 不存在
    - ❌ `openai/gpt-5.1-codex-max` - 不存在
-   - ✅ `openai/gpt-5-mini` - **存在** (line 157)
+   - ✅ `github-copilot/gpt-5-mini` - **存在** (line 157)
    - ✅ `github-copilot/gpt-5-mini` - **存在** (line 167)
 
 4. **Missing Verification Method**
@@ -40,7 +40,7 @@ Task 0 (模型可用性验证) 无法完成,原因如下:
 
 **Workaround Decision:**
 - 调整 Task 1-3 的模型选择,只使用 knownModels 中的模型
-- 使用 `openai/gpt-5-mini` 和 `github-copilot/gpt-5-mini` (已知存在)
+- 使用 `github-copilot/gpt-5-mini` 和 `github-copilot/gpt-5-mini` (已知存在)
 - Task 0 标记为需用户手动处理
 
 **Action Required:**

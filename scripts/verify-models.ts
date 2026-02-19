@@ -67,7 +67,7 @@ const MODELS_TO_VERIFY: ModelToVerify[] = [
     description: '快速内联 - 轻量级推理',
   },
   {
-    id: 'openai/gpt-5-mini',
+    id: 'github-copilot/gpt-5-mini',
     provider: 'OpenAI',
     name: 'GPT-5 Mini',
     description: '快速深度推理 - 性价比高',
@@ -88,14 +88,14 @@ const FALLBACK_SUGGESTIONS: Record<string, string[]> = {
   ],
   'github-copilot/raptor-mini': [
     'github-copilot/gpt-5-mini', // GitHub Copilot 免费模型
-    'openai/gpt-5-mini',        // OpenAI Mini 版本
+    'github-copilot/gpt-5-mini',        // OpenAI Mini 版本
   ],
-  'openai/gpt-5-mini': [
+  'github-copilot/gpt-5-mini': [
     'github-copilot/gpt-5-mini', // GitHub Copilot 版本（免费）
     'openai/gpt-4.1',           // OpenAI 轻量级模型
   ],
   'openai/gpt-5.1-codex-max': [
-    'anthropic/claude-sonnet-4-5', // Anthropic 平衡模型
+    'anthropic/claude-sonnet-4-6', // Anthropic 平衡模型
     'openai/gpt-5.2',             // OpenAI 标准版本
   ],
 };

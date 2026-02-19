@@ -29,7 +29,7 @@
   "agents": {
     // 主编排器 - Claude sonnet 4.5 (Github copilot)
     "sisyphus": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "fallback": "minimax-coding-plan/MiniMax-M2.5",
       "variant": "max",
       "thinking": {
@@ -40,7 +40,7 @@
     },
     // 规划器 - Claude Opus 4.5 (Gemini antigravity, Thinking 模式)
     "prometheus": {
-      "model": "google/antigravity-claude-opus-4-5-thinking",
+      "model": "google/antigravity-claude-opus-4-6-thinking",
       "fallback": "ark-coding-plan/kimi-k2-thinking",
       "variant": "max",
       "thinking": {
@@ -59,7 +59,7 @@
     },
     // 文档搜索 - Claude Sonnet 4.5 (Claude Pro)
     "librarian": {
-      "model": "anthropic/claude-sonnet-4-5",
+      "model": "anthropic/claude-sonnet-4-6",
       "fallback": "minimax-coding-plan/MiniMax-M2.5",
       "temperature": 0.1
     },
@@ -77,7 +77,7 @@
     },
     // 规划顾问 - Claude Sonnet 4.5 Thinking (github-copilot)
     "metis": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "fallback": "ark-coding-plan/doubao-seed-code",
       "thinking": {
         "type": "enabled",
@@ -127,7 +127,7 @@
     // 创意任务 - Gemini 3 Pro Max (Gemini Pro，创意能力强)
     "artistry": {
       "model": "google/gemini-3-pro",
-      "fallback": "github-copilot/claude-sonnet-4.5",
+      "fallback": "github-copilot/claude-sonnet-4.6",
       "fallbackReason": "降级兜底到 Copilot Sonnet 4.5",
       "variant": "max",
       "temperature": 0.7
@@ -155,7 +155,7 @@
     },
     // 深度分析 - Claude Sonnet 4.5 Thinking (Anthropic Pro)
     "deep": {
-      "model": "anthropic/claude-sonnet-4-5",
+      "model": "anthropic/claude-sonnet-4-6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -179,9 +179,9 @@
     "modelConcurrency": {
       "anthropic/claude-opus-4-6": 2, // Opus 限制 2 并发（昂贵）
       "google/antigravity-claude-opus-4-6": 3, // Antigravity Opus 限制 3 并发
-      "anthropic/claude-sonnet-4-5": 3, // Sonnet 限制 3 并发
+      "anthropic/claude-sonnet-4-6": 3, // Sonnet 限制 3 并发
       "openai/gpt-5.3-codex": 2, // GPT-5.2 Codex 限制 2 并发
-      "github-copilot/claude-sonnet-4.5": 2, // claude-sonnet-4.5 限制 2 并发（Premium）
+      "github-copilot/claude-sonnet-4.6": 2, // claude-sonnet-4.6 限制 2 并发（Premium）
       "github-copilot/claude-opus-4.6": 2, // claude-opus-4.6 限制 2 并发（Premium）      "google/gemini-3-pro": 5, // Gemini 3 Pro 允许 5 并发
       "google/gemini-3-flash": 10, // Gemini 3 Flash 允许 10 并发
       "zhipuai-coding-plan/glm-5": 20 // GLM 5 允许 20 并发（大用量）

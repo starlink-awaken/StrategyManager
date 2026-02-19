@@ -36,13 +36,13 @@
   // ================================================
   "agents": {
     "sisyphus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "用 ZhiPu 60倍额度作为主编排器"
     },
     "prometheus": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -61,13 +61,13 @@
       "description": "关键架构决策（Copilot Codex）"
     },
     "hephaestus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "深度工作用大额度"
     },
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.1,
       "maxTokens": 2500,
       "description": "快速查询用大额度"
@@ -85,25 +85,25 @@
       "description": "多模态用 Flash"
     },
     "metis": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
       },
-      "fallback": "anthropic/claude-sonnet-4-5",
+      "fallback": "anthropic/claude-sonnet-4-6",
       "fallbackReason": "成本优化 - Sonnet 兜底 (thinking 50k)",
       "temperature": 0.2,
       "maxTokens": 3500,
       "description": "规划前分析（Copilot优先）"
     },
     "momus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.2,
       "maxTokens": 3000,
       "description": "规划审查"
     },
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.2,
       "maxTokens": 4000,
       "description": "执行器用大额度"
@@ -131,7 +131,7 @@
       "description": "复杂架构决策（Copilot Opus）"
     },
     "artistry": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "fallback": "google/gemini-3-flash",
       "fallbackReason": "成本优化 - Flash 快速兜底",
       "temperature": 0.7,
@@ -146,25 +146,25 @@
       "description": "公文处理、日常工具、娱乐 - 免费快速模型"
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3,
       "maxTokens": 2500,
       "description": "文件编辑、代码清理"
     },
     "unspecified-high": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "temperature": 0.3,
       "maxTokens": 5000,
       "description": "复杂功能实现、架构设计"
     },
     "writing": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "temperature": 0.6,
       "maxTokens": 4000,
       "description": "个人写作、新媒体、技术文章 - 专业文笔"
     },
     "deep": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -190,14 +190,14 @@
     },
     "modelConcurrency": {
       "anthropic/claude-opus-4-6": 1,
-      "anthropic/claude-sonnet-4-5": 2,
+      "anthropic/claude-sonnet-4-6": 2,
       "anthropic/claude-haiku-4-5": 4,
       "google/gemini-3-pro": 3,
       "google/gemini-3-flash": 10,
       "openai/gpt-5.3-codex": 2,
-      "zhipuai-coding-plan/glm-5": 30,
+      "zhipuai-coding-plan/glm-4.7": 30,
       "github-copilot/claude-opus-4.6": 2,
-      "github-copilot/claude-sonnet-4.5": 4,
+      "github-copilot/claude-sonnet-4.6": 4,
       "github-copilot/gpt-4o": 10
     }
   },

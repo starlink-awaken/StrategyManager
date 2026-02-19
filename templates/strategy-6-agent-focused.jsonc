@@ -12,7 +12,7 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -44,7 +44,7 @@
       "temperature": 0.2
     },
     "explore": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.2
     },
     "multimodal-looker": {
@@ -56,18 +56,18 @@
       "maxTokens": 4000
     },
     "metis": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 100000
       }
     },
     "momus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     }
   },
@@ -79,25 +79,25 @@
       "temperature": 0.4
     },
     "unspecified-high": {
-      "model": "anthropic/claude-sonnet-4.5",
+      "model": "anthropic/claude-sonnet-4.6",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
       "temperature": 0.3
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     "quick": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     "writing": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.5
     },
     "artistry": {
-      "model": "github-copilot/claude-sonnet-4.5",
+      "model": "github-copilot/claude-sonnet-4.6",
       "temperature": 0.7
     },
     "ultrabrain": {
@@ -107,7 +107,7 @@
       "temperature": 0.3
     },
     "deep": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.2,
       "thinking": {
         "type": "enabled",
@@ -153,7 +153,7 @@
     "modelConcurrency": {
       "openai/gpt-5.3-codex": 2,
       "github-copilot/gpt-5-mini": 5,
-      "zhipuai-coding-plan/glm-5": 20
+      "zhipuai-coding-plan/glm-4.7": 20
     }
   }
 }

@@ -79,7 +79,7 @@
 2. **验证的模型**：
    - `github-copilot/grok-code-fast-1` ✅ Available
    - `github-copilot/raptor-mini` ✅ Available
-   - `openai/gpt-5-mini` ✅ Available（已存在于 knownModels）
+   - `github-copilot/gpt-5-mini` ✅ Available（已存在于 knownModels）
    - `openai/gpt-5.1-codex-max` ✅ Available
 
 3. **Validator.ts 更新** (`Tools/Validator.ts`)

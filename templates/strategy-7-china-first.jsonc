@@ -30,7 +30,7 @@
     "sisyphus": {
       "model": "ark-coding-plan/doubao-seed-code",
       "fallback": [
-        "zhipuai-coding-plan/glm-5",
+        "zhipuai-coding-plan/glm-4.7",
         "minimax-coding-plan/MiniMax-M2.5",
         "github-copilot/gpt-4o"
       ]
@@ -39,7 +39,7 @@
     "prometheus": {
       "model": "ark-coding-plan/kimi-k2-thinking",
       "fallback": [
-        "zhipuai-coding-plan/glm-5",
+        "zhipuai-coding-plan/glm-4.7",
         "minimax-coding-plan/MiniMax-M2.5",
         "github-copilot/gpt-4o"
       ]
@@ -48,7 +48,7 @@
     "oracle": {
       "model": "minimax-coding-plan/MiniMax-M2.5",
       "fallback": [
-        "zhipuai-coding-plan/glm-5",
+        "zhipuai-coding-plan/glm-4.7",
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
       ]
@@ -73,32 +73,23 @@
     // explore - 代码探索，快速响应
     "explore": {
       "model": "minimax-coding-plan/MiniMax-M2.5-lightning",
-      "fallback": [
-        "zhipuai-coding-plan/glm-4.7-flash",
-        "github-copilot/gpt-4o"
-      ]
+      "fallback": ["zhipuai-coding-plan/glm-4.7-flash", "github-copilot/gpt-4o"]
     },
     // multimodal - 多模态处理
     "multimodal-looker": {
-      "model": "zhipuai-coding-plan/glm-5",
-      "fallback": [
-        "ark-coding-plan/doubao-seed-code",
-        "github-copilot/gpt-4o"
-      ]
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "fallback": ["ark-coding-plan/doubao-seed-code", "github-copilot/gpt-4o"]
     },
     // metis - 元分析
     "metis": {
       "model": "ark-coding-plan/ark-code-latest",
-      "fallback": [
-        "zhipuai-coding-plan/glm-5",
-        "github-copilot/gpt-4o"
-      ]
+      "fallback": ["zhipuai-coding-plan/glm-4.7", "github-copilot/gpt-4o"]
     },
     // momus - 代码审查
     "momus": {
       "model": "minimax-coding-plan/MiniMax-M2.5",
       "fallback": [
-        "zhipuai-coding-plan/glm-5",
+        "zhipuai-coding-plan/glm-4.7",
         "ark-coding-plan/doubao-seed-code",
         "github-copilot/gpt-4o"
       ]
@@ -117,27 +108,21 @@
     // 视觉工程 - 方舟主力 + 智谱兜底
     "visual-engineering": {
       "model": "ark-coding-plan/doubao-seed-code",
-      "fallback": [
-        "zhipuai-coding-plan/glm-5",
-        "github-copilot/gpt-4o"
-      ]
+      "fallback": ["zhipuai-coding-plan/glm-4.7", "github-copilot/gpt-4o"]
     },
     // 超级推理 - 方舟 Kimi 思考 + MiniMax 推理
     "ultrabrain": {
       "model": "ark-coding-plan/kimi-k2-thinking",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.5",
-        "zhipuai-coding-plan/glm-5",
+        "zhipuai-coding-plan/glm-4.7",
         "deepseek/deepseek-v3-2"
       ]
     },
     // 创意 - MiniMax + 方舟
     "artistry": {
       "model": "minimax-coding-plan/MiniMax-M2.5",
-      "fallback": [
-        "ark-coding-plan/doubao-seed-code",
-        "github-copilot/gpt-4o"
-      ]
+      "fallback": ["ark-coding-plan/doubao-seed-code", "github-copilot/gpt-4o"]
     },
     // 快速响应 - 智谱 Air 极速
     "quick": {
@@ -150,14 +135,11 @@
     // 通用低优先级 - 智谱 Air
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7-flash",
-      "fallback": [
-        "ark-coding-plan/ark-code-latest",
-        "github-copilot/gpt-4o"
-      ]
+      "fallback": ["ark-coding-plan/ark-code-latest", "github-copilot/gpt-4o"]
     },
     // 通用高优先级 - 智谱旗舰 + 方舟
     "unspecified-high": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "fallback": [
         "ark-coding-plan/kimi-k2-thinking",
         "minimax-coding-plan/MiniMax-M2.5",
@@ -167,17 +149,14 @@
     // 写作 - 方舟 + MiniMax
     "writing": {
       "model": "ark-coding-plan/doubao-seed-code",
-      "fallback": [
-        "minimax-coding-plan/MiniMax-M2.5",
-        "github-copilot/gpt-4o"
-      ]
+      "fallback": ["minimax-coding-plan/MiniMax-M2.5", "github-copilot/gpt-4o"]
     },
     // 深度分析 - 方舟 Kimi 思考 + MiniMax 推理
     "deep": {
       "model": "ark-coding-plan/kimi-k2-thinking",
       "fallback": [
         "minimax-coding-plan/MiniMax-M2.5",
-        "zhipuai-coding-plan/glm-5",
+        "zhipuai-coding-plan/glm-4.7",
         "deepseek/deepseek-v3-2"
       ]
     }
@@ -198,7 +177,7 @@
       "ark-coding-plan/doubao-seed-code": 15,
       "ark-coding-plan/kimi-k2-thinking": 8,
       "ark-coding-plan/ark-code-latest": 10,
-      "zhipuai-coding-plan/glm-5": 6,
+      "zhipuai-coding-plan/glm-4.7": 6,
       "zhipuai-coding-plan/glm-4.7-flash": 8,
       "minimax-coding-plan/MiniMax-M2.5": 6,
       "minimax-coding-plan/MiniMax-M2.5-lightning": 8,

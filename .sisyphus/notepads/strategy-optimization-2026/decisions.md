@@ -42,16 +42,16 @@
 **Adjusted Models:**
 - **Task 1 (Strategy-2)**:
   - Remove: Grok Code Fast 1 (unknown), Raptor mini (unknown)
-  - Use: `openai/gpt-5-mini` (known, exists in knownModels line 157)
+  - Use: `github-copilot/gpt-5-mini` (known, exists in knownModels line 157)
   - Fallback: Existing low-cost models from Strategy-3
 
 - **Task 2 (Strategy-1)**:
-  - Use: `openai/gpt-5-mini` (known)
+  - Use: `github-copilot/gpt-5-mini` (known)
   - Replace: Some GPT-5.2-Codex calls with GPT-5-mini for cost savings
 
 - **Task 3 (Strategy-6)**:
   - Remove: GPT-5.1-Codex-Max (unknown)
-  - Use: `openai/gpt-5-mini` + `openai/gpt-5.2-codex` (both known)
+  - Use: `github-copilot/gpt-5-mini` + `openai/gpt-5.2-codex` (both known)
   - Agent-specific optimization still achievable
 
 **Trade-off:**

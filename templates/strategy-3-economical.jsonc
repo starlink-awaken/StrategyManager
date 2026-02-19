@@ -39,7 +39,7 @@
     // 架构/调试 - GLM-5 (ZhiPuAI Max，大用量兜底)
     // 仅不可替代场景才调用顶级模型（每日配额 5 次）
     "oracle": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     // 文档搜索 - GPT-5-mini (Github Copilot Free)
@@ -87,7 +87,7 @@
     "deep": {
       "model": "copilot/gpt-5-mini",
       "fallback": {
-        "model": "anthropic/claude-sonnet-4-5",
+        "model": "anthropic/claude-sonnet-4-6",
         "condition": "紧急"
       }
     },
@@ -103,7 +103,7 @@
     },
     // 通用高难度 - GLM-5 (ZhiPuAI Max)
     "unspecified-high": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     // 文档写作 - Gemini 3 Flash (Gemini Pro)
@@ -156,11 +156,11 @@
     "modelConcurrency": {
       "github-copilot/gpt-4o": 25, // GPT-4o 允许 25 并发（主力）
       "github-copilot/gpt-5-mini": 35, // GPT-5-mini 允许 35 并发（主力）
-      "zhipuai-coding-plan/glm-5": 18, // GLM-5 允许 18 并发
+      "zhipuai-coding-plan/glm-4.7": 18, // GLM-5 允许 18 并发
       "google/gemini-3-flash": 15, // Gemini Flash 允许 15 并发
       "google/gemini-3-flash": 18, // Gemini 3 Flash 允许 18 并发
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
-      "anthropic/claude-sonnet-4-5": 2 // Claude Sonnet 限制 2 并发（紧急）
+      "anthropic/claude-sonnet-4-6": 2 // Claude Sonnet 限制 2 并发（紧急）
     }
   }
 }

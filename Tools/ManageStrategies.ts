@@ -1926,7 +1926,7 @@ const SCENARIO_TEMPLATE_MAP: Record<ScenarioType, string[]> = {
 const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
   quality: {
     models: [
-      "anthropic/claude-sonnet-4-5",
+      "anthropic/claude-sonnet-4-6",
       "openai/gpt-5.2-codex",
       "zhipuai-coding-plan/glm-4.7",
     ],

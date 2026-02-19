@@ -43,8 +43,8 @@
 
 #### 1. 模型替换
 
-- **Oracle Agent**: `github-copilot/gpt-5.2-codex` → `openai/gpt-5-mini`
-- **Visual-Engineering Category**: `github-copilot/gpt-5.2-codex` → `openai/gpt-5-mini`
+- **Oracle Agent**: `github-copilot/gpt-5.2-codex` → `github-copilot/gpt-5-mini`
+- **Visual-Engineering Category**: `github-copilot/gpt-5.2-codex` → `github-copilot/gpt-5-mini`
 
 #### 2. Fallback 机制增强
 
@@ -179,7 +179,7 @@ bun run Tools/ManageStrategies.ts compare strategy-2-balanced strategy-6-agent-f
 
 差异摘要:
   + agents.sisyphus.model: zhipuai-coding-plan/glm-4.7
-  ~ agents.oracle.model: openai/gpt-5-mini → openai/gpt-5.2-codex
+  ~ agents.oracle.model: github-copilot/gpt-5-mini → openai/gpt-5.2-codex
   - agents.prometheus.fallback: github-copilot/gpt-4o
 
 成本差异:
@@ -383,7 +383,7 @@ bun run Tools/ManageStrategies.ts recommend "成本敏感" --max-cost 150
 vim ~/.config/opencode/oh-my-opencode.json
 
 # 修改示例：将 OpenAI 模型替换为 Claude
-# "model": "openai/gpt-5-mini" → "model": "anthropic/claude-sonnet-4-5"
+# "model": "github-copilot/gpt-5-mini" → "model": "anthropic/claude-sonnet-4-5"
 
 # 验证修改
 bun run Tools/ManageStrategies.ts validate
@@ -687,7 +687,7 @@ bun test tests/performance/
 
 | 模型 | 直连 API | GitHub Copilot |
 |------|----------|----------------|
-| GPT-5 mini | `openai/gpt-5-mini` | 不支持 |
+| GPT-5 mini | `github-copilot/gpt-5-mini` | 不支持 |
 | GPT-5.2-Codex | `openai/gpt-5.2-codex` | 不支持 |
 | GPT-4o | `openai/gpt-4o` | `github-copilot/gpt-4o` (免费) |
 
@@ -742,7 +742,7 @@ bun run Tools/ManageStrategies.ts switch strategy-2-balanced
 **症状**:
 
 ```
-❌ 验证失败: Model 'openai/gpt-5-mini' is not in the allowed models list
+❌ 验证失败: Model 'github-copilot/gpt-5-mini' is not in the allowed models list
 ```
 
 **原因**: Model ID 不在 `Validator.ts` 的允许列表中
@@ -1035,19 +1035,19 @@ cp templates/strategy-3-economical.jsonc .config/oh-my-opencode.json
   },
   "agents": {
     "prometheus": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "temperature": 0.2
     },
     "oracle": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "temperature": 0.3
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "openai/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o"
     }
   }

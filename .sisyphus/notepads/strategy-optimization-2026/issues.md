@@ -26,7 +26,7 @@
    - **Missing**: `github-copilot/grok-code-fast-1`
    - **Missing**: `github-copilot/raptor-mini`
    - **Missing**: `openai/gpt-5.1-codex-max`
-   - **Present**: `openai/gpt-5-mini` ✅
+   - **Present**: `github-copilot/gpt-5-mini` ✅
    - **Impact**: Cannot use these models without verification
    - **Workaround**: Using only known models for Task 1-3
 
