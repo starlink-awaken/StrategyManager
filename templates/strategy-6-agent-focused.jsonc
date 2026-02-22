@@ -40,7 +40,7 @@
       "temperature": 0.3
     },
     "librarian": {
-      "model": "minimax-coding-plan/MiniMax-M2.5",
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.2
     },
     "explore": {
@@ -48,8 +48,8 @@
       "temperature": 0.2
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-pro",
-      "fallback": "google/gemini-3-flash",
+      "model": "google/gemini-3-pro-preview",
+      "fallback": "google/gemini-3-flash-preview",
       "fallbackReason": "极致稳定 - Gemini Flash 3 多模态互备",
       "variant": "high",
       "temperature": 0.3,
@@ -140,7 +140,7 @@
       "enabled": false
     }
   },
-  "disabled_mcps": [],
+  "disabled_mcps": ["github"],
 
   "background_task": {
     "defaultConcurrency": 10,

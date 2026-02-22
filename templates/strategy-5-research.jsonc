@@ -85,21 +85,21 @@
       "description": "资料查询：快速检索（用大额度资源）"
     },
     "explore": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.2,
       "maxTokens": 4000,
       "description": "探索器：Gemini 提供不同视角"
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "多模态：Gemini 图表分析（金融场景）"
     },
     "metis": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.2,
       "maxTokens": 5000,
@@ -209,7 +209,7 @@
       "anthropic/claude-sonnet-4-6": 3,
       "openai/gpt-5.2": 3,
       "openai/gpt-5.3-codex": 2,
-      "google/gemini-3-pro": 4,
+      "google/gemini-3-pro-preview": 4,
       "zhipuai-coding-plan/glm-4.7": 15,
       "github-copilot/gpt-4o": 5
     }
@@ -236,6 +236,6 @@
     "auto_resume": true,
     "truncate_all_tool_outputs": false
   },
-  "disabled_mcps": [],
+  "disabled_mcps": ["github"],
   "disabled_hooks": []
 }

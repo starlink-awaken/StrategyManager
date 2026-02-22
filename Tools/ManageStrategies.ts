@@ -1908,19 +1908,20 @@ async function fetchQuotaStatusFromUsageSync(): Promise<QuotaStatus[]> {
 // ==================== 动态策略生成 ====================
 
 const SCENARIO_TEMPLATE_MAP: Record<ScenarioType, string[]> = {
+  "agent-heavy": ["strategy-1-performance", "strategy-2-balanced"],
   education: ["strategy-2-balanced", "strategy-4-creative"],
   health: ["strategy-2-balanced", "strategy-5-research"],
   finance: ["strategy-5-research", "strategy-1-performance"],
   coding: ["strategy-2-balanced", "strategy-1-performance"],
   research: ["strategy-5-research", "strategy-1-performance"],
   creative: ["strategy-4-creative", "strategy-2-balanced"],
-  daily: ["strategy-2-balanced", "strategy-3-economical"],
+  daily: ["strategy-8-general", "strategy-2-balanced"],
   writing: ["strategy-4-creative", "strategy-2-balanced"],
   multimedia: ["strategy-4-creative", "strategy-2-balanced"],
   social: ["strategy-4-creative", "strategy-2-balanced"],
-  tools: ["strategy-3-economical", "strategy-2-balanced"],
-  entertainment: ["strategy-3-economical", "strategy-2-balanced"],
-  documentation: ["strategy-3-economical", "strategy-2-balanced"],
+  tools: ["strategy-8-general", "strategy-2-balanced"],
+  entertainment: ["strategy-8-general", "strategy-2-balanced"],
+  documentation: ["strategy-8-general", "strategy-2-balanced"]
 };
 
 const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {

@@ -33,7 +33,7 @@
     },
     // 规划器 - GPT-5-mini (Copilot Free，免费但更强)
     "prometheus": {
-      "model": "copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "temperature": 0.2
     },
     // 架构/调试 - GLM-5 (ZhiPuAI Max，大用量兜底)
@@ -54,7 +54,7 @@
     },
     // 多模态 - Gemini 3 Flash (Gemini Pro，便宜)
     "multimodal-looker": {
-      "model": "google/gemini-3-flash"
+      "model": "google/gemini-3-flash-preview"
     },
     // 规划顾问 - GPT-4o (Github Copilot Free)
     "metis": {
@@ -62,32 +62,32 @@
     },
     // 规划审查 - Gemini 2.5 Flash (Gemini Pro)
     "momus": {
-      "model": "google/gemini-3-flash"
+      "model": "google/gemini-3-flash-preview"
     }
   },
   // ========== Category 配置 ==========
   "categories": {
     // 前端 UI/UX - Gemini 2.5 Flash (Gemini Pro)
     "visual-engineering": {
-      "model": "google/gemini-3-flash",
+      "model": "google/gemini-3-flash-preview",
       "temperature": 0.4
     },
     // 深度逻辑推理 - GPT-5-mini (Copilot Free，免费且支持 thinking)
     "ultrabrain": {
-      "model": "copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "temperature": 0.2
     },
     // 创意任务 - Gemini 2.5 Flash (Gemini Pro)
     "artistry": {
-      "model": "google/gemini-3-flash",
+      "model": "google/gemini-3-flash-preview",
       "temperature": 0.7
     },
     // 深度思考 - GPT-5-mini (Copilot Free)
-    // 紧急 fallback: Claude Sonnet 4-5 (2并发)
+    // 紧急 fallback: Claude Sonnet 4.5 (2并发)
     "deep": {
-      "model": "copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5-mini",
       "fallback": {
-        "model": "anthropic/claude-sonnet-4-6",
+        "model": "anthropic/claude-sonnet-4.6",
         "condition": "紧急"
       }
     },
@@ -108,7 +108,7 @@
     },
     // 文档写作 - Gemini 3 Flash (Gemini Pro)
     "writing": {
-      "model": "google/gemini-3-flash",
+      "model": "google/gemini-3-flash-preview",
       "temperature": 0.5
     }
   },
@@ -138,7 +138,7 @@
       "enabled": false
     }
   },
-  "disabled_mcps": [],
+  "disabled_mcps": ["github"],
 
   "background_task": {
     "defaultConcurrency": 12,
@@ -157,8 +157,8 @@
       "github-copilot/gpt-4o": 25, // GPT-4o 允许 25 并发（主力）
       "github-copilot/gpt-5-mini": 35, // GPT-5-mini 允许 35 并发（主力）
       "zhipuai-coding-plan/glm-4.7": 18, // GLM-5 允许 18 并发
-      "google/gemini-3-flash": 15, // Gemini Flash 允许 15 并发
-      "google/gemini-3-flash": 18, // Gemini 3 Flash 允许 18 并发
+      "google/gemini-3-flash-preview": 15, // Gemini Flash 允许 15 并发
+      "google/gemini-3-pro-preview": 18, // Gemini 3 pro 允许 18 并发
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
       "anthropic/claude-sonnet-4-6": 2 // Claude Sonnet 限制 2 并发（紧急）
     }

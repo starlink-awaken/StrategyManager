@@ -30,7 +30,7 @@
     // 主编排器 - Claude sonnet 4.5 (Github copilot)
     "sisyphus": {
       "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": "minimax-coding-plan/MiniMax-M2.5",
+      "fallback": "minimax-cn-coding-plan/MiniMax-M2.5",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -41,7 +41,7 @@
     // 规划器 - Claude Opus 4.5 (Gemini antigravity, Thinking 模式)
     "prometheus": {
       "model": "google/antigravity-claude-opus-4-6-thinking",
-      "fallback": "ark-coding-plan/kimi-k2-thinking",
+      "fallback": "google/gemini-3-flash-preview",
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -59,8 +59,8 @@
     },
     // 文档搜索 - Claude Sonnet 4.5 (Claude Pro)
     "librarian": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "fallback": "minimax-coding-plan/MiniMax-M2.5",
+      "model": "anthropic/claude-sonnet-4.6",
+      "fallback": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.1
     },
     // 快速探索 - GLM 5 (ZhiPuAI Max，大用量)
@@ -71,14 +71,14 @@
     },
     // 多模态 - Gemini 3 Pro (Gemini Pro，多模态能力强)
     "multimodal-looker": {
-      "model": "google/gemini-3-pro",
-      "fallback": "google/gemini-3-flash",
+      "model": "google/gemini-3-pro-preview",
+      "fallback": "google/gemini-3-flash-preview",
       "variant": "high"
     },
     // 规划顾问 - Claude Sonnet 4.5 Thinking (github-copilot)
     "metis": {
       "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": "ark-coding-plan/doubao-seed-code",
+      "fallback": "google/gemini-3-flash-preview",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 100000
@@ -102,8 +102,8 @@
     },
     // 深度思考 - GLM 5 (ZhiPuAI Max)
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-5",
-      "fallback": "minimax-coding-plan/MiniMax-M2.5",
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "fallback": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.2
     }
   },
@@ -111,7 +111,7 @@
   "categories": {
     // 前端 UI/UX - Gemini 3 Pro High (Gemini Pro，UI 设计强)
     "visual-engineering": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.4
     },
@@ -126,20 +126,20 @@
     },
     // 创意任务 - Gemini 3 Pro Max (Gemini Pro，创意能力强)
     "artistry": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "fallback": "github-copilot/claude-sonnet-4.6",
-      "fallbackReason": "降级兜底到 Copilot Sonnet 4.5",
+      "fallbackReason": "降级兜底到 Copilot Sonnet 4.6",
       "variant": "max",
       "temperature": 0.7
     },
     // 简单任务 - GLM 5 (ZhiPuAI Max，60倍用量，适合高频)
     "quick": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     // 通用低难度 - GLM 5 (ZhiPuAI Max，性价比高)
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
     // 通用高难度 - Claude Opus 4.6 Max (Claude Pro，最强能力)
@@ -150,7 +150,7 @@
     },
     // 文档写作 - Gemini 3 Flash (Gemini Pro，快速便宜)
     "writing": {
-      "model": "google/gemini-3-flash",
+      "model": "google/gemini-3-flash-preview",
       "temperature": 0.5
     },
     // 深度分析 - Claude Sonnet 4.5 Thinking (Anthropic Pro)
@@ -182,9 +182,10 @@
       "anthropic/claude-sonnet-4-6": 3, // Sonnet 限制 3 并发
       "openai/gpt-5.3-codex": 2, // GPT-5.2 Codex 限制 2 并发
       "github-copilot/claude-sonnet-4.6": 2, // claude-sonnet-4.6 限制 2 并发（Premium）
-      "github-copilot/claude-opus-4.6": 2, // claude-opus-4.6 限制 2 并发（Premium）      "google/gemini-3-pro": 5, // Gemini 3 Pro 允许 5 并发
-      "google/gemini-3-flash": 10, // Gemini 3 Flash 允许 10 并发
-      "zhipuai-coding-plan/glm-5": 20 // GLM 5 允许 20 并发（大用量）
+      "github-copilot/claude-opus-4.6": 2, // claude-opus-4.6 限制 2 并发（Premium）
+      "google/gemini-3-pro-preview": 5, // Gemini 3 Pro 允许 5 并发
+      "google/gemini-3-flash-preview": 10, // Gemini 3 Flash 允许 10 并发
+      "zhipuai-coding-plan/glm-4.7": 20 // GLM 4.7 允许 20 并发（大用量）
     }
   },
   // ========== 其他配置 ==========
@@ -200,5 +201,6 @@
   "experimental": {
     "aggressive_truncation": false, // 性能优先，不激进截断
     "auto_resume": true
-  }
+  },
+  "disabled_mcps": ["github"]
 }

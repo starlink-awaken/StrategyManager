@@ -44,7 +44,7 @@
       "description": "主创作者：流畅表达 + 创意激发"
     },
     "prometheus": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.8,
       "maxTokens": 5000,
@@ -52,7 +52,7 @@
     },
     "oracle": {
       "model": "anthropic/claude-sonnet-4-6",
-      "fallback": "google/gemini-3-pro",
+      "fallback": "google/gemini-3-pro-preview",
       "temperature": 0.6,
       "maxTokens": 5000,
       "description": "内容审核：质量把关和优化建议"
@@ -71,14 +71,14 @@
       "description": "资料查询：快速检索和参考"
     },
     "explore": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.8,
       "maxTokens": 4000,
       "description": "探索器：创意灵感和多角度思考"
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.7,
       "maxTokens": 4000,
@@ -86,7 +86,7 @@
     },
     "metis": {
       "model": "anthropic/claude-sonnet-4-6",
-      "fallback": "google/gemini-3-pro",
+      "fallback": "google/gemini-3-pro-preview",
       "temperature": 0.6,
       "maxTokens": 4000,
       "description": "策略分析：内容规划和受众定位"
@@ -112,14 +112,14 @@
       "description": "技术支持（如需代码）"
     },
     "ultrabrain": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.5,
       "maxTokens": 20000,
       "description": "复杂内容策略规划"
     },
     "artistry": {
-      "model": "google/gemini-3-pro",
+      "model": "google/gemini-3-pro-preview",
       "variant": "high",
       "temperature": 0.85,
       "maxTokens": 5000,
@@ -153,7 +153,7 @@
     },
     "deep": {
       "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": "google/gemini-3-pro",
+      "fallback": "google/gemini-3-pro-preview",
       "temperature": 0.6,
       "maxTokens": 7000,
       "description": "深度内容：思想深度 + 表达力",
@@ -172,8 +172,8 @@
     },
     "modelConcurrency": {
       "anthropic/claude-sonnet-4-6": 4,
-      "google/gemini-3-pro": 10,
-      "deepseek/deepseek-v3-2": 20,
+      "google/gemini-3-pro-preview": 10,
+      "deepseek/deepseek-v3.2": 20,
       "zhipuai-coding-plan/glm-5": 25,
       "github-copilot/gpt-5-mini": 10,
       "github-copilot/claude-sonnet-4.6": 8,
@@ -202,6 +202,6 @@
     "auto_resume": true,
     "truncate_all_tool_outputs": false
   },
-  "disabled_mcps": [],
+  "disabled_mcps": ["github"],
   "disabled_hooks": []
 }
