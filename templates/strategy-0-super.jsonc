@@ -35,7 +35,7 @@
     // 配置：完整思考支持，高预算用于复杂推理
     "sisyphus": {
       "model": "github-copilot/claude-opus-4.6",
-      "fallback": "anthropic/claude-opus-4-6",
+      "fallback": ["anthropic/claude-opus-4-6", "minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "fallbackReason": "极致稳定 - Anthropic Opus 4.6 互备",
       "variant": "max",
       "thinking": {

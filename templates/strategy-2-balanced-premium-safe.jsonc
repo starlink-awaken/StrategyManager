@@ -37,6 +37,7 @@
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-4.7",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "用 ZhiPu 60倍额度作为主编排器"
@@ -53,6 +54,7 @@
     },
     "oracle": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "成本优化 - GPT-4o 免费兜底",
       "reasoningEffort": "medium",
@@ -112,6 +114,7 @@
   "categories": {
     "visual-engineering": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "成本优化 - GPT-4o 免费兜底",
       "reasoningEffort": "medium",

@@ -31,6 +31,7 @@
       "model": "zhipuai-coding-plan/glm-4.7",
       "fallback": [
         "minimax-cn-coding-plan/MiniMax-M2.5",
+        "ark/glm-5",
         "github-copilot/gpt-4o"
       ]
     },
@@ -39,18 +40,19 @@
       "model": "zhipuai-coding-plan/glm-4.7",
       "fallback": [
         "minimax-cn-coding-plan/MiniMax-M2.5",
+        "ark/glm-5",
         "github-copilot/gpt-4o"
       ]
     },
     // oracle - 顾问角色，需要多样化视角
     "oracle": {
       "model": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "fallback": ["zhipuai-coding-plan/glm-4.7", "github-copilot/gpt-4o"]
+      "fallback": ["zhipuai-coding-plan/glm-4.7", "ark/glm-5", "github-copilot/gpt-4o"]
     },
     // hephaestus - 构建工具，高频工作，MiniMax 极速主力
     "hephaestus": {
       "model": "minimax-cn-coding-plan/MiniMax-M2.5-lightning",
-      "fallback": ["zhipuai-coding-plan/glm-4.7-flash", "github-copilot/gpt-4o"]
+      "fallback": ["zhipuai-coding-plan/glm-4.7-flash", "ark/glm-5", "github-copilot/gpt-4o"]
     },
     // librarian - 文档检索，快速响应
     "librarian": {
@@ -85,6 +87,7 @@
       "model": "zhipuai-coding-plan/glm-4.7-flash",
       "fallback": [
         "minimax-cn-coding-plan/MiniMax-M2.5-lightning",
+        "ark/glm-5",
         "github-copilot/gpt-4o"
       ]
     }

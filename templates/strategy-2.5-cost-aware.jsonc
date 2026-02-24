@@ -1,0 +1,277 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "成本敏感型：免费模型优先 + 极致降级",
+  "metadata": {
+    "version": "1.0.0",
+    "updated": "2026-02-24",
+    "cost_level": "low",
+    "use_case": "成本极度敏感场景，最大化利用免费额度",
+    "optimization": "GPT-4o 免费主力 + ZhiPu/方舟兜底 + 严格预算控制",
+    "monthly_cost": "¥50-100",
+    "resources_used": [
+      "GitHub Copilot Pro+ (GPT-4o 免费主力)",
+      "ZhiPu CodingPlan Pro (仅fallback)",
+      "方舟 CodingPlan Pro (仅fallback)",
+      "MiniMax Coding Plan Pro (仅fallback)",
+      "DeepSeek API (¥300 - 仅fallback)",
+      "硅基流动中国 (¥200 - 仅fallback)",
+      "OpenRouter ($100 - 仅fallback)"
+    ],
+    "scene_coverage": "70%",
+    "scene_mapping": {
+      "个人项目开发": "visual-engineering (GPT-4o 免费)",
+      "公文处理": "quick (GPT-4o 免费)",
+      "日常工具": "quick (免费)",
+      "笔记管理": "unspecified-low (GLM高并发)",
+      "常规写作": "writing (GPT-4o 免费)",
+      "简单重构": "standard (GPT-4o 免费)",
+      "复杂任务": "complex (仅在预算允许时使用)"
+    }
+  },
+  // ================================================
+  // Strategy-2.5: 成本敏感型 (COST-AWARE)
+  // ================================================
+  "agents": {
+    "sisyphus": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "fallback": [
+        "zhipuai-coding-plan/glm-4.7",
+        "minimax-cn-coding-plan/MiniMax-M2.5",
+        "ark/glm-5",
+        "deepseek/deepseek-v3-2",
+        "siliconflow/deepseek-v3",
+        "openrouter/deepseek/deepseek-chat-v3"
+      ],
+      "fallbackReason": "成本优先 - 免费模型为主，中国厂商兜底",
+      "temperature": 0.3,
+      "maxTokens": 4000,
+      "description": "极致成本优化 - 优先使用免费 GPT-4o"
+    },
+    "prometheus": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "temperature": 0.2,
+      "maxTokens": 4000,
+      "description": "规划器使用免费模型"
+    },
+    "oracle": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "fallback": "zhipuai-coding-plan/glm-4.7",
+      "fallbackReason": "成本优先 - 免费模型为主",
+      "reasoningEffort": "medium",
+      "temperature": 0.3,
+      "maxTokens": 5000,
+      "description": "架构决策 - 免费模型优先"
+    },
+    "hephaestus": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3,
+      "maxTokens": 4000,
+      "description": "深度工作 - 使用 ZhiPu 大额度"
+    },
+    "librarian": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.1,
+      "maxTokens": 2500,
+      "description": "快速查询 - ZhiPu 高并发"
+    },
+    "explore": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "grep", "glob", "ast_grep_search", "task"],
+      "temperature": 0.2,
+      "maxTokens": 2000,
+      "description": "轻量级探索 - 免费模型"
+    },
+    "multimodal-looker": {
+      "model": "google/gemini-3-flash-preview",
+      "temperature": 0.3,
+      "maxTokens": 3000,
+      "description": "多模态 - 使用免费 Flash"
+    },
+    "metis": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "temperature": 0.2,
+      "maxTokens": 3500,
+      "description": "规划前分析 - 免费模型"
+    },
+    "momus": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2,
+      "maxTokens": 3000,
+      "description": "规划审查 - ZhiPu"
+    },
+    "atlas": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.2,
+      "maxTokens": 4000,
+      "description": "执行器 - ZhiPu 高并发"
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "temperature": 0.3,
+      "maxTokens": 4000,
+      "description": "个人项目开发 - 免费模型"
+    },
+    "ultrabrain": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "variant": "max",
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 80000
+      },
+      "temperature": 0.2,
+      "maxTokens": 5000,
+      "description": "复杂架构 - ZhiPu (仅在必要时使用)"
+    },
+    "artistry": {
+      "model": "github-copilot/gpt-4o",
+      "temperature": 0.7,
+      "maxTokens": 4000,
+      "description": "创意任务 - 免费模型"
+    },
+    "quick": {
+      "model": "github-copilot/gpt-4o",
+      "temperature": 0.3,
+      "maxTokens": 2000,
+      "description": "简单任务 - 免费快速"
+    },
+    "unspecified-low": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "temperature": 0.3,
+      "maxTokens": 2500,
+      "description": "低优先级 - ZhiPu 高并发"
+    },
+    "unspecified-high": {
+      "model": "github-copilot/gpt-4o",
+      "temperature": 0.3,
+      "maxTokens": 5000,
+      "description": "复杂功能 - 免费模型优先"
+    },
+    "writing": {
+      "model": "github-copilot/gpt-4o",
+      "temperature": 0.6,
+      "maxTokens": 4000,
+      "description": "写作 - 免费模型"
+    },
+    "deep": {
+      "model": "github-copilot/gpt-4o",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "temperature": 0.2,
+      "maxTokens": 6000,
+      "description": "深度分析 - 免费模型，仅在必要时 fallback"
+    }
+  },
+  "background_task": {
+    "defaultConcurrency": 15,
+    "staleTimeoutMs": 300000,
+    "providerConcurrency": {
+      "anthropic": 1,  // 严格控制高端模型并发
+      "openai": 1,
+      "google": 2,
+      "zhipuai-coding-plan": 30,
+      "github-copilot": 15
+    },
+    "modelConcurrency": {
+      "anthropic/claude-opus-4-6": 0,  // 禁用
+      "anthropic/claude-sonnet-4-6": 1,  // 极低并发
+      "anthropic/claude-haiku-4-5": 2,
+      "google/gemini-3-pro-preview": 1,
+      "google/gemini-3-flash-preview": 5,
+      "openai/gpt-5.3-codex": 0,  // 禁用
+      "openai/gpt-4o": 10,
+      "zhipuai-coding-plan/glm-4.7": 30,
+      "github-copilot/claude-opus-4.6": 0,  // 禁用
+      "github-copilot/claude-sonnet-4.6": 2,
+      "github-copilot/gpt-4o": 15,
+      "minimax-cn-coding-plan/MiniMax-M2.5": 5,
+      "ark/glm-5": 5
+    }
+  },
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true
+  },
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40
+  },
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+    "dynamic_context_pruning": {
+      "enabled": false
+    }
+  },
+  "disabled_mcps": ["github"],
+  "disabled_hooks": [],
+  // ========== 成本优化配置 ==========
+  "budget": {
+    "daily_limit_usd": 5,
+    "monthly_limit_usd": 50,
+    "emergency_fallback": "github-copilot/gpt-4o",
+    "alert_threshold_usd": 0.8,
+    "disable_high_cost_models": [
+      "anthropic/claude-opus-4-6",
+      "anthropic/claude-sonnet-4-6",
+      "openai/gpt-5.3-codex",
+      "github-copilot/claude-opus-4.6",
+      "github-copilot/claude-sonnet-4.6"
+    ]
+  },
+  "quota_sensitivity": "high",
+  "provider_quotas": {
+    "anthropic": {
+      "monthly_limit_tokens": 1000000,
+      "current_usage_tokens": 0,
+      "threshold_percent": 70,  // 更早触发降级
+      "fallback_priority": ["github-copilot", "zhipuai-coding-plan"]
+    },
+    "openai": {
+      "monthly_limit_tokens": 500000,
+      "current_usage_tokens": 0,
+      "threshold_percent": 80,
+      "fallback_priority": ["github-copilot", "zhipuai-coding-plan"]
+    },
+    "google": {
+      "monthly_limit_tokens": 1000000,
+      "current_usage_tokens": 0,
+      "threshold_percent": 75,
+      "fallback_priority": ["github-copilot", "zhipuai-coding-plan"]
+    }
+  },
+  // ========== 时间策略 ==========
+  "time_based_routing": {
+    "work_hours": {
+      "model": "github-copilot/gpt-4o",
+      "reason": "工作时间 - 免费模型足够"
+    },
+    "off_hours": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "reason": "非工作时间 - 用中国厂商额度"
+    }
+  },
+  // ========== 缓存配置 ==========
+  "caching": {
+    "enabled": true,
+    "ttl_seconds": 7200,
+    "similarity_threshold": 0.85,
+    "cache_types": ["code_review", "refactoring", "documentation", "test_generation", "simple_tasks"],
+    "cache_storage": "local"
+  }
+}

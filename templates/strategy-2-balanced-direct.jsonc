@@ -37,6 +37,7 @@
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-4.7",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "temperature": 0.3,
       "maxTokens": 4000,
       "description": "用 ZhiPu GLM-5 60倍额度作为主编排器"
@@ -115,6 +116,12 @@
       "maxTokens": 4000,
       "description": "个人项目开发、AI探索 - 代码专精模型"
     },
+    "gpt5mini_fallback": {
+      "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "temperature": 0.3,
+      "maxTokens": 2000
+    }
     "ultrabrain": {
       "model": "anthropic/claude-opus-4-6",
       "variant": "max",

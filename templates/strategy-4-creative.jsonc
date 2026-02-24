@@ -39,6 +39,7 @@
   "agents": {
     "sisyphus": {
       "model": "github-copilot/claude-sonnet-4.6",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "temperature": 0.7,
       "maxTokens": 6000,
       "description": "主创作者：流畅表达 + 创意激发"

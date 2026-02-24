@@ -35,7 +35,9 @@ import {
   UsageData,
   SyncResult,
   BatchSyncResult,
+  CostOptimizationConfig,
 } from "./interfaces";
+import { QuotaMonitor } from "./QuotaMonitor";
 
 /**
  * 使用量同步协调器
@@ -44,6 +46,7 @@ import {
  */
 export class UsageSyncCoordinator {
   private syncs: Map<string, UsageSync> = new Map();
+  private quotaMonitor: QuotaMonitor | null = null;
 
   /**
    * 注册一个同步器
@@ -167,6 +170,96 @@ export class UsageSyncCoordinator {
     }
 
     return allData;
+  }
+
+  /**
+   * 设置配额监控器
+   */
+  setQuotaMonitor(monitor: QuotaMonitor): void {
+    this.quotaMonitor = monitor;
+  }
+
+  /**
+   * 获取配额监控器
+   */
+  getQuotaMonitor(): QuotaMonitor | null {
+    return this.quotaMonitor;
+  }
+
+  /**
+   * 同步所有厂商并更新配额状态
+   */
+  async syncAllWithQuotaUpdate(
+    period?: { start: Date; end: Date },
+    quotaConfig?: CostOptimizationConfig
+  ): Promise<BatchSyncResult> {
+    // 如果提供了配额配置，先配置监控器
+    if (quotaConfig && this.quotaMonitor) {
+      this.quotaMonitor.configure(quotaConfig);
+    }
+
+    // 执行同步
+    const result = await this.syncAll(period);
+
+    // 更新配额状态
+    if (this.quotaMonitor && result.results) {
+      const allUsage = this.aggregateUsage(result.results);
+      await this.quotaMonitor.updateUsage(allUsage);
+    }
+
+    return result;
+  }
+
+  /**
+   * 获取配额报告
+   */
+  getQuotaReport(): string {
+    if (!this.quotaMonitor) {
+      return "配额监控器未配置";
+    }
+    return this.quotaMonitor.generateReport();
+  }
+
+  /**
+   * 检查是否需要降级
+   */
+  shouldDowngrade(provider: string): boolean {
+    return this.quotaMonitor?.shouldDowngrade(provider) ?? false;
+  }
+
+  /**
+   * 获取降级推荐
+   */
+  getFallbackRecommendations(provider: string): string[] {
+    return this.quotaMonitor?.getFallbackRecommendations(provider) || [];
+  }
+
+  /**
+   * 检查是否允许使用高成本模型
+   */
+  canUseHighCostModel(model: string): { allowed: boolean; reason?: string } {
+    return this.quotaMonitor?.canUseHighCostModel(model) || { allowed: true };
+  }
+
+  /**
+   * 获取紧急降级模型
+   */
+  getEmergencyFallback(): string {
+    return this.quotaMonitor?.getEmergencyFallback() || "github-copilot/gpt-4o";
+  }
+
+  /**
+   * 获取时间策略推荐
+   */
+  getTimeBasedRecommendation(): { model: string; reason: string } | null {
+    return this.quotaMonitor?.getTimeBasedRecommendation() || null;
+  }
+
+  /**
+   * 重置配额统计（新月度时调用）
+   */
+  resetQuotaTracking(): void {
+    this.quotaMonitor?.reset();
   }
 }
 

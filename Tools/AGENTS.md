@@ -10,7 +10,7 @@ AI 策略管理核心功能集：策略 CRUD、智能推荐、多厂商使用同
 
 | 模块 | 行数 | 职责 |
 |------|------|------|
-| ManageStrategies.ts | 2648 | 主入口：CLI 路由、策略切换、历史管理 |
+| ManageStrategies.ts | 2802 | 主入口：CLI 路由、策略切换、历史管理 |
 | UsageSync/ | 2400+ | 多厂商使用同步（独立子模块） |
 | Recommender.ts | 841 | 智能推荐引擎：场景预算质量评分 |
 | Validator.ts | 489 | 策略验证：Schema 兼容性检查 |
@@ -114,7 +114,7 @@ Validator.ts (独立)
 
 ## 注意事项
 
-- **ManageStrategies.ts** 单文件 2648 行，修改前考虑拆分
+- **ManageStrategies.ts** 单文件 2802 行，修改前考虑拆分
 - **UsageSync/** 独立子模块，详见 `Tools/UsageSync/AGENTS.md`
 - **Recommender.v2** 存在（`tests/unit/Recommender.v2.test.ts`），可能表示重构中
 - **颜色输出**: 使用 `chalk`，遵循 green=success, red=error, yellow=warn, blue=info

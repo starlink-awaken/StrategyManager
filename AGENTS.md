@@ -1,14 +1,14 @@
 # StrategyManager 知识库
 
-**生成时间**: 2026-02-05
-**Git 提交**: 56020e5
-**分支**: master
+**生成时间**: 2026-02-24 16:35:06
+**Git 提交**: e94eaec
+**分支**: main
 
 ## 概述
 
-AI 策略配置生命周期管理工具 - OpenCode Skill，支持 Claude、Copilot、Gemini 等多平台配置管理。核心特性：智能推荐、策略比较、成本分析、历史回滚、使用同步。
+AI 策略配置生命周期管理工具 - OpenCode Skill，支持 Claude、Copilot、Gemini、minimax、方舟等多平台配置管理。核心特性：智能推荐、策略比较、成本分析、历史回滚、使用同步。
 
-**技术栈**: TypeScript 5.3+ + Bun 1.0+
+**技术栈**: TypeScript 5.3+ + Bun 1.0+ (13,043 行代码，142 个文件)
 
 ## 常用命令
 
@@ -109,11 +109,11 @@ describe("模块名 - 功能分组", () => {
 
 | 目录 | 内容 | 关键文件 |
 |------|------|----------|
-| `Tools/` | 核心功能模块（11k+ 行） | `ManageStrategies.ts`, `Recommender.ts` |
-| `Tools/UsageSync/` | 多厂商使用同步（独立子模块） | `index.ts`, `interfaces.ts` |
-| `Workflows/` | OpenCode 工作流定义（12 个） | `List.md`, `Switch.md` |
+| `Tools/` | 核心功能模块（11k+ 行） | `ManageStrategies.ts` (2802), `Recommender.ts` (841) |
+| `Tools/UsageSync/` | 多厂商使用同步（独立子模块，21 文件，2411 行） | `index.ts`, `interfaces.ts` |
+| `Workflows/` | OpenCode 工作流定义（13 个） | `List.md`, `Switch.md` |
 | `tests/unit/` | 单元测试（3500+ 行） | `PathManager.test.ts`, `Validator.test.ts` |
-| `templates/` | 策略模板 | `strategy-*.jsonc` |
+| `templates/` | 策略模板（12 文件） | `strategy-*.jsonc` |
 | `scripts/` | 安装和配置脚本 | `install.sh`, `setup-opencode-integration.sh` |
 
 ## 核心类型速查
@@ -158,8 +158,11 @@ interface UsageData {
 
 ## 关键注意事项
 
-- **ManageStrategies.ts**: 单文件 2648 行，拆分前需评估
-- **UsageSync/**: 独立子模块，有独立 `index.ts` 和 `interfaces.ts`
+- **ManageStrategies.ts**: 单文件 2802 行，修改前评估拆分必要性
+- **UsageSync/**: 独立子模块（2411 行），有独立 `index.ts` 和 `interfaces.ts`
 - **工作流**: Markdown 格式，通过 `SKILL.md` 路由加载
 - **颜色输出**: `chalk` 库，green=success, red=error, yellow=warn, blue=info
 - **类型检查**: 提交前必须运行 `bun type-check`，无错误才能合并
+- **Recommender.v2**: 存在（`tests/unit/Recommender.v2.test.ts`），重构进行中
+- **模块边界**: Tools/UsageSync/ 是完整模块（有 index.ts），Tools/ 包含多个独立模块
+- **测试覆盖**: 目标 - PathManager 90%+, Validator 85%+, Recommender 80%+, ManageStrategies 75%+, UsageSync 70%+

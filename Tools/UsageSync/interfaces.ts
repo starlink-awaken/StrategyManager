@@ -120,3 +120,63 @@ export interface UsageSummary {
   };
   lastUpdated: Date;
 }
+
+/**
+ * 厂商配额状态
+ */
+export interface QuotaStatus {
+  provider: string;
+  model?: string; // 可选：特定模型的配额
+  monthlyLimitTokens: number; // 月度配额总量
+  currentUsageTokens: number; // 当前使用量
+  remainingTokens: number; // 剩余配额
+  thresholdPercent: number; // 告警阈值（百分比）
+  isOverThreshold: boolean; // 是否超过阈值
+  isExhausted: boolean; // 是否耗尽
+  lastUpdated: Date;
+  period: {
+    start: Date;
+    end: Date;
+  };
+}
+
+/**
+ * 配额监控配置
+ */
+export interface QuotaConfig {
+  provider: string;
+  monthlyLimitTokens: number;
+  thresholdPercent?: number; // 默认 80%
+  fallbackPriority?: string[]; // 降级优先级列表
+}
+
+/**
+ * 预算限制配置
+ */
+export interface BudgetConfig {
+  dailyLimitUsd?: number;
+  monthlyLimitUsd?: number;
+  emergencyFallback?: string;
+  alertThresholdUsd?: number; // 默认 0.8 (80%)
+  disableHighCostModels?: string[];
+}
+
+/**
+ * 成本优化配置
+ */
+export interface CostOptimizationConfig {
+  budget?: BudgetConfig;
+  quotaSensitivity?: 'low' | 'medium' | 'high';
+  providerQuotas?: Record<string, QuotaConfig>;
+  timeBasedRouting?: {
+    workHours?: { model: string; reason?: string };
+    offHours?: { model: string; reason?: string };
+  };
+  caching?: {
+    enabled: boolean;
+    ttlSeconds?: number;
+    similarityThreshold?: number;
+    cacheTypes?: string[];
+    cacheStorage?: 'local' | 'redis';
+  };
+}

@@ -39,7 +39,7 @@
   "agents": {
     "sisyphus": {
       "model": "anthropic/claude-opus-4-6",
-      "fallback": "openai/gpt-5.3-codex",
+      "fallback": ["openai/gpt-5.3-codex", "minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "fallbackReason": "智能体任务兜底 - GPT-5.3 Codex (xhigh) 双层保障",
       "thinking": {
         "type": "enabled",

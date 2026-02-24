@@ -44,7 +44,8 @@
     // 主执行器 - 智谱 GLM-5 免费额度主力
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "fallback": ["github-copilot/gpt-4o", "github-copilot/gpt-5-mini"],
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
+      "fallback": ["github-copilot/gpt-4o", "github-copilot/gpt-5-mini", "ark/glm-5", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "fallbackReason": "成本优化 - GPT-4o/GPT-5-mini 免费兜底",
       "temperature": 0.3,
       "maxTokens": 4000,
@@ -151,6 +152,7 @@
     // 通用低优先级 - 智谱高并发
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": [
         "zhipuai-coding-plan/glm-4.7-flash",
         "google/gemini-3-flash-preview",

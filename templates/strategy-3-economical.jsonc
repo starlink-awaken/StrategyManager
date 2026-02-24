@@ -29,11 +29,13 @@
     // 主编排器 - GPT-4o (Github Copilot Free，无限免费)
     "sisyphus": {
       "model": "github-copilot/gpt-4o",
+      "fallback": ["deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "temperature": 0.3
     },
     // 规划器 - GPT-5-mini (Copilot Free，免费但更强)
     "prometheus": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
     // 架构/调试 - GLM-5 (ZhiPuAI Max，大用量兜底)
@@ -75,6 +77,7 @@
     // 深度逻辑推理 - GPT-5-mini (Copilot Free，免费且支持 thinking)
     "ultrabrain": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
     // 创意任务 - Gemini 2.5 Flash (Gemini Pro)
@@ -162,5 +165,38 @@
       "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
       "anthropic/claude-sonnet-4-6": 2 // Claude Sonnet 限制 2 并发（紧急）
     }
-  }
+  },
+  // ========== Sisyphus Agent 配置 ==========
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true
+  },
+  // ========== Git 配置 ==========
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  // ========== Tmux 集成 ==========
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40
+  },
+  // ========== 实验性功能 ==========
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+    "dynamic_context_pruning": {
+      "enabled": false
+    }
+  },
+  // ========== MCP 配置 ==========
+  "disabled_mcps": ["github"],
+  // ========== Hooks 配置 ==========
+  "disabled_hooks": []
 }

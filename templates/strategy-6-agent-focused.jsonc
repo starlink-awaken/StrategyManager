@@ -13,6 +13,7 @@
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-4.7",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "variant": "max",
       "thinking": {
         "type": "enabled",
@@ -35,6 +36,7 @@
     },
     "hephaestus": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
       "temperature": 0.3
@@ -74,6 +76,7 @@
   "categories": {
     "visual-engineering": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
       "temperature": 0.4
@@ -155,5 +158,38 @@
       "github-copilot/gpt-5-mini": 5,
       "zhipuai-coding-plan/glm-4.7": 20
     }
-  }
+  },
+  // ========== Sisyphus Agent 配置 ==========
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true
+  },
+  // ========== Git 配置 ==========
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  // ========== Tmux 集成 ==========
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40
+  },
+  // ========== 实验性功能 ==========
+  "experimental": {
+    "aggressive_truncation": false,
+    "auto_resume": true,
+    "truncate_all_tool_outputs": false,
+    "dynamic_context_pruning": {
+      "enabled": false
+    }
+  },
+  // ========== MCP 配置 ==========
+  "disabled_mcps": ["github"],
+  // ========== Hooks 配置 ==========
+  "disabled_hooks": []
 }
