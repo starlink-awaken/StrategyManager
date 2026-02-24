@@ -37,6 +37,14 @@ import {
   type UsageSync,
 } from "./UsageSync";
 
+/**
+ * 将配置对象转换为 JSONC 字符串（简化版：只生成 JSON）
+ */
+
+
+
+
+
 // ==================== 类型定义 ====================
 
 /**
@@ -402,13 +410,11 @@ export function readJSONC(filePath: string): any {
     processedLines.push(processedLine);
   }
 
-  const jsonContent = processedLines.join("\n");
+  let jsonContent = processedLines.join("\n");
+  // Remove trailing commas before } or ] to support JSON5
+  jsonContent = jsonContent.replace(/,(\s*[}\]])/g, '$1');
 
-  try {
-    return JSON.parse(jsonContent);
-  } catch (err) {
-    throw new Error(`解析 JSONC 文件失败: ${filePath}`);
-  }
+  return JSON.parse(jsonContent);
 }
 
 /**
@@ -589,6 +595,13 @@ export function switchStrategy(strategyName: string): boolean {
           : undefined,
     });
   }
+  // 应用工具约束过滤
+  applyToolConstraints(config);
+
+  // 写回修改后的配置
+  const jsoncContent = JSON.stringify(config, null, 2) + "\n";
+  fs.writeFileSync(targetFile, jsoncContent, "utf8");
+  info(`已应用工具约束并更新配置: ${targetFile}`);
 
   // 创建软链接（只维护 .jsonc）
   try {
@@ -673,8 +686,10 @@ export function listStrategiesWithOptions(options?: {
           source,
         });
       } catch (err) {
+        console.error(`加载策略失败 ${file}:`, err);
         warning(`跳过无效策略文件: ${file}`);
       }
+
     }
   };
 
@@ -1908,20 +1923,20 @@ async function fetchQuotaStatusFromUsageSync(): Promise<QuotaStatus[]> {
 // ==================== 动态策略生成 ====================
 
 const SCENARIO_TEMPLATE_MAP: Record<ScenarioType, string[]> = {
-  "agent-heavy": ["strategy-1-performance", "strategy-2-balanced"],
-  education: ["strategy-2-balanced", "strategy-4-creative"],
-  health: ["strategy-2-balanced", "strategy-5-research"],
-  finance: ["strategy-5-research", "strategy-1-performance"],
-  coding: ["strategy-2-balanced", "strategy-1-performance"],
-  research: ["strategy-5-research", "strategy-1-performance"],
-  creative: ["strategy-4-creative", "strategy-2-balanced"],
-  daily: ["strategy-8-general", "strategy-2-balanced"],
-  writing: ["strategy-4-creative", "strategy-2-balanced"],
-  multimedia: ["strategy-4-creative", "strategy-2-balanced"],
-  social: ["strategy-4-creative", "strategy-2-balanced"],
-  tools: ["strategy-8-general", "strategy-2-balanced"],
-  entertainment: ["strategy-8-general", "strategy-2-balanced"],
-  documentation: ["strategy-8-general", "strategy-2-balanced"]
+  "agent-heavy": ["fast", "balanced"],
+  education: ["balanced", "smart"],
+  health: ["balanced", "smart"],
+  finance: ["smart", "fast"],
+  coding: ["balanced", "fast"],
+  research: ["smart", "fast"],
+  creative: ["smart", "balanced"],
+  daily: ["balanced", "fast"],
+  writing: ["smart", "balanced"],
+  multimedia: ["smart", "balanced"],
+  social: ["smart", "balanced"],
+  tools: ["balanced", "fast"],
+  entertainment: ["balanced", "fast"],
+  documentation: ["balanced", "fast"]
 };
 
 const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
@@ -2011,6 +2026,49 @@ function optimizeAgentModels(
         agent.model = replacement;
       }
     }
+  }
+}
+
+function applyToolConstraints(config: StrategyConfig): void {
+  const constraints = (config.lsp?.constraints || {}) as any;
+  const allowedTools = constraints.allowedTools as string[] | undefined;
+  const maxTools = constraints.maxToolsPerRequest as number | undefined;
+
+  if (!allowedTools && !maxTools) return; // 无约束则跳过
+
+  // 过滤 agents 中的 tools
+  for (const agent of Object.values(config.agents || {})) {
+    if (!agent?.tools) continue;
+
+    // Cast to any to handle both string[] and Record<string, boolean>
+    const toolsAny = (agent as any).tools as string[];
+    let filtered: string[] = toolsAny;
+
+    if (allowedTools && Array.isArray(allowedTools)) {
+      filtered = filtered.filter((tool: string) => allowedTools.includes(tool));
+    }
+    if (typeof maxTools === 'number' && filtered.length > maxTools) {
+      filtered = filtered.slice(0, maxTools);
+    }
+
+    (agent as any).tools = filtered;
+  }
+
+  // 过滤 categories 中的 tools
+  for (const category of Object.values(config.categories || {})) {
+    if (!category?.tools) continue;
+
+    const toolsAny = (category as any).tools as string[];
+    let filtered: string[] = toolsAny;
+
+    if (allowedTools && Array.isArray(allowedTools)) {
+      filtered = filtered.filter((tool: string) => allowedTools.includes(tool));
+    }
+    if (typeof maxTools === 'number' && filtered.length > maxTools) {
+      filtered = filtered.slice(0, maxTools);
+    }
+
+    (category as any).tools = filtered;
   }
 }
 
@@ -2108,6 +2166,20 @@ export function generateDynamicStrategy(
   const priority = options.priority || parsed.scenario?.priority || "balanced";
 
   const templates = SCENARIO_TEMPLATE_MAP[scenarioType] || [
+    "balanced",
+    "fast",
+    "balanced",
+    "cheap",
+    "balanced",
+    "fast",
+    "balanced",
+    "cheap",
+    "fast",
+    "balanced",
+    "smart",
+    "cheap",
+    "fast",
+    "balanced",
     "strategy-2-balanced",
   ];
   const baseTemplate = templates[0];

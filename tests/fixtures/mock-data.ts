@@ -16,7 +16,7 @@ import type { StrategyConfig } from "../../Tools/ManageStrategies";
 
 export const mockStrategies: StrategyMetadata[] = [
   {
-    name: "strategy-0-super",
+    name: "smart",
     filePath: "/mock/strategies/0-super.jsonc",
     description: "超级策略 - 最高质量和性能，适合关键任务",
     costLevel: "ultra-high",
@@ -31,7 +31,7 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-1-performance",
+    name: "fast",
     filePath: "/mock/strategies/1-performance.jsonc",
     description: "性能策略 - 高质量和快速响应",
     costLevel: "high",
@@ -42,7 +42,7 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-2-balanced",
+    name: "balanced",
     filePath: "/mock/strategies/2-balanced.jsonc",
     description: "平衡策略 - 质量和成本的最佳平衡",
     costLevel: "medium",
@@ -53,7 +53,7 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-3-economical",
+    name: "cheap",
     filePath: "/mock/strategies/3-economical.jsonc",
     description: "经济策略 - 成本优先",
     costLevel: "low",
@@ -64,7 +64,7 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-4-creative",
+    name: "smart",
     filePath: "/mock/strategies/4-creative.jsonc",
     description: "创意内容策略 - 优化创意输出",
     costLevel: "medium-high",
@@ -75,7 +75,7 @@ export const mockStrategies: StrategyMetadata[] = [
     source: "installed",
   },
   {
-    name: "strategy-5-research",
+    name: "smart",
     filePath: "/mock/strategies/5-research.jsonc",
     description: "研究思维策略 - 深度分析和推理",
     costLevel: "high",
@@ -145,9 +145,9 @@ export function createHistoryData(
 ): HistoryData {
   return {
     recentStrategies: [
-      "strategy-2-balanced",
-      "strategy-2-balanced",
-      "strategy-1-performance",
+      "balanced",
+      "balanced",
+      "fast",
     ],
     frequentScenarios: ["coding", "daily"],
     avgCostPerDay: 30,
@@ -192,7 +192,7 @@ export const recommendationTestCases = [
         priority: "quality" as const,
       },
     },
-    expectedTopStrategy: "strategy-1-performance",
+    expectedTopStrategy: "fast",
   },
   {
     name: "Cost Priority Daily",
@@ -203,7 +203,7 @@ export const recommendationTestCases = [
       },
       budget: createBudgetContext({ monthly: 500, currentSpent: 300 }),
     },
-    expectedTopStrategy: "strategy-3-economical",
+    expectedTopStrategy: "cheap",
   },
   {
     name: "Research with Deep Thinking",
@@ -213,7 +213,7 @@ export const recommendationTestCases = [
         priority: "quality" as const,
       },
     },
-    expectedTopStrategy: "strategy-5-research",
+    expectedTopStrategy: "smart",
   },
   {
     name: "Creative Content",
@@ -223,7 +223,7 @@ export const recommendationTestCases = [
         priority: "balanced" as const,
       },
     },
-    expectedTopStrategy: "strategy-4-creative",
+    expectedTopStrategy: "smart",
   },
   {
     name: "Urgent Task",
@@ -236,7 +236,7 @@ export const recommendationTestCases = [
         isUrgent: true,
       },
     },
-    expectedTopStrategy: "strategy-0-super",
+    expectedTopStrategy: "smart",
   },
 ];
 

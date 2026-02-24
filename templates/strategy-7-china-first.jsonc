@@ -109,10 +109,7 @@
       "fallback": ["github-copilot/gpt-4o"]
     },
     // 创意 - MiniMax
-    "artistry": {
-      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "fallback": ["github-copilot/gpt-4o"]
-    },
+
     // 快速响应 - 智谱 Air 极速
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.7-flash",

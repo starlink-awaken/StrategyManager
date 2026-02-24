@@ -27,7 +27,7 @@ function createMockStrategy(
   overrides: Partial<StrategyMetadata> = {},
 ): StrategyMetadata {
   return {
-    name: "strategy-2-balanced",
+    name: "balanced",
     filePath: "/mock/strategies/2-balanced.jsonc",
     description: "Balanced strategy for general use",
     costLevel: "medium",
@@ -43,7 +43,7 @@ function createMockStrategy(
 function createStrategyLibrary(): StrategyMetadata[] {
   return [
     createMockStrategy({
-      name: "strategy-0-super",
+      name: "smart",
       description: "Ultimate performance and quality",
       costLevel: "ultra-high",
       models: [
@@ -53,31 +53,31 @@ function createStrategyLibrary(): StrategyMetadata[] {
       ],
     }),
     createMockStrategy({
-      name: "strategy-1-performance",
+      name: "fast",
       description: "High performance strategy",
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "openai/gpt-5.2-codex"],
     }),
     createMockStrategy({
-      name: "strategy-2-balanced",
+      name: "balanced",
       description: "Balanced strategy",
       costLevel: "medium",
       models: ["anthropic/claude-sonnet-4-5", "github-copilot/gpt-5-mini"],
     }),
     createMockStrategy({
-      name: "strategy-3-economical",
+      name: "cheap",
       description: "Cost-effective strategy",
       costLevel: "low",
       models: ["github-copilot/gpt-4.1", "google/gemini-3-flash"],
     }),
     createMockStrategy({
-      name: "strategy-4-creative",
+      name: "smart",
       description: "Content creation strategy",
       costLevel: "medium-high",
       models: ["anthropic/claude-sonnet-4-5", "openai/gpt-5.2"],
     }),
     createMockStrategy({
-      name: "strategy-5-research",
+      name: "smart",
       description: "Deep research strategy",
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
@@ -114,8 +114,8 @@ describe("SmartRecommender - Scenario Matching", () => {
     const recommendations = recommender.recommend(context);
 
     expect(recommendations.length).toBeGreaterThan(0);
-    // coding scenario's best match is strategy-2-balanced
-    expect(recommendations[0].strategyName).toBe("strategy-2-balanced");
+    // coding scenario's best match is balanced
+    expect(recommendations[0].strategyName).toBe("balanced");
   });
 
   // Test 2: Research Scenario
@@ -130,8 +130,8 @@ describe("SmartRecommender - Scenario Matching", () => {
     const recommendations = recommender.recommend(context);
 
     expect(recommendations.length).toBeGreaterThan(0);
-    // research scenario's best match is strategy-5-research
-    expect(recommendations.some((r) => r.strategyName === "strategy-5-research")).toBe(true);
+    // research scenario's best match is smart
+    expect(recommendations.some((r) => r.strategyName === "smart")).toBe(true);
   });
 
   // Test 3: Creative Content Scenario
@@ -147,7 +147,7 @@ describe("SmartRecommender - Scenario Matching", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
 
-    expect(recommendations.some((r) => r.strategyName === "strategy-4-creative")).toBe(true);
+    expect(recommendations.some((r) => r.strategyName === "smart")).toBe(true);
   });
 
   // Test 4: Complex Task Adjustment
@@ -206,8 +206,8 @@ describe("SmartRecommender - Scenario Matching", () => {
     const recommendations = recommender.recommend(context);
 
     expect(recommendations.length).toBeGreaterThan(0);
-    // Fallback should recommend strategy-1-performance
-    expect(recommendations.some((r) => r.strategyName === "strategy-1-performance")).toBe(true);
+    // Fallback should recommend fast
+    expect(recommendations.some((r) => r.strategyName === "fast")).toBe(true);
   });
   it("should recommend economical strategies for simple tasks", () => {
     const simpleContext: RecommendationContext = {
@@ -222,7 +222,7 @@ describe("SmartRecommender - Scenario Matching", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
     // Simple + cost priority should favor economical
-    expect(recommendations.some((r) => r.strategyName === "strategy-3-economical")).toBe(true);
+    expect(recommendations.some((r) => r.strategyName === "cheap")).toBe(true);
   });
 });
 
@@ -281,7 +281,7 @@ describe("SmartRecommender - Cost Efficiency", () => {
 
     // Should include economical strategy
     const economicalRec = recommendations.find(
-      (r) => r.strategyName === "strategy-3-economical",
+      (r) => r.strategyName === "cheap",
     );
     expect(economicalRec).toBeDefined();
   });
@@ -303,7 +303,7 @@ describe("SmartRecommender - Cost Efficiency", () => {
     const recommendations = recommender.recommend(context);
 
     // Super strategy (¥2500) should be last or not recommended
-    expect(recommendations.some((r) => r.strategyName === "strategy-0-super")).not.toBeDefined();
+    expect(recommendations.some((r) => r.strategyName === "smart")).not.toBeDefined();
   });
 
   // Test 9: Cost Estimation
@@ -414,8 +414,8 @@ describe("SmartRecommender - Weight Adjustment", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
 
-    // Balanced should include strategy-2-balanced
-    expect(recommendations.some((r) => r.strategyName === "strategy-2-balanced")).toBeDefined();
+    // Balanced should include balanced
+    expect(recommendations.some((r) => r.strategyName === "balanced")).toBeDefined();
   });
 });
 
@@ -438,9 +438,9 @@ describe("SmartRecommender - History Preference", () => {
       },
       history: {
         recentStrategies: [
-          "strategy-2-balanced",
-          "strategy-2-balanced",
-          "strategy-2-balanced",
+          "balanced",
+          "balanced",
+          "balanced",
         ],
         frequentScenarios: ["daily"],
       },
@@ -450,8 +450,8 @@ describe("SmartRecommender - History Preference", () => {
 
     expect(recommendations.length).toBeGreaterThan(0);
 
-    // strategy-2-balanced should rank high due to history
-    expect(recommendations[0].strategyName).toBe("strategy-2-balanced");
+    // balanced should rank high due to history
+    expect(recommendations[0].strategyName).toBe("balanced");
   });
 
   // Test 14: No History
@@ -484,9 +484,9 @@ describe("SmartRecommender - History Preference", () => {
       },
       history: {
         recentStrategies: [
-          "strategy-2-balanced",
-          "strategy-3-economical",
-          "strategy-2-balanced",
+          "balanced",
+          "cheap",
+          "balanced",
         ],
         frequentScenarios: ["daily", "tools"],
       },
@@ -501,8 +501,8 @@ describe("SmartRecommender - History Preference", () => {
       .slice(0, 2)
       .map((r) => r.strategyName);
 
-    const hasBalanced = topStrategies.includes("strategy-2-balanced");
-    const hasEconomical = topStrategies.includes("strategy-3-economical");
+    const hasBalanced = topStrategies.includes("balanced");
+    const hasEconomical = topStrategies.includes("cheap");
 
     expect(hasBalanced || hasEconomical).toBe(true);
   });
@@ -608,8 +608,8 @@ describe("SmartRecommender - Complete Recommendations", () => {
       },
       history: {
         recentStrategies: [
-          "strategy-5-research",
-          "strategy-1-performance",
+          "smart",
+          "fast",
         ],
         frequentScenarios: ["research", "coding"],
         avgCostPerDay: 50,
@@ -786,7 +786,7 @@ describe("SmartRecommender - Edge Cases", () => {
     const recommendations = singleRecommender.recommend(context);
 
     expect(recommendations.length).toBe(1);
-    expect(recommendations[0].strategyName).toBe("strategy-2-balanced");
+    expect(recommendations[0].strategyName).toBe("balanced");
   });
 
   // Test 29: Score Consistency
@@ -822,7 +822,7 @@ describe("SmartRecommender - Edge Cases", () => {
         alertThreshold: 0.8,
       },
       history: {
-        recentStrategies: ["strategy-2-balanced"],
+        recentStrategies: ["balanced"],
         frequentScenarios: ["daily"],
       },
     };

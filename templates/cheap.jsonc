@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "经济型：最大化利用免费和额度资源，极低月度成本",
+  "description": "经济型：最大化免费额度，批量处理优先",
   "metadata": {
     "version": "1.1.1",
     "updated": "2026-02-13",
-    "scene_coverage": "70%",
+    "cost_level": "ultra-low",
     "cost_level": "ultra-low",
     "use_case": "探索、学习、快速迭代、成本压力大",
-    "optimization": "最大化利用免费和额度资源",
+    "monthly_cost": "¥50-150",
     "monthly_cost": "¥50-150",
     "resources_used": [
       "GitHub Copilot Pro+ (免费模型)",
@@ -16,6 +16,59 @@
       "硅基流动 (额度)",
       "Google Pro (Gemini Flash 便宜)"
     ]
+  },
+
+  "lsp": {
+    "scene_coverage": ["daily", "tools", "education", "health", "entertainment", "chinese"],
+    "budget": {
+      "monthlyLimitUSD": 150,
+      "dailyAlertThreshold": 0.8,
+      "emergencySwitchTo": "cheap",
+    },
+    "provider_quotas": {
+      "kimi": {
+        "priority": 1,
+        "maxRequestsPerDay": 20000,
+        "maxCostPerRequest": 0.01,
+        "maxConcurrentRequests": 30,
+        "fallbackModels": ["step/step-3-flash", "zhipuai/glm-4.7-flash"]
+      },
+      "step": {
+        "priority": 1,
+        "maxRequestsPerDay": 20000,
+        "maxCostPerRequest": 0.01,
+        "maxConcurrentRequests": 30,
+        "fallbackModels": ["kimi/kimi-coding-pro", "zhipuai/glm-4.7-flash"]
+      },
+      "zhipuai": {
+        "priority": 2,
+        "maxRequestsPerDay": 50000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 40,
+        "fallbackModels": ["kimi/kimi-coding-pro", "step/step-3-flash"]
+      },
+      "minimax": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 20
+      },
+      "deepseek": {
+        "priority": 3,
+        "maxRequestsPerDay": 50000,
+        "maxCostPerRequest": 0.002,
+        "maxConcurrentRequests": 50
+      },
+      "github-copilot": {
+        "priority": 1,
+        "maxRequestsPerDay": 100000,
+        "maxConcurrentRequests": 100
+      }
+    },
+    "constraints": {
+      "maxToolsPerRequest": 6,
+      "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing"]
+    }
   },
   // ================================================
   // Strategy-3: 经济型 (ECONOMICAL)
@@ -44,29 +97,9 @@
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
-    // 文档搜索 - GPT-5-mini (Github Copilot Free)
-    "librarian": {
-      "model": "github-copilot/gpt-5-mini",
-      "temperature": 0.1
-    },
-    // 快速探索 - GPT-5-mini (Github Copilot Free)
-    "explore": {
-      "model": "github-copilot/gpt-5-mini",
-      "temperature": 0.2
-    },
-    // 多模态 - Gemini 3 Flash (Gemini Pro，便宜)
-    "multimodal-looker": {
-      "model": "google/gemini-3-flash-preview"
-    },
-    // 规划顾问 - GPT-4o (Github Copilot Free)
-    "metis": {
-      "model": "github-copilot/gpt-4o"
-    },
-    // 规划审查 - Gemini 2.5 Flash (Gemini Pro)
-    "momus": {
-      "model": "google/gemini-3-flash-preview"
-    }
-  },
+
+
+
   // ========== Category 配置 ==========
   "categories": {
     // 前端 UI/UX - Gemini 2.5 Flash (Gemini Pro)
@@ -81,10 +114,7 @@
       "temperature": 0.2
     },
     // 创意任务 - Gemini 2.5 Flash (Gemini Pro)
-    "artistry": {
-      "model": "google/gemini-3-flash-preview",
-      "temperature": 0.7
-    },
+
     // 深度思考 - GPT-5-mini (Copilot Free)
     // 紧急 fallback: Claude Sonnet 4.5 (2并发)
     "deep": {

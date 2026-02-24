@@ -187,9 +187,9 @@ describe("PathManager - Path Resolution", () => {
       customConfigDir: customDir,
     });
 
-    const templatePath = pm.getTemplateFilePath("strategy-0-super");
+    const templatePath = pm.getTemplateFilePath("smart");
 
-    expect(templatePath).toContain("strategy-0-super.jsonc");
+    expect(templatePath).toContain("smart.jsonc");
     expect(templatePath).toContain(pm.getTemplatesDir());
   });
 
@@ -271,9 +271,9 @@ describe("PathManager - File System Operations", () => {
     const templatesDir = createTempDir("list-templates");
 
     // Mock templates directory
-    fs.writeFileSync(path.join(templatesDir, "strategy-0-super.jsonc"), "{}");
+    fs.writeFileSync(path.join(templatesDir, "smart.jsonc"), "{}");
     fs.writeFileSync(
-      path.join(templatesDir, "strategy-1-performance.jsonc"),
+      path.join(templatesDir, "fast.jsonc"),
       "{}",
     );
     fs.writeFileSync(path.join(templatesDir, "readme.md"), "");

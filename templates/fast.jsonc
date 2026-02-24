@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "性能优先型：关键路径用强模型，其他路径用经济模型，兼顾性能与成本",
+  "description": "速度优先型：高频对话，实时响应",
   "metadata": {
     "version": "2.1.1",
     "updated": "2026-02-13",
-    "cost_level": "medium",
+    "cost_level": "high",
     "use_case": "中等重要项目、功能开发、权衡性能和成本",
     "optimization": "GPT-5 mini 替代部分 GPT-5.3-Codex 场景(oracle + ultrabrain + momus)",
-    "monthly_cost": "¥850-1350",
+    "monthly_cost": "¥1500-2500",
     "scene_coverage": 85,
     "resources_used": [
       "GitHub Copilot Pro+",
@@ -30,82 +30,77 @@
     // 主编排器 - Claude sonnet 4.5 (Github copilot)
     "sisyphus": {
       "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
-      "variant": "max",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3", "kimi/moonshot-v1", "step/step-1"],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 200000
       },
-      "temperature": 0.3
+      "temperature": 0.55
     },
     // 规划器 - Claude Opus 4.5 (Gemini antigravity, Thinking 模式)
     "prometheus": {
       "model": "google/antigravity-claude-opus-4-6-thinking",
-      "fallback": "google/gemini-3-flash-preview",
-      "variant": "max",
+      "fallback": ["google/gemini-3-flash-preview", "kimi/moonshot-v1", "step/step-1"],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 150000
       },
-      "temperature": 0.2
+      "temperature": 0.55
     },
     // 架构/调试 - GPT-4.1 (ChatGPT Plus / Github Copilot Premium)
     "oracle": {
       "model": "github-copilot/gpt-5-mini",
-      "fallback": "github-copilot/gpt-4o",
-      "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
+      "fallback": ["github-copilot/gpt-4o", "kimi/moonshot-v1", "step/step-1"],
       "reasoningEffort": "high",
-      "temperature": 0.3
+      "temperature": 0.55
     },
     // 文档搜索 - Claude Sonnet 4.5 (Claude Pro)
     "librarian": {
       "model": "anthropic/claude-sonnet-4.6",
-      "fallback": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "temperature": 0.1
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/moonshot-v1", "step/step-1"],
     },
     // 快速探索 - GLM 5 (ZhiPuAI Max，大用量)
     "explore": {
       "model": "zhipuai-coding-plan/glm-5",
-      "fallback": "github-copilot/gpt-4o",
-      "temperature": 0.2
+      "fallback": ["github-copilot/gpt-4o", "kimi/moonshot-v1", "step/step-1"],
     },
     // 多模态 - Gemini 3 Pro (Gemini Pro，多模态能力强)
     "multimodal-looker": {
       "model": "google/gemini-3-pro-preview",
-      "fallback": "google/gemini-3-flash-preview",
-      "variant": "high"
+      "fallback": ["google/gemini-3-flash-preview", "kimi/moonshot-v1", "step/step-1"],
+      "temperature": 0.45
     },
     // 规划顾问 - Claude Sonnet 4.5 Thinking (github-copilot)
     "metis": {
       "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": "google/gemini-3-flash-preview",
+      "fallback": ["google/gemini-3-flash-preview", "kimi/moonshot-v1", "step/step-1"],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 100000
-      }
+      },
+      "temperature": 0.45
     },
     // 规划审查 - GPT-5.2 (OpenAI Plus)
     "momus": {
       "model": "github-copilot/gpt-5-mini",
-      "fallback": "github-copilot/gpt-4o",
-      "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
+      "fallback": ["github-copilot/gpt-4o", "kimi/moonshot-v1", "step/step-1"],
       "variant": "medium",
-      "reasoningEffort": "medium"
+      "reasoningEffort": "medium",
+      "temperature": 0.45
     },
     // 深度工作者 - GPT-5 mini (OpenAI Plus)
     "hephaestus": {
       "model": "github-copilot/gpt-5-mini",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
-      "fallback": "github-copilot/gpt-4o",
-      "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
+      "fallback": ["github-copilot/gpt-4o", "kimi/moonshot-v1", "step/step-1"],
       "reasoningEffort": "high",
-      "temperature": 0.3
+      "temperature": 0.55
     },
     // 深度思考 - GLM 5 (ZhiPuAI Max)
     "atlas": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "fallback": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "temperature": 0.2
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/moonshot-v1", "step/step-1"],
+      "temperature": 0.55
     }
   },
   // ========== Category 配置 ==========
@@ -114,45 +109,43 @@
     "visual-engineering": {
       "model": "google/gemini-3-pro-preview",
       "variant": "high",
-      "temperature": 0.4
+      "temperature": 0.45
     },
     // 深度逻辑推理 - GPT-5.2 Codex XHigh (ChatGPT Plus，顶级推理)
     "ultrabrain": {
       "model": "github-copilot/gpt-5-mini",
-      "fallback": "github-copilot/gpt-4o",
-      "fallbackReason": "成本优化 - GPT-5 mini 降级到 GPT-4o 免费兜底",
+      "fallback": ["github-copilot/gpt-4o", "kimi/moonshot-v1", "step/step-1"],
       "variant": "xhigh",
       "reasoningEffort": "xhigh",
-      "temperature": 0.2
+      "temperature": 0.45
     },
     // 创意任务 - Gemini 3 Pro Max (Gemini Pro，创意能力强)
     "artistry": {
       "model": "google/gemini-3-pro-preview",
-      "fallback": "github-copilot/claude-sonnet-4.6",
-      "fallbackReason": "降级兜底到 Copilot Sonnet 4.6",
+      "fallback": ["github-copilot/claude-sonnet-4.6", "kimi/moonshot-v1", "step/step-1"],
       "variant": "max",
       "temperature": 0.7
     },
     // 简单任务 - GLM 5 (ZhiPuAI Max，60倍用量，适合高频)
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3
+      "temperature": 0.45
     },
     // 通用低难度 - GLM 5 (ZhiPuAI Max，性价比高)
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3
+      "temperature": 0.45
     },
     // 通用高难度 - Claude Opus 4.6 Max (Claude Pro，最强能力)
     "unspecified-high": {
       "model": "anthropic/claude-opus-4-6",
       "variant": "max",
-      "temperature": 0.3
+      "temperature": 0.45
     },
     // 文档写作 - Gemini 3 Flash (Gemini Pro，快速便宜)
     "writing": {
       "model": "google/gemini-3-flash-preview",
-      "temperature": 0.5
+      "temperature": 0.45
     },
     // 深度分析 - Claude Sonnet 4.5 Thinking (Anthropic Pro)
     "deep": {
@@ -161,7 +154,7 @@
         "type": "enabled",
         "budgetTokens": 80000
       },
-      "temperature": 0.2
+      "temperature": 0.45
     }
   },
   // ========== 并发控制 ==========
@@ -203,5 +196,62 @@
     "aggressive_truncation": false, // 性能优先，不激进截断
     "auto_resume": true
   },
-  "disabled_mcps": ["github"]
+
+  "disabled_mcps": ["github"],
+  "lsp": {
+    "scene_coverage": [
+      "daily",
+      "coding",
+      "tools",
+      "finance",
+      "social",
+      "general"
+    ],
+    "budget": {
+      "monthlyLimitUSD": 2500,
+      "dailyAlertThreshold": 0.8,
+      "emergencySwitchTo": "balanced"
+    },
+    "provider_quotas": {
+      "openai": {
+        "priority": 1,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.1,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["google/gemini-3-flash-preview", "anthropic/claude-sonnet-4-6"]
+      },
+      "anthropic": {
+        "priority": 1,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.1,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["openai/gpt-5.1", "google/gemini-3-flash-preview"]
+      },
+      "google": {
+        "priority": 2,
+        "maxRequestsPerDay": 15000,
+        "maxCostPerRequest": 0.05,
+        "maxConcurrentRequests": 25,
+        "fallbackModels": ["openai/gpt-5.1", "anthropic/claude-sonnet-4-6"]
+      },
+      "zhipuai": {
+        "priority": 3,
+        "maxRequestsPerDay": 30000,
+        "maxCostPerRequest": 0.01,
+        "maxConcurrentRequests": 40,
+        "fallbackModels": ["openai/gpt-5.1", "kimi/kimi-coding-pro"]
+      },
+      "kimi": {
+        "priority": 4,
+        "maxRequestsPerDay": 10000
+      },
+      "step": {
+        "priority": 4,
+        "maxRequestsPerDay": 10000
+      }
+    },
+    "constraints": {
+      "maxToolsPerRequest": 8,
+    }
+  }
 }

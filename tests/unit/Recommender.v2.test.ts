@@ -26,7 +26,7 @@ function createMockStrategy(
   overrides: Partial<StrategyMetadata> = {},
 ): StrategyMetadata {
   return {
-    name: "strategy-2-balanced",
+    name: "balanced",
     filePath: "/mock/strategies/2-balanced.jsonc",
     description: "Balanced strategy for general use",
     costLevel: "medium",
@@ -42,7 +42,7 @@ function createMockStrategy(
 function createStrategyLibrary(): StrategyMetadata[] {
   return [
     createMockStrategy({
-      name: "strategy-0-super",
+      name: "smart",
       description: "Ultimate performance and quality",
       costLevel: "ultra-high",
       models: [
@@ -52,31 +52,31 @@ function createStrategyLibrary(): StrategyMetadata[] {
       ],
     }),
     createMockStrategy({
-      name: "strategy-1-performance",
+      name: "fast",
       description: "High performance strategy",
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "openai/gpt-5.2-codex"],
     }),
     createMockStrategy({
-      name: "strategy-2-balanced",
+      name: "balanced",
       description: "Balanced strategy",
       costLevel: "medium",
       models: ["anthropic/claude-sonnet-4-5", "github-copilot/gpt-5-mini"],
     }),
     createMockStrategy({
-      name: "strategy-3-economical",
+      name: "cheap",
       description: "Cost-effective strategy",
       costLevel: "low",
       models: ["github-copilot/gpt-4.1", "google/gemini-3-flash"],
     }),
     createMockStrategy({
-      name: "strategy-4-creative",
+      name: "smart",
       description: "Content creation strategy",
       costLevel: "medium-high",
       models: ["anthropic/claude-sonnet-4-5", "openai/gpt-5.2"],
     }),
     createMockStrategy({
-      name: "strategy-5-research",
+      name: "smart",
       description: "Deep research strategy",
       costLevel: "high",
       models: ["anthropic/claude-opus-4-5", "google/gemini-3-pro"],
@@ -264,9 +264,9 @@ describe("Adaptive Weights - 权重自适应", () => {
 
       const recommendations = recommender.recommend(context);
 
-      // 应该推荐 strategy-5-research
+      // 应该推荐 smart
       expect(recommendations[0].strategyName).toBe(
-        "strategy-5-research",
+        "smart",
       );
     });
   });
@@ -277,9 +277,9 @@ describe("Adaptive Weights - 权重自适应", () => {
         scenario: { type: "coding", priority: "balanced" },
         history: {
           recentStrategies: [
-            "strategy-2-balanced",
-            "strategy-2-balanced",
-            "strategy-2-balanced",
+            "balanced",
+            "balanced",
+            "balanced",
           ],
           frequentScenarios: ["coding"],
         },
@@ -288,9 +288,9 @@ describe("Adaptive Weights - 权重自适应", () => {
 
       const recommendations = recommender.recommend(context);
 
-      // strategy-2-balanced 应该排名靠前
+      // balanced 应该排名靠前
       const balanced = recommendations.find(
-        (r) => r.strategyName === "strategy-2-balanced",
+        (r) => r.strategyName === "balanced",
       );
       expect(balanced).toBeDefined();
       expect(balanced?.score).toBeGreaterThan(70);
@@ -317,7 +317,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       const context = enhancer.enhanceContext(raw);
       const recommendations = recommender.recommend(context);
 
-      expect(recommendations[0].strategyName).toBe("strategy-2-balanced");
+      expect(recommendations[0].strategyName).toBe("balanced");
       expect(recommendations[0].score).toBeGreaterThan(75);
     });
   });
@@ -329,7 +329,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       const recommendations = recommender.recommend(context);
 
       const research = recommendations.find(
-        (r) => r.strategyName === "strategy-5-research",
+        (r) => r.strategyName === "smart",
       );
       expect(research).toBeDefined();
       expect(research?.score).toBeGreaterThan(75);
@@ -348,7 +348,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       // 应该推荐经济策略或平衡策略
       const topRecommendation = recommendations[0];
       expect(
-        ["strategy-3-economical", "strategy-2-balanced"].includes(
+        ["cheap", "balanced"].includes(
           topRecommendation.strategyName,
         ),
       ).toBe(true);
@@ -362,7 +362,7 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       const recommendations = recommender.recommend(context);
 
       const creative = recommendations.find(
-        (r) => r.strategyName === "strategy-4-creative",
+        (r) => r.strategyName === "smart",
       );
       expect(creative).toBeDefined();
     });
@@ -378,9 +378,9 @@ describe("End-to-End Accuracy - 推荐准确率", () => {
       const topRecommendation = recommendations[0];
       expect(
         [
-          "strategy-0-super",
-          "strategy-1-performance",
-          "strategy-5-research",
+          "smart",
+          "fast",
+          "smart",
         ].includes(topRecommendation.strategyName),
       ).toBe(true);
       expect(topRecommendation.score).toBeGreaterThan(70);

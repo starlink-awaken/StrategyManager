@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "极致性能型（极致稳定）：最强模型负责关键决策，大用量资源承担主力，思考预算充足",
+  "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
   "metadata": {
     "version": "2.1.1",
     "updated": "2026-02-13",
@@ -17,8 +17,83 @@
       "方舟 CodingPlan Pro"
     ]
   },
+
+  "lsp": {
+    "scene_coverage": ["core development", "architecture design", "code review", "research", "creative", "writing", "multimedia", "collaboration", "education", "documentation", "agent-heavy"]
+    "budget": {
+      "monthlyLimitUSD": 3000,
+      "dailyAlertThreshold": 0.8,
+      "emergencySwitchTo": "performance"
+    },
+    "provider_quotas": {
+      "anthropic": {
+        "priority": 1,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.05,
+        "maxConcurrentRequests": 10,
+        "fallbackModels": ["openai/gpt-5.2", "google/gemini-3-pro-preview"]
+      },
+      "openai": {
+        "priority": 1,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.05,
+        "maxConcurrentRequests": 10,
+        "fallbackModels": ["anthropic/claude-opus-4-6", "deepseek/deepseek-v3-2"]
+      },
+      "google": {
+        "priority": 2,
+        "maxRequestsPerDay": 8000,
+        "maxCostPerRequest": 0.03,
+        "maxConcurrentRequests": 15,
+        "fallbackModels": ["openai/gpt-5.2", "deepseek/deepseek-v3-2"]
+      },
+      "deepseek": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxCostPerRequest": 0.01,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["openai/gpt-5.2", "zhipuai/glm-5"]
+      },
+      "zhipuai": {
+        "priority": 3,
+        "maxRequestsPerDay": 50000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 30,
+        "fallbackModels": ["deepseek/deepseek-v3-2", "kimi/kimi-coding-pro"]
+      },
+      "kimi": {
+        "priority": 4
+      },
+      "step": {
+        "priority": 4
+      },
+      "minimax": {
+        "priority": 4
+      },
+      "github-copilot": {
+        "priority": 1,
+        "maxRequestsPerDay": 10000,
+        "maxConcurrentRequests": 5
+      }
+      "anthropic": {
+        "priority": 1
+      },
+      "openai": {
+        "priority": 1
+      },
+      "kimi": {
+        "priority": 3
+      },
+      "step": {
+        "priority": 4
+      }
+    },
+    "constraints": {
+      "maxToolsPerRequest": 15
+    }
+  },
   // ================================================
-  // Strategy-0: 极致性能型 (SUPER)
+  // Strategy-SMART: 旗舰智能
   // ================================================
   // 理念：用最强的模型做最重要的事，充分利用思考预算
   // 关键特性：
@@ -42,7 +117,7 @@
         "type": "enabled",
         "budgetTokens": 200000
       },
-      "temperature": 0.3,
+      "temperature": 0.6,
       "maxTokens": 8000
     },
     // 规划器 - Claude Opus 4.6 Thinking (Google Antigravity)
@@ -57,7 +132,7 @@
         "type": "enabled",
         "budgetTokens": 150000
       },
-      "temperature": 0.2,
+      "temperature": 0.55,
       "maxTokens": 6000
     },
     // 架构/代码审查 - GPT-5.3-Codex
@@ -68,7 +143,7 @@
       "fallback": "anthropic/claude-opus-4-6",
       "fallbackReason": "极致稳定 - Opus 4.6 高级推理互备",
       "reasoningEffort": "xhigh",
-      "temperature": 0.3,
+      "temperature": 0.55,
       "maxTokens": 6000
     },
     // 深度工作者 - GPT-5.3-Codex
@@ -78,28 +153,17 @@
       "fallback": "github-copilot/claude-opus-4.6",
       "fallbackReason": "极致稳定 - Copilot Opus 4.6 高级互备",
       "reasoningEffort": "high",
-      "temperature": 0.3,
+      "temperature": 0.55,
       "maxTokens": 8000
     },
     // 文档/知识查询 - GLM-4.7 (ZhiPu 60倍额度)
     // 职责：快速查询、文档检索、模式匹配
     // 配置：低温度、低成本、高并发
-    "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.7",
-      "fallback": "anthropic/claude-haiku-4-5",
-      "fallbackReason": "极致稳定 - Haiku 4.5 快速互备",
-      "temperature": 0.1,
-      "maxTokens": 3000
-    },
+
     // 快速探索 - Claude Haiku 4.5
     // 职责：快速代码探索、grep 上下文收集
     // 配置：经济型，用于辅助任务
-    "explore": {
-      "model": "anthropic/claude-haiku-4-5",
-      "fallback": "google/gemini-3-pro-preview",
-      "temperature": 0.2,
-      "maxTokens": 2000
-    },
+
     // 多模态分析 - Gemini 3 Pro
     // 职责：图像分析、UI 评审、多模态任务
     // 配置：高变体用于最佳质量
@@ -108,7 +172,7 @@
       "fallback": "google/gemini-3-flash-preview",
       "fallbackReason": "极致稳定 - Gemini Flash 3 多模态互备",
       "variant": "high",
-      "temperature": 0.3,
+      "temperature": 0.5,
       "maxTokens": 4000
     },
     // 规划前分析 - Claude Sonnet 4.5 Thinking
@@ -121,7 +185,7 @@
         "type": "enabled",
         "budgetTokens": 80000
       },
-      "temperature": 0.2,
+      "temperature": 0.55,
       "maxTokens": 4000
     },
     // 规划审查 - GPT-5.3-Codex
@@ -131,7 +195,7 @@
       "fallback": "anthropic/claude-opus-4-6",
       "fallbackReason": "极致稳定 - Opus 4.6 审查互备",
       "reasoningEffort": "medium",
-      "temperature": 0.2,
+      "temperature": 0.55,
       "maxTokens": 4000
     },
     // 深度思考 - Claude Opus 4.6 Thinking (Github Copilot)
@@ -144,22 +208,14 @@
         "type": "enabled",
         "budgetTokens": 150000
       },
-      "temperature": 0.2,
+      "temperature": 0.55,
       "maxTokens": 6000
     }
   },
   // ========== Category 配置 ==========
   "categories": {
     // 前端 UI/UX 设计
-    "visual-engineering": {
-      "model": "google/gemini-3-pro-preview",
-      "fallback": "google/gemini-3-flash-preview",
-      "fallbackReason": "极致稳定 - Gemini Flash 3 快速互备",
-      "variant": "high",
-      "temperature": 0.4,
-      "maxTokens": 5000,
-      "description": "UI/UX 设计、前端实现、样式优化"
-    },
+
     // 深度逻辑推理
     "ultrabrain": {
       "model": "openai/gpt-5.3-codex",
@@ -181,22 +237,7 @@
       "maxTokens": 6000,
       "description": "创意文案、设计创意、新颖想法生成"
     },
-    // 快速简单任务
-    "quick": {
-      "model": "zhipuai-coding-plan/glm-5",
-      "temperature": 0.3,
-      "maxTokens": 2000,
-      "description": "快速修复、简单功能、格式转换"
-    },
-    // 通用低难度
-    "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-5",
-      "fallback": "anthropic/claude-haiku-4-5",
-      "fallbackReason": "极致稳定 - Haiku 4.5 快速互备",
-      "temperature": 0.3,
-      "maxTokens": 3000,
-      "description": "文件编辑、代码清理、基础实现"
-    },
+
     // 通用高难度
     "unspecified-high": {
       "model": "anthropic/claude-opus-4-6",

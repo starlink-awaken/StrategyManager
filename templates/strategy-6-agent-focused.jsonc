@@ -2,8 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "智能体任务专用策略: 多agent协作、代码生成、架构决策",
   "metadata": {
-    "version": "1.1.1",
-    "updated": "2026-02-13",
+    "version": "1.2.0",
+    "updated": "2026-02-24",
     "cost_level": "medium-high",
     "use_case": "智能体密集型任务:多agent协作、代码生成、架构决策",
     "optimization": "智能体专用: GPT-5.3-Codex/Mini 混合,GLM-5 大量兜底",
@@ -19,42 +19,42 @@
         "type": "enabled",
         "budgetTokens": 200000
       },
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "prometheus": {
       "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
-      "temperature": 0.2
+      "temperature": 0.5
     },
     "oracle": {
       "model": "openai/gpt-5.3-codex",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
       "reasoningEffort": "high",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "hephaestus": {
       "model": "github-copilot/gpt-5-mini",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "librarian": {
       "model": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "temperature": 0.2
+      "temperature": 0.5
     },
     "explore": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.2
+      "temperature": 0.5
     },
     "multimodal-looker": {
       "model": "google/gemini-3-pro-preview",
       "fallback": "google/gemini-3-flash-preview",
       "fallbackReason": "极致稳定 - Gemini Flash 3 多模态互备",
       "variant": "high",
-      "temperature": 0.3,
+      "temperature": 0.5,
       "maxTokens": 4000
     },
     "metis": {
@@ -62,15 +62,28 @@
       "thinking": {
         "type": "enabled",
         "budgetTokens": 100000
-      }
+      },
+      "temperature": 0.5
     },
     "momus": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "atlas": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3
+      "temperature": 0.5
+    },
+    "kimi": {
+      "model": "zhipuai-coding-plan/glm-4.7",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5"],
+      "temperature": 0.5,
+      "priority": 3
+    },
+    "step": {
+      "model": "openai/gpt-5.3-codex",
+      "fallback": "github-copilot/gpt-4o",
+      "temperature": 0.5,
+      "priority": 4
     }
   },
   "categories": {
@@ -79,21 +92,21 @@
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
-      "temperature": 0.4
+      "temperature": 0.5
     },
     "unspecified-high": {
       "model": "anthropic/claude-sonnet-4.6",
       "fallback": "github-copilot/gpt-4o",
       "fallbackReason": "智能体任务优化 - GPT-4o/GLM-5 双层兜底",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "unspecified-low": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "quick": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "writing": {
       "model": "zhipuai-coding-plan/glm-4.7",
@@ -101,23 +114,47 @@
     },
     "artistry": {
       "model": "github-copilot/claude-sonnet-4.6",
-      "temperature": 0.7
+      "temperature": 0.5
     },
     "ultrabrain": {
       "model": "github-copilot/gpt-5-mini",
       "fallback": "github-copilot/claude-opus-4.6",
       "fallbackReason": "智能体任务优化 - Claude Opus/GLM-5 双层兜底",
-      "temperature": 0.3
+      "temperature": 0.5
     },
     "deep": {
       "model": "zhipuai-coding-plan/glm-4.7",
-      "temperature": 0.2,
+      "temperature": 0.5,
       "thinking": {
         "type": "enabled",
         "budgetTokens": 100000
       }
     }
   },
+  "lsp": {
+    "scene_coverage": ["agent orchestration", "automated workflows", "multi-step tasks"],
+    "budget": {
+      "monthlyLimitUSD": 1200,
+      "dailyAlertThreshold": 0.8,
+      "emergencySwitchTo": "balanced"
+    },
+    "provider_quotas": {
+      "openai": { "monthlyTokens": 50000000, "dailyTokens": 1666666 },
+      "zhipuai-coding-plan": { "monthlyTokens": 100000000, "dailyTokens": 3333333 },
+      "github-copilot": { "monthlyTokens": 100000000, "dailyTokens": 3333333 },
+      "minimax-cn-coding-plan": { "monthlyTokens": 50000000, "dailyTokens": 1666666 },
+      "google": { "monthlyTokens": 30000000, "dailyTokens": 1000000 },
+      "anthropic": { "monthlyTokens": 20000000, "dailyTokens": 666666 },
+      "ark": { "monthlyTokens": 50000000, "dailyTokens": 1666666 },
+      "deepseek": { "monthlyTokens": 30000000, "dailyTokens": 1000000 },
+      "siliconflow": { "monthlyTokens": 30000000, "dailyTokens": 1000000 },
+      "openrouter": { "monthlyTokens": 30000000, "dailyTokens": 1000000 }
+    },
+    "constraints": {
+      "maxToolsPerRequest": 15
+    }
+  },
+
   "sisyphus_agent": {
     "disabled": false,
     "default_builder_enabled": false,

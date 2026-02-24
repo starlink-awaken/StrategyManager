@@ -1,3 +1,5 @@
+import * as path from "path";
+import { readJSONC } from "./jsonc"; // 用于读取策略JSONC文件
 /**
  * Recommender.ts
  * 智能策略推荐系统
@@ -100,44 +102,43 @@ export interface Recommendation {
  * 第一个策略是最佳匹配，第二个是次优选择
  */
 const SCENARIO_MAPPING: Record<ScenarioType, string[]> = {
-  "agent-heavy": ["strategy-6-agent", "strategy-1-performance"],
-  education: ["strategy-2-balanced", "strategy-4-creative"],
-  health: ["strategy-2-balanced", "strategy-5-research"],
-  finance: ["strategy-5-research", "strategy-1-performance"],
-  coding: ["strategy-2-balanced", "strategy-1-performance"],
-  research: ["strategy-5-research", "strategy-1-performance"],
-  creative: ["strategy-4-creative", "strategy-2-balanced"],
-  daily: ["strategy-8-general", "strategy-2-balanced"],
-  writing: ["strategy-4-creative", "strategy-2-balanced"],
-  multimedia: ["strategy-4-creative", "strategy-2-balanced"],
-  social: ["strategy-4-creative", "strategy-2-balanced"],
-  tools: ["strategy-8-general", "strategy-2-balanced"],
-  entertainment: ["strategy-8-general", "strategy-2-balanced"],
-  documentation: ["strategy-8-general", "strategy-2-balanced"],
+  "agent-heavy": ["fast", "balanced"],
+  education: ["balanced", "smart"],
+  health: ["balanced", "smart"],
+  finance: ["smart", "fast"],
+  coding: ["balanced", "fast"],
+  research: ["smart", "fast"],
+  creative: ["smart", "balanced"],
+  daily: ["balanced", "fast"],
+  writing: ["smart", "balanced"],
+  multimedia: ["smart", "balanced"],
+  social: ["smart", "balanced"],
+  tools: ["balanced", "fast"],
+  entertainment: ["balanced", "fast"],
+  documentation: ["balanced", "fast"],
 };
 
 /**
  * 策略成本级别映射
  */
 const COST_LEVELS: Record<string, number> = {
-  "strategy-0-super": 2500,
-  "strategy-1-performance": 1250,
-  "strategy-2-balanced": 550,
+  "smart": 2500,
+  "fast": 1250,
+  "balanced": 550,
+  "cheap": 150,
+  "strategy-6-agent-focused": 750,
+  "strategy-7-china-first": 180,
   "strategy-8-general": 180,
-  "strategy-5-research": 2150,
-  "strategy-4-creative": 650,
 };
 
 /**
  * 策略质量评分
  */
 const QUALITY_SCORES: Record<string, number> = {
-  "strategy-0-super": 1.0,
-  "strategy-5-research": 0.95,
-  "strategy-1-performance": 0.85,
-  "strategy-4-creative": 0.8,
-  "strategy-2-balanced": 0.7,
-  "strategy-8-general": 0.65,
+  "smart": 1.0,
+  "balanced": 0.7,
+  "fast": 0.85,
+  "cheap": 0.5,
   "strategy-6-agent": 0.85,
 };
 
@@ -236,41 +237,53 @@ export class SmartRecommender {
     strategy: StrategyMetadata,
     scenario?: ScenarioConfig,
   ): number {
-    if (!scenario) return 0.5; // 默认中等匹配
+    if (!scenario) return 0.5;
 
-    const matchingStrategies = SCENARIO_MAPPING[scenario.type] || [];
+    const sceneType = scenario.type as ScenarioType;
 
-    // 完美匹配
-    if (matchingStrategies[0] === strategy.name) {
-  if (scenario?.type === "agent-heavy") {
-    return 1.2; // Boost for Strategy-6 in agent-heavy scenarios
-  }
-  return 1.0;
-}
-
-    // 次优匹配
-    if (matchingStrategies[1] === strategy.name) return 0.7;
-
-    // 包含在映射中
-    if (matchingStrategies.includes(strategy.name)) return 0.5;
-
-    // 复杂度调整
-    if (scenario.complexity === "complex") {
-      // 复杂任务倾向高质量策略
-      if (
-        strategy.name.includes("super") ||
-        strategy.name.includes("research")
-      ) {
-        return 0.6;
+    try {
+      const config = readJSONC(strategy.filePath);
+      const coverage = (config.lsp?.scene_coverage || []) as string[];
+      if (Array.isArray(coverage) && coverage.length > 0) {
+        // 精确匹配
+        if (coverage.some((s: string) => s.toLowerCase() === sceneType.toLowerCase())) {
+          return 1.0;
+        }
+        // 模糊匹配：包含关系
+        if (coverage.some((s: string) => sceneType.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(sceneType.toLowerCase()))) {
+          return 0.7;
+        }
+        // 有coverage但不匹配，返回低分
+        return 0.1;
       }
-    } else if (scenario.complexity === "simple") {
-      // 简单任务倾向经济策略
-      if (strategy.name.includes("economical")) {
-        return 0.6;
-      }
+    } catch (e) {
+      // 读取失败，忽略
     }
 
-    return 0.2; // 弱匹配
+    // Fallback: 基于策略名和场景类型的默认匹配
+    const name = strategy.name;
+
+    if (name === "smart") return 0.9;
+    if (name === "fast") {
+      return sceneType === "coding" || sceneType === "finance" || sceneType === "research" ? 0.9 : 0.3;
+    }
+    if (name === "balanced") {
+      return sceneType === "daily" || sceneType === "tools" ? 0.9 : 0.4;
+    }
+    if (name === "cheap") {
+      return sceneType === "daily" || sceneType === "tools" || sceneType === "education" ? 0.9 : 0.4;
+    }
+    if (name === "strategy-6-agent-focused") {
+      return sceneType === "agent-heavy" || sceneType === "coding" ? 0.9 : 0.3;
+    }
+    if (name === "strategy-7-china-first") {
+      return sceneType === "coding" || sceneType === "writing" || sceneType === "daily" ? 0.8 : 0.4;
+    }
+    if (name === "strategy-8-general") {
+      return sceneType === "daily" || sceneType === "tools" ? 0.8 : 0.5;
+    }
+
+    return 0.5;
   }
 
   /**
@@ -289,7 +302,7 @@ export class SmartRecommender {
     const remaining = budget.monthly - budget.currentSpent;
 
     // 预算不足
-    if (strategyCost > remaining) return 0.1;
+    if (strategyCost > remaining) return 0;
 
     // 成本占剩余预算的比例
     console.log(`Cost calculation for ${strategy.name}: strategyCost=${strategyCost}, remaining=${remaining}`);
@@ -584,7 +597,7 @@ export class SmartRecommender {
       }
     }
 
-    return reasons.join("；") || "基本适用于当前场景";
+    return reasons.join("；") || "适合一般场景使用，成本和输出质量平衡";
   }
 
   /**
