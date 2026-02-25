@@ -279,7 +279,6 @@ export class KeywordWeightEngine {
   identifyScenarios(description: string): ScenarioScores {
     const lowerDesc = this.normalizeText(description);
     const tokens = this.tokenize(lowerDesc);
-console.log('Tokens:', tokens);
     const scores = {} as Record<ScenarioType, number>;
 
     // 初始化所有场景分数

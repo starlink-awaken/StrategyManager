@@ -1773,9 +1773,9 @@ function optimizeAgentModels(
 }
 
 function applyToolConstraints(config: StrategyConfig): void {
-  const constraints = (config.lsp?.constraints || {}) as any;
-  const allowedTools = constraints.allowedTools as string[] | undefined;
-  const maxTools = constraints.maxToolsPerRequest as number | undefined;
+  const constraints = config.lsp?.constraints || {};
+  const allowedTools = (constraints as { allowedTools?: string[] }).allowedTools;
+  const maxTools = (constraints as { maxTools?: number }).maxTools;
 
   if (!allowedTools && !maxTools) return; // 无约束则跳过
 
