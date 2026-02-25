@@ -1,4 +1,7 @@
 {
+  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
+  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
   "metadata": {

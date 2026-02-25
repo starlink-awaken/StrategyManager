@@ -1,4 +1,5 @@
 {
+  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "均衡型：日常主力，性价比最优",
   "metadata": {
