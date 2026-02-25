@@ -1,120 +1,42 @@
 # Tools 核心模块
 
-**父级**: `./AGENTS.md`
+**父级**: `../AGENTS.md`
 
-## 概述
+## OVERVIEW
+AI 策略管理核心逻辑实现层。11k+ 行 TypeScript 代码，涵盖策略 CRUD、智能推荐、多厂商同步及成本分析。
 
-AI 策略管理核心功能集：策略 CRUD、智能推荐、多厂商使用同步、成本分析。11k+ 行 TypeScript 代码，Bun 运行时。
+## STRUCTURE
+- `ManageStrategies.ts`: 主入口，负责 CLI 路由与核心调度。
+- `UsageSync/`: 独立子模块，处理多平台使用数据同步。
+- `Recommender.ts`: 推荐引擎，基于场景与预算进行评分。
+- `Validator.ts`: 策略 Schema 验证与自动修复建议。
+- `KeywordWeightEngine.ts`: 自然语言解析与关键词权重计算。
+- `PathManager.ts`: 跨平台路径解析与配置定位。
+- `ContextEnhancer.ts`: 推荐上下文构造与增强。
+- `CostReport.ts`: 成本分析与 GitHub Copilot 报告生成。
 
-## 模块清单
+## WHERE TO LOOK
+- **策略切换与列表**: `ManageStrategies.ts` (2802 行)。
+- **推荐逻辑**: `Recommender.ts` (841 行) 与 `KeywordWeightEngine.ts`。
+- **路径与备份管理**: `PathManager.ts`。
+- **Schema 校验**: `Validator.ts`。
 
-| 模块 | 行数 | 职责 |
-|------|------|------|
-| ManageStrategies.ts | 2802 | 主入口：CLI 路由、策略切换、历史管理 |
-| UsageSync/ | 2400+ | 多厂商使用同步（独立子模块） |
-| Recommender.ts | 841 | 智能推荐引擎：场景预算质量评分 |
-| Validator.ts | 489 | 策略验证：Schema 兼容性检查 |
-| KeywordWeightEngine.ts | 533 | 关键词权重：自然语言解析 |
-| PathManager.ts | 195 | 路径管理：配置目录解析 |
-| ContextEnhancer.ts | 295 | 上下文增强：推荐上下文构造 |
-| CostReport.ts | 91 | 成本报告：GitHub Copilot 分析 |
+## CONVENTIONS
+- **单文件规模**: `ManageStrategies.ts` 超过 2500 行，修改前需评估拆分必要性。
+- **符号统计**: 55 functions, 16 interfaces, 包含多组核心常量。
+- **错误处理**: 强制使用 `chalk` 彩色输出（green=成功, red=错误, yellow=警告, blue=信息）。
 
-## 核心类与接口
+## MODULES
+- `ManageStrategies`: 核心调度器，依赖 `PathManager`, `Recommender`, `UsageSync`。
+- `SmartRecommender`: 评分引擎，依赖 `KeywordWeightEngine`, `ContextEnhancer`。
+- `StrategyValidator`: 独立验证器，支持 Error/Warn/Info 三层校验。
 
-### 主入口：ManageStrategies
-```typescript
-// 命令路由（Commander）
-program
-  .command("list")
-  .command("switch <name>")
-  .command("compare <a> <b>")
-  .command("recommend [scenario]")
-  .command("validate <file>")
-  // ... 10+ commands
-
-// 关键函数
-switchStrategy(name)      // 策略切换 + 备份
-compareStrategies(a, b)   // 差异可视化
-recommend(scenario)       // 智能推荐
-importStrategy(path)       // 导入 + 验证
-exportStrategy(name, out) // 导出 JSON
-```
-
-### 推荐：Recommender
-```typescript
-class SmartRecommender {
-  // 多因素评分
-  calculateScore(strategy, context): number
-
-  // 场景类型
-  scenarioTypes = {
-    "日常开发", "深度研究", "创意写作", "成本敏感"
-  }
-
-  // 优先级
-  priorities = {
-    "balanced", "quality", "cost", "speed"
-  }
-}
-```
-
-### 验证：Validator
-```typescript
-class StrategyValidator {
-  // 三层验证
-  validate(config): {
-    errors: ValidationError[]
-    warnings: ValidationWarning[]
-    info: ValidationInfo[]
-  }
-
-  // 自动修复建议
-  suggestFixes(errors): FixSuggestion[]
-}
-```
-
-### 路径：PathManager
-```typescript
-class PathManager {
-  // 配置目录（优先级）
-  getConfigDir(): string
-  getStrategiesDir(): string
-  getHistoryPath(): string
-  getBackupDir(): string
-}
-```
-
-## 导入依赖关系
-
-```
-ManageStrategies.ts
-  ├─ PathManager (路径解析)
-  ├─ Recommender (推荐引擎)
-  └─ UsageSync (使用同步)
-
-Recommender.ts
-  ├─ KeywordWeightEngine (关键词解析)
-  └─ ContextEnhancer (上下文)
-
-Validator.ts (独立)
-```
-
-## 工作流映射
-
-| CLI 命令 | 工作流 |
-|----------|--------|
-| list | Workflows/List.md |
-| switch | Workflows/Switch.md |
-| compare | Workflows/Compare.md |
-| recommend | Workflows/Recommend.md |
-| validate | Workflows/Validate.md |
-| import/export | Workflows/Import.md / Export.md |
-| history/rollback | Workflows/History.md |
-| fix | Workflows/Fix.md |
-
-## 注意事项
-
-- **ManageStrategies.ts** 单文件 2802 行，修改前考虑拆分
-- **UsageSync/** 独立子模块，详见 `Tools/UsageSync/AGENTS.md`
-- **Recommender.v2** 存在（`tests/unit/Recommender.v2.test.ts`），可能表示重构中
-- **颜色输出**: 使用 `chalk`，遵循 green=success, red=error, yellow=warn, blue=info
+## WORKFLOWS
+| CLI 命令 | 映射工作流 |
+| :--- | :--- |
+| `list` / `switch` | `Workflows/List.md`, `Workflows/Switch.md` |
+| `recommend` | `Workflows/Recommend.md` |
+| `compare` | `Workflows/Compare.md` |
+| `validate` / `fix` | `Workflows/Validate.md`, `Workflows/Fix.md` |
+| `history` / `rollback` | `Workflows/History.md` |
+| `sync-usage` | `Workflows/UsageSync.md` |],op:

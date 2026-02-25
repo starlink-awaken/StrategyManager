@@ -1,0 +1,11 @@
+SmartRecommender - Cost Efficiency > should favor economical strategies with tight budget
+SmartRecommender - Cost Efficiency > should warn when strategy exceeds budget
+SmartRecommender - Weight Adjustment > should adjust scores for speed priority
+SmartRecommender - Complete Recommendations > should provide meaningful reasons for recommendations
+StrategyValidator - Model Availability > should not warn about known models
+StrategyValidator - Cost Reasonableness > should identify high-cost models
+StrategyValidator - Cost Reasonableness > should warn when using too many expensive models
+StrategyValidator - Comprehensive Validation > should generate suggestions based on validation results
+KeywordWeightEngine - 关键词识别 > T1: 场景识别 - 编程开发 > should identify coding scenario with high confidence
+ContextEnhancer - 上下文增强 > 基础增强功能 > should calculate complexity and urgency
+End-to-End Accuracy - 推荐准确率 > T10: 编程 + 快速 > should recommend balanced strategy

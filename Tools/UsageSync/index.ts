@@ -36,8 +36,64 @@ import {
   SyncResult,
   BatchSyncResult,
   CostOptimizationConfig,
+  QuotaConfig,
 } from "./interfaces";
 import { QuotaMonitor } from "./QuotaMonitor";
+import type { StrategyConfig } from "../ManageStrategies";
+
+/**
+ * 将策略的 lsp.provider_quotas 转换为 QuotaConfig[]
+ * 策略结构: { "anthropic": { "maxRequestsPerDay": 50, ... }, ... }
+ * 转换为: [{ provider, monthlyLimitTokens, fallbackPriority }]
+ */
+export function adaptStrategyQuotas( strategyQuotas: Record<string, any> ): QuotaConfig[] {
+  const result: QuotaConfig[] = [];
+  const TOKENS_PER_REQUEST = 3000; // 估算值
+
+  for (const [provider, config] of Object.entries(strategyQuotas)) {
+    const quota = config as any;
+    const dailyRequests = quota.maxRequestsPerDay || 1000;
+    const monthlyLimitTokens = dailyRequests * TOKENS_PER_REQUEST * 30;
+
+    const fallbackPriority: string[] = [];
+    if (quota.fallbackModels && Array.isArray(quota.fallbackModels)) {
+      fallbackPriority.push(...quota.fallbackModels);
+    }
+
+    result.push({
+      provider,
+      monthlyLimitTokens,
+      thresholdPercent: 80,
+      fallbackPriority: fallbackPriority.length > 0 ? fallbackPriority : undefined,
+    });
+  }
+
+  return result;
+}
+
+/**
+ * 从策略配置中提取 CostOptimizationConfig
+ */
+export function extractCostOptimizationConfig(strategy: StrategyConfig): CostOptimizationConfig {
+  const lsp = strategy.lsp || ({} as any);
+
+  const quotas = lsp.provider_quotas ? adaptStrategyQuotas(lsp.provider_quotas) : undefined;
+
+  // 转换为 Record<string, QuotaConfig>
+  const quotaRecord: Record<string, QuotaConfig> = {};
+  if (quotas) {
+    for (const q of quotas) {
+      quotaRecord[q.provider] = q;
+    }
+  }
+
+  return {
+    budget: lsp.budget || undefined,
+    providerQuotas: quotaRecord,
+    quotaSensitivity: lsp.quotaSensitivity || 'medium',
+    timeBasedRouting: lsp.timeBasedRouting,
+  };
+}
 
 /**
  * 使用量同步协调器

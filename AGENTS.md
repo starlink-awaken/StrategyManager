@@ -1,6 +1,7 @@
 # StrategyManager 知识库
 
-**生成时间**: 2026-02-24 16:35:06
+**生成时间**: 2026-02-24 更新中
+**模式**: 增量更新 + 子目录覆盖
 **Git 提交**: e94eaec
 **分支**: main
 
@@ -8,33 +9,33 @@
 
 AI 策略配置生命周期管理工具 - OpenCode Skill，支持 Claude、Copilot、Gemini、minimax、方舟等多平台配置管理。核心特性：智能推荐、策略比较、成本分析、历史回滚、使用同步。
 
-**技术栈**: TypeScript 5.3+ + Bun 1.0+ (13,043 行代码，142 个文件)
 
-## 常用命令
 
-### 开发
-```bash
-bun install                    # 安装依赖
-bun type-check                 # TypeScript 类型检查
-bun run dev:watch              # 热重载开发
-bun run Tools/ManageStrategies.ts <command>  # 运行 CLI 命令
+
+```
+./
+├── Tools/              # 核心 (11k+ 行)
+│   ├── ManageStrategies.ts   (2802 行)
+│   ├── Recommender.ts        (841 行)
+│   ├── Validator.ts          (489 行)
+│   └── UsageSync/            (独立子模块)
+├── Workflows/          # 13 个工作流 (Markdown)
+├── tests/              # 单元测试 + fixtures
+├── templates/          # 12 个策略模板
+├── scripts/            # 安装/配置脚本
+└── docs/               # 文档
 ```
 
-### 测试
-```bash
-bun test                       # 所有测试
-bun test:watch                 # 监听模式
-bun test:coverage             # 覆盖率报告
-bun test tests/unit/           # 单元测试套件
-bun test tests/unit/PathManager.test.ts  # 单个测试文件（推荐）
-bun test:ci                   # CI 模式（Junit 报告）
-```
+## WHERE TO LOOK
 
-### 脚本
-```bash
-bash scripts/install.sh        # 安装策略模板
-bash scripts/setup-opencode-integration.sh  # 配置 OpenCode 集成
-```
+| 任务 | 位置 | 提示 |
+|------|------|------|
+| 策略 CRUD | `Tools/ManageStrategies.ts` | 2802 行，考虑拆分 |
+| 推荐引擎 | `Tools/Recommender.ts` | v2 重构中 |
+| 使用同步 | `Tools/UsageSync/` | 独立模块，见子AGENTS.md |
+| 工作流 | `Workflows/*.md` | 通过 SKILL.md 路由 |
+| 模板 | `templates/strategy-*.jsonc` | JSONC 格式 |
+| 脚本 | `scripts/*.sh` | + `.ts` 辅助脚本 |
 
 ## 代码风格指南
 
@@ -166,3 +167,49 @@ interface UsageData {
 - **Recommender.v2**: 存在（`tests/unit/Recommender.v2.test.ts`），重构进行中
 - **模块边界**: Tools/UsageSync/ 是完整模块（有 index.ts），Tools/ 包含多个独立模块
 - **测试覆盖**: 目标 - PathManager 90%+, Validator 85%+, Recommender 80%+, ManageStrategies 75%+, UsageSync 70%+
+
+## CONVENTIONS
+
+- **运行时**: Bun 1.0+
+- **入口**: `bun run Tools/ManageStrategies.ts <command>`
+- **测试**: `bun test` (原生 Bun 测试)
+- **配置文件**: `.editorconfig` + `tsconfig.json` (根 + Tools) + `.prettierrc.json`
+- **无 ESLint**: 仅依赖 type-check + 测试
+- **CI**: GitHub Actions (矩阵: ubuntu/macos) + Codecov
+- ** fixtures**: `tests/fixtures/mock-data.ts`
+
+## ANTI-PATTERNS
+
+- ❌ `as any` 类型断言 (18 处，主要在 UsageSync)
+- ❌ 单文件超 2500 行 (ManageStrategies.ts 2802 行)
+- ❌ 硬编码绝对路径
+- ❌ 忽略 type-check 直接提交
+
+## UNIQUE STYLES
+
+- **颜色输出**: `chalk` — green=success, red=error, yellow=warn, blue=info
+- **工作流文件**: Markdown 格式，无业务逻辑
+- **模板格式**: JSONC (带注释的 JSON)
+- **导入顺序**: Node 内置 → 项目相对 → 类型导入 → 第三方
+
+## 质量守则
+
+- ✅ 提交前: `bun type-check` (零错误)
+- ✅ 新代码: 配套测试 (覆盖率目标 80%+)
+- ✅ 反模式: 避免 `as any` / `@ts-ignore`
+- ✅ 文档: 公开方法必须 JSDoc
+
+## 子模块导航
+
+| 目录 | AGENTS.md | 说明 |
+|------|-----------|------|
+| `Tools/` | ✅ `Tools/AGENTS.md` | 核心模块总览 |
+| `Tools/UsageSync/` | ✅ `Tools/UsageSync/AGENTS.md` | 多厂商同步 (2411 行) |
+| `tests/` | ✅ `tests/AGENTS.md` | 测试策略 |
+| `Workflows/` | ✅ `Workflows/AGENTS.md` | 工作流定义 |
+| `scripts/` | ✅ `scripts/AGENTS.md` | 脚本约定 |
+| `templates/` | ✅ `templates/AGENTS.md` | 策略模板 |
+
+---
+
+**维护**: 遵循 oh-my-opencode schema 兼容性 | 禁止偏离官方字段范围

@@ -1,145 +1,59 @@
-# Tests 测试套件
+# tests/ AGENTS.md
 
-**父级**: `../AGENTS.md`
+## OVERVIEW
+基于 Bun 原生测试套件的自动化测试体系，包含 3500+ 行测试代码。覆盖从底层路径管理到高层策略 CRUD 及多厂商同步的核心逻辑。
 
-## 概述
-
-Bun 原生测试套件，3500+ 行测试代码，覆盖核心模块。8 个测试文件，Mock 数据支持。
-
-## 目录结构
-
+## STRUCTURE
 ```
 tests/
-├── unit/                  # 单元测试
-│   ├── PathManager.test.ts
-│   ├── Validator.test.ts
-│   ├── Recommender.test.ts
-│   └── Recommender.v2.test.ts  # 重构版本测试
-├── fixtures/              # Mock 数据
-│   └── mock-data.ts
-├── CLI.test.ts            # CLI 命令测试
-├── DataProcessing.test.ts # 数据处理测试
-├── ManageStrategies.test.ts  # 核心功能测试
-└── UsageSync.test.ts      # 使用同步测试
+├── unit/                  # 核心模块单元测试
+├── fixtures/              # 静态 Mock 数据
+├── CLI.test.ts            # 命令行交互测试
+├── DataProcessing.test.ts # 数据转换逻辑测试
+├── ManageStrategies.test.ts # 策略生命周期测试
+└── UsageSync.test.ts      # 多厂商同步逻辑测试
 ```
 
-## 测试文件映射
+## WHERE TO LOOK
+| 测试文件 | 对应源码 | 核心关注点 |
+| :--- | :--- | :--- |
+| `unit/PathManager.test.ts` | `Tools/PathManager.ts` | 路径解析、配置目录定位 |
+| `unit/Validator.test.ts` | `Tools/Validator.ts` | Schema 校验、自动修复建议 |
+| `unit/Recommender.*.test.ts` | `Tools/Recommender.ts` | 推荐评分算法、v2 重构逻辑 |
+| `ManageStrategies.test.ts` | `Tools/ManageStrategies.ts` | 策略 CRUD、备份与回滚机制 |
+| `UsageSync.test.ts` | `Tools/UsageSync/` | API 响应解析、成本计算 |
+| `CLI.test.ts` | `Tools/UsageSync/CLI.ts` | 命令行参数解析与输出 |
+| `DataProcessing.test.ts` | 通用逻辑 | 数据转换、格式化准确性 |
 
-| 测试文件 | 模块 | 测试内容 |
-|---------|------|---------|
-| PathManager.test.ts | `Tools/PathManager.ts` | 路径解析、配置目录 |
-| Validator.test.ts | `Tools/Validator.ts` | Schema 验证、错误检测 |
-| Recommender.test.ts | `Tools/Recommender.ts` | 推荐算法、评分逻辑 |
-| Recommender.v2.test.ts | `Tools/Recommender.ts` | 重构版本测试 |
-| CLI.test.ts | `Tools/UsageSync/CLI.ts` | CLI 命令行 |
-| DataProcessing.test.ts | 通用 | 数据转换、格式化 |
-| ManageStrategies.test.ts | `Tools/ManageStrategies.ts` | 策略 CRUD、切换 |
-| UsageSync.test.ts | `Tools/UsageSync/` | 多厂商同步 |
-
-## Mock 数据
-
-### fixtures/mock-data.ts
+## TESTING PATTERNS
+使用 `bun test` 运行。采用 `describe/it/expect` 经典模式。
 ```typescript
-// Mock 策略配置
-export const mockStrategyConfig: StrategyConfig = {
-  agents: {
-    "agent1": {
-      model: "claude-3-opus",
-      category: "deep"
-    }
-  }
-}
+import { describe, it, expect, beforeEach } from "bun:test";
 
-// Mock 使用数据
-export const mockUsageData: UsageData = {
-  provider: "anthropic",
-  model: "claude-3-opus",
-  usage: {
-    inputTokens: 1000,
-    outputTokens: 500,
-    totalTokens: 1500
-  },
-  cost: 0.03
-}
+describe("Feature", () => {
+  it("should handle success", async () => {
+    const result = await targetFunction();
+    expect(result).toBeDefined();
+  });
+});
 ```
 
-## 测试命令
-
-```bash
-# 所有测试
-bun test
-
-# 单元测试
-bun test tests/unit/
-
-# 特定测试
-bun test tests/unit/Validator.test.ts
-
-# 覆盖率
-bun test --coverage
-
-# 监听模式
-bun test --watch
-```
-
-## 测试模式
-
+## FIXTURES
+Mock 数据统一管理于 `tests/fixtures/mock-data.ts`。
+**模式**: 导出强类型的常量，避免在测试文件中硬编码复杂对象。
 ```typescript
-import { describe, it, expect, beforeEach } from "bun:test"
-
-describe("模块名", () => {
-  beforeEach(() => { /* setup */ })
-
-  it("应该做什么", () => {
-    expect(result).toBe(expected)
-  })
-})
+import { mockStrategyConfig } from "./fixtures/mock-data";
+// 在测试中直接使用 mockStrategyConfig
 ```
 
-### 异步 & Mock
-```typescript
-it("异步操作", async () => {
-  const result = await asyncFunction()
-  expect(result).toBeDefined()
-})
+## COVERAGE TARGETS
+| 模块 | 目标覆盖率 |
+| :--- | :--- |
+| PathManager | 90%+ |
+| Validator | 85%+ |
+| Recommender | 80%+ |
+| ManageStrategies | 75%+ |
+| UsageSync | 70%+ |
 
-it("Mock 数据", () => {
-  const mockConfig = mockStrategyConfig
-  expect(validate(mockConfig).errors).toHaveLength(0)
-})
-```
-
-## 覆盖率目标
-
-| 模块 | 目标 | 当前 |
-|------|------|------|
-| PathManager | 90% | ✅ |
-| Validator | 85% | ✅ |
-| Recommender | 80% | ✅ |
-| ManageStrategies | 75% | ✅ |
-| UsageSync | 70% | ⚠️ |
-
-## 测试约定
-
-### 命名
-- 测试文件: `<ModuleName>.test.ts`
-- 测试组: `describe("模块名", ...)`
-- 测试用例: `it("应该做什么", ...)`
-
-### 断言
-```typescript
-.toBe()      .toEqual()      .toBeDefined()
-.toBeGreaterThan()  .toHaveLength()  .toThrow()
-```
-
-## 已知问题
-
-- **Recommender.v2.test.ts**: 存在重构版本测试，Recommender 可能处于重构中
-- **UsageSync 覆盖率**: 目标 70%，当前未达
-
-## 注意事项
-
-- 使用 Bun 原生测试（`bun test`）
-- Mock 数据统一放在 `tests/fixtures/mock-data.ts`
-- 遵循命名约定：`<ModuleName>.test.ts`
-- 测试覆盖率目标：核心模块 80%+
+---
+*注：Recommender.v2.test.ts 针对重构中的版本，修改算法时需同步更新。*

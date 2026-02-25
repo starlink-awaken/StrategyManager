@@ -1,13 +1,6 @@
 {
   // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "metadata": {
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
   "metadata": {
     "version": "2.1.1",
     "updated": "2026-02-13",
@@ -24,13 +17,12 @@
       "方舟 CodingPlan Pro"
     ]
   },
-
   "lsp": {
-    "scene_coverage": ["core development", "architecture design", "code review", "research", "creative", "writing", "multimedia", "collaboration", "education", "documentation", "agent-heavy"]
+    "scene_coverage": ["core development", "architecture design", "code review", "research", "creative", "writing", "multimedia", "collaboration", "education", "documentation", "agent-heavy"],
     "budget": {
       "monthlyLimitUSD": 3000,
       "dailyAlertThreshold": 0.8,
-      "emergencySwitchTo": "performance"
+      "emergencySwitchTo": "balanced"
     },
     "provider_quotas": {
       "anthropic": {
@@ -68,31 +60,13 @@
         "maxConcurrentRequests": 30,
         "fallbackModels": ["deepseek/deepseek-v3-2", "kimi/kimi-coding-pro"]
       },
-      "kimi": {
-        "priority": 4
-      },
-      "step": {
-        "priority": 4
-      },
-      "minimax": {
-        "priority": 4
-      },
+      "kimi": { "priority": 4 },
+      "step": { "priority": 4 },
+      "minimax": { "priority": 4 },
       "github-copilot": {
         "priority": 1,
         "maxRequestsPerDay": 10000,
         "maxConcurrentRequests": 5
-      }
-      "anthropic": {
-        "priority": 1
-      },
-      "openai": {
-        "priority": 1
-      },
-      "kimi": {
-        "priority": 3
-      },
-      "step": {
-        "priority": 4
       }
     },
     "constraints": {
@@ -163,17 +137,8 @@
       "temperature": 0.55,
       "maxTokens": 8000
     },
-    // 文档/知识查询 - GLM-4.7 (ZhiPu 60倍额度)
-    // 职责：快速查询、文档检索、模式匹配
-    // 配置：低温度、低成本、高并发
-
-    // 快速探索 - Claude Haiku 4.5
-    // 职责：快速代码探索、grep 上下文收集
-    // 配置：经济型，用于辅助任务
-
     // 多模态分析 - Gemini 3 Pro
     // 职责：图像分析、UI 评审、多模态任务
-    // 配置：高变体用于最佳质量
     "multimodal-looker": {
       "model": "google/gemini-3-pro-preview",
       "fallback": "google/gemini-3-flash-preview",
@@ -221,8 +186,6 @@
   },
   // ========== Category 配置 ==========
   "categories": {
-    // 前端 UI/UX 设计
-
     // 深度逻辑推理
     "ultrabrain": {
       "model": "openai/gpt-5.3-codex",
@@ -244,7 +207,6 @@
       "maxTokens": 6000,
       "description": "创意文案、设计创意、新颖想法生成"
     },
-
     // 通用高难度
     "unspecified-high": {
       "model": "anthropic/claude-opus-4-6",
@@ -257,7 +219,7 @@
       },
       "temperature": 0.3,
       "maxTokens": 8000,
-      "description": "复杂功能实现、架构设计、系统优化",
+      "description": "复杂功能实现、架构设计、系统优化"
     },
     // 文档/技术写作
     "writing": {
