@@ -19,6 +19,9 @@ import {
   type HistoryData,
   type BudgetConfig,
 } from "./Recommender";
+import { colorize, success, error, warning, info, formatTable } from './FormatUtils';
+import { readJSONC, writeJSONC, fileExists } from './FileSystemUtils';
+import { getHistory, addHistoryEntry, displayHistory, rollbackToHistory } from './HistoryManager';
 import {
   UsageSyncCoordinator,
   AnthropicSync,
@@ -286,173 +289,7 @@ export function validateMetadata(config: StrategyConfig): string[] {
   return warnings;
 }
 
-// ==================== 输出格式化 ====================
 
-const COLORS = {
-  reset: "\x1b[0m",
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  blue: "\x1b[34m",
-};
-
-export function colorize(text: string, color: keyof typeof COLORS): string {
-  return `${COLORS[color]}${text}${COLORS.reset}`;
-}
-
-export function success(text: string): void {
-  console.log(colorize(`✅ ${text}`, "green"));
-}
-
-export function error(text: string): void {
-  console.error(colorize(`❌ ${text}`, "red"));
-}
-
-export function warning(text: string): void {
-  console.log(colorize(`⚠️  ${text}`, "yellow"));
-}
-
-export function info(text: string): void {
-  console.log(colorize(`ℹ️  ${text}`, "blue"));
-}
-
-// ==================== 格式化表格 ====================
-
-/**
- * 格式化表格输出
- */
-export function formatTable(headers: string[], rows: string[][]): string {
-  const maxWidths = headers.map((header, i) => {
-    const columnWidths = rows.map((row) => (row[i] || "").length);
-    return Math.max(header.length, ...columnWidths);
-  });
-
-  const separator = maxWidths.map((width) => "-".repeat(width + 2)).join("+");
-
-  let result = separator + "\n";
-  result +=
-    "| " +
-    headers.map((header, i) => header.padEnd(maxWidths[i])).join(" | ") +
-    " |\n";
-  result += separator + "\n";
-
-  for (const row of rows) {
-    result +=
-      "| " +
-      row.map((cell, i) => (cell || "").padEnd(maxWidths[i])).join(" | ") +
-      " |\n";
-  }
-
-  result += separator;
-  return result;
-}
-
-// ==================== 文件系统操作 ====================
-
-export function readJSONC(filePath: string): any {
-  const content = fs.readFileSync(filePath, "utf-8");
-
-  const hasComments = /^\s*\/\/|\/\*/m.test(content);
-
-  if (!hasComments) {
-    return JSON.parse(content);
-  }
-
-  let result = content;
-
-  // 先移除块注释 /* ... */
-  result = result.replace(/\/\*[\s\S]*?\*\//g, "");
-
-  // 移除行尾的 // 注释（需要小心不匹配字符串内的 //）
-  // 策略：逐行处理，只移除不在引号内的 //
-  const lines = result.split("\n");
-  const processedLines: string[] = [];
-
-  for (const line of lines) {
-    let processedLine = "";
-    let inString = false;
-    let escapeNext = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-
-      if (escapeNext) {
-        processedLine += char;
-        escapeNext = false;
-        continue;
-      }
-
-      if (char === "\\") {
-        processedLine += char;
-        escapeNext = true;
-        continue;
-      }
-
-      if (char === '"' || char === "'" || char === "`") {
-        inString = !inString;
-        processedLine += char;
-        continue;
-      }
-
-      // 如果不在字符串内且遇到 //，则截断
-      if (
-        !inString &&
-        char === "/" &&
-        i + 1 < line.length &&
-        line[i + 1] === "/"
-      ) {
-        break;
-      }
-
-      processedLine += char;
-    }
-
-    processedLines.push(processedLine);
-  }
-
-  let jsonContent = processedLines.join("\n");
-  // Remove trailing commas before } or ] to support JSON5
-  jsonContent = jsonContent.replace(/,(\s*[}\]])/g, '$1');
-
-  return JSON.parse(jsonContent);
-}
-
-/**
- * 写入 JSONC 文件
- */
-export function writeJSONC(filePath: string, data: any): void {
-  const jsonContent = JSON.stringify(data, null, 2);
-  fs.writeFileSync(filePath, jsonContent, "utf-8");
-}
-
-/**
- * 提取策略中使用的模型列表
- */
-export function extractModels(config: StrategyConfig): string[] {
-  const models: string[] = [];
-
-  if (config.agents) {
-    for (const agent of Object.values(config.agents)) {
-      if (agent?.model && typeof agent.model === "string") {
-        models.push(agent.model);
-      }
-    }
-  }
-
-  return Array.from(new Set(models));
-}
-
-/**
- * 检查文件是否存在
- */
-export function fileExists(filePath: string): boolean {
-  try {
-    fs.accessSync(filePath, fs.constants.F_OK);
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * 检查是否为软链接
@@ -475,6 +312,32 @@ export function readSymlink(filePath: string): string | null {
     return null;
   }
 }
+
+/**
+ * 提取策略中使用的模型列表
+ */
+export function extractModels(config: StrategyConfig): string[] {
+  const models: string[] = [];
+
+  if (config.agents) {
+    for (const agent of Object.values(config.agents)) {
+      if (agent?.model && typeof agent.model === "string") {
+        models.push(agent.model);
+      }
+    }
+  }
+
+  if (config.categories) {
+    for (const category of Object.values(config.categories)) {
+      if (category?.model && typeof category.model === "string") {
+        models.push(category.model);
+      }
+    }
+  }
+
+  return Array.from(new Set(models));
+}
+
 
 // ==================== 策略读取功能 ====================
 
@@ -1250,128 +1113,7 @@ export function displayStrategyDiff(name1: string, name2: string): void {
 
 // ==================== 历史记录功能 ====================
 
-/**
- * 获取历史记录
- */
-export function getHistory(): HistoryEntry[] {
-  if (!fileExists(HISTORY_FILE)) {
-    return [];
-  }
-
-  try {
-    const content = fs.readFileSync(HISTORY_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    if (Array.isArray(data)) {
-      return data;
-    }
-
-    if (data && typeof data === "object" && Array.isArray(data.history)) {
-      return data.history;
-    }
-
-    return [];
-  } catch (err) {
-    error(`读取历史记录失败: ${err}`);
-    return [];
-  }
-}
-
-/**
- * 添加历史记录
- */
-export function addHistoryEntry(entry: HistoryEntry): void {
-  const history = getHistory();
-  history.unshift(entry);
-
-  // 保留最近 100 条记录
-  const trimmedHistory = history.slice(0, 100);
-
-  try {
-    fs.writeFileSync(
-      HISTORY_FILE,
-      JSON.stringify(trimmedHistory, null, 2),
-      "utf-8",
-    );
-  } catch (err) {
-    error(`保存历史记录失败: ${err}`);
-  }
-}
-
-/**
- * 显示历史记录
- */
-export function displayHistory(limit: number = 10): void {
-  const history = getHistory();
-  const displayHistory = history.slice(0, limit);
-
-  if (displayHistory.length === 0) {
-    info("没有历史记录");
-    return;
-  }
-
-  info("策略切换历史:");
-  console.log();
-
-  const headers = ["时间", "策略", "操作", "备份"];
-  const rows: string[][] = [];
-
-  for (const entry of displayHistory) {
-    const date = new Date(entry.timestamp).toLocaleString("zh-CN");
-    rows.push([
-      date,
-      entry.strategyName,
-      entry.action,
-      entry.backupPath ? path.basename(entry.backupPath) : "-",
-    ]);
-  }
-
-  console.log(formatTable(headers, rows));
-}
-
-/**
- * 回滚到历史记录
- */
-export function rollbackToHistory(index: number): boolean {
-  const history = getHistory();
-
-  if (index < 0 || index >= history.length) {
-    error(`无效的历史记录索引: ${index}`);
-    return false;
-  }
-
-  const entry = history[index];
-
-  if (
-    entry.action === "switch" &&
-    entry.backupPath &&
-    fileExists(entry.backupPath)
-  ) {
-    // 从备份恢复
-    try {
-      fs.copyFileSync(entry.backupPath, CONFIG_FILE);
-      success(`已从备份恢复: ${path.basename(entry.backupPath)}`);
-
-      addHistoryEntry({
-        timestamp: new Date().toISOString(),
-        strategyName: entry.strategyName,
-        strategyPath: entry.strategyPath,
-        action: "rollback",
-      });
-
-      return true;
-    } catch (err) {
-      error(`恢复备份失败: ${err}`);
-      return false;
-    }
-  } else if (fileExists(entry.strategyPath)) {
-    // 直接切换到历史策略
-    return switchStrategy(path.basename(entry.strategyPath, ".jsonc"));
-  } else {
-    error(`无法回滚: 策略文件或备份不存在`);
-    return false;
-  }
-}
+// ==================== 导出/导入功能 ====================
 
 // ==================== 导出/导入功能 ====================
 

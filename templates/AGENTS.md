@@ -2,7 +2,7 @@
 
 ## OVERVIEW
 
-本目录包含 7 个策略模板（4 个核心 + 3 个扩展），采用 JSONC 格式。这些模板覆盖了从极致性能到极致性价比的多种使用场景。用户可以通过 `switch` 命令快速激活选定的策略。
+#BT|本目录包含 8+ 个策略模板，涵盖从极致性能到极致性价比的多种场景。采用 JSONC 格式。
 
 ## STRUCTURE
 
@@ -12,13 +12,31 @@
 - `fast.jsonc`: 高速配置，追求响应速度，适合简单任务。
 - `cheap.jsonc`: 经济配置，极低成本，适合学习实验。
 
-### 扩展策略（保留）
+### 扩展策略（按需使用）
+-HS|- `strategy-0-super.jsonc`: 极致性能（v2.1.0，¥2000-3000/月）
+-YZ|- `strategy-1-performance.jsonc`: 高性能（v2.1.0，¥850-1350/月）
+-QB|- `strategy-2-balanced.jsonc`: 标准平衡（v2.2.0，¥220-420/月） ⭐默认
+-QB|- `strategy-2-balanced-copilot.jsonc`: GitHub Copilot 专用（v2.1.0-deprecated，已废弃）
+-QB|- `strategy-2-balanced-direct.jsonc`: 直连模式（v2.2.0-direct，¥400-700/月）
+-QB|- `strategy-3-economical.jsonc`: 经济实用（v1.1.0，¥50-150/月）⚠️结构不完整
+-QB|- `strategy-4-creative.jsonc`: 创意写作（v1.1.0，¥500-800/月）
+-QB|- `strategy-5-research.jsonc`: 深度研究（v1.1.0，¥1800-2500/月）
+-QB|- `strategy-6-agent-focused.jsonc`: Agent 编排（v1.1.0，¥800-1200/月）⚠️需修复BUG
+-IT|
 - `strategy-6-agent-focused.jsonc`: Agent 编排优化。
 - `strategy-7-china-first.jsonc`: 国产大模型优先。
 - `strategy-8-general.jsonc`: 通用配置。
 
 ## WHERE TO LOOK
-
+|| 场景 | 推荐模板 | 预估月成本 | 状态 |
+| :--- | :--- | :--- | :--- |
+|| 关键任务/深度研究 | `smart` / `strategy-0-super` | $2000-3000 | ✅ |
+|| 日常开发/团队协作 | `balanced` / `strategy-2-balanced` | $220-700 | ⭐默认 |
+|| 简单任务/快速迭代 | `fast` / `strategy-1-performance` | $850-1500 | ✅ |
+|| 学习实验/成本敏感 | `cheap` / `strategy-3-economical` | $50-150 | ⚠️待完善 |
+|| 创意写作/新媒体运营 | `smart` / `strategy-4-creative` | $500-800 | ✅ |
+|| 深度研究/金融分析 | `smart` / `strategy-5-research` | $1800-2500 | ✅ |
+|| Agent 编排/自动化 | `strategy-6-agent-focused` | $800-1200 | ❌需修复 |
 | 场景 | 推荐模板 | 预估月成本 (USD) |
 | :--- | :--- | :--- |
 | 关键任务 / 深度研究 | `smart` | $2000-3000 |

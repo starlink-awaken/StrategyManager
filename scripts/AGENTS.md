@@ -4,12 +4,16 @@
 
 ## 概述
 
-Shell 脚本目录，包含 6 个实用工具脚本，用于项目安装、配置和集成设置。
+#ZZ|Shell 脚本目录，包含 7 个实用工具脚本，用于项目安装、配置和集成设置。
 
 ## 结构
 
 ```
 scripts/
+├── install.sh                         # 策略模板安装脚本
+├── setup-opencode-integration.sh      # OpenCode 集成配置
+├── verify-models.ts                   # 模型验证脚本（TypeScript）
+└── (其他脚本...)
 ├── install.sh                         # 策略模板安装脚本
 ├── setup-opencode-integration.sh      # OpenCode 集成配置
 ├── verify-models.ts                   # 模型验证脚本（TypeScript）

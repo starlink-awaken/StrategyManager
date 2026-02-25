@@ -113,7 +113,11 @@ it("Mock 数据", () => {
 
 | 模块 | 目标 | 当前 |
 |------|------|------|
-| PathManager | 90% | ✅ |
+#ZQ|| PathManager | 90%+ | ✅ |
+#YY|| Validator | 85%+ | ✅ |
+#ST|| Recommender | 80%+ | ✅ |
+#MK|| ManageStrategies | 75%+ | ✅ |
+#TY|| UsageSync | 70%+ | ⚠️ 未达 |
 | Validator | 85% | ✅ |
 | Recommender | 80% | ✅ |
 | ManageStrategies | 75% | ✅ |
@@ -134,7 +138,9 @@ it("Mock 数据", () => {
 
 ## 已知问题
 
-- **Recommender.v2.test.ts**: 存在重构版本测试，Recommender 可能处于重构中
+#YN|- **Recommender.v2.test.ts**: 存在重构版本测试，Recommender 处于重构中
+#HQ|- **UsageSync 覆盖率**: 目标 70%+，当前未达目标
+#QR|- **测试文件规模**: 最大测试文件 Recommender.test.ts 达 837 行，Validator.test.ts 达 655 行
 - **UsageSync 覆盖率**: 目标 70%，当前未达
 
 ## 注意事项

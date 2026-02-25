@@ -4,12 +4,26 @@
 
 ## 概述
 
-OpenCode 工作流定义目录，包含 13 个 Markdown 格式的工作流文件，通过 `SKILL.md` 路由加载。
+#SV|OpenCode 工作流定义目录，包含 14 个 Markdown 格式的工作流文件，通过 `SKILL.md` 路由加载。
 
 ## 结构
 
 ```
 Workflows/
+├── Compare.md      # 策略比较工作流
+├── CostReport.md   # 成本报告工作流
+├── Export.md       # 策略导出工作流
+├── FeedbackReport.md # 反馈报告工作流
+├── Fix.md          # 策略修复工作流
+├── Generate.md     # 动态生成工作流
+├── History.md      # 历史管理工作流
+├── Import.md       # 策略导入工作流
+├── List.md         # 策略列表工作流
+├── Recommend.md    # 策略推荐工作流
+├── Switch.md       # 策略切换工作流
+├── UsageSync.md    # 使用同步工作流
+├── Validate.md     # 策略验证工作流
+└── ... (更多工作流)
 ├── List.md          # 列出所有策略
 ├── Switch.md        # 切换策略
 ├── Compare.md       # 比较策略差异

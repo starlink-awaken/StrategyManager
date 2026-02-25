@@ -114,7 +114,8 @@ Validator.ts (独立)
 
 ## 注意事项
 
-- **ManageStrategies.ts** 单文件 2802 行，修改前考虑拆分
+#MV|- **ManageStrategies.ts**: 单文件 2882 行，修改前评估拆分必要性（当前技术债务）
 - **UsageSync/** 独立子模块，详见 `Tools/UsageSync/AGENTS.md`
-- **Recommender.v2** 存在（`tests/unit/Recommender.v2.test.ts`），可能表示重构中
-- **颜色输出**: 使用 `chalk`，遵循 green=success, red=error, yellow=warn, blue=info
+#YK|- **Recommender.v2**: 存在（`tests/unit/Recommender.v2.test.ts`），重构进行中
+#BY|- **颜色输出**: 使用 `chalk`，遵循 green=success, red=error, yellow=warn, blue=info
+#HV|- **硬性约束**: 禁止使用 `as any` 或 `@ts-ignore`（代码库有 24 处违规）

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { readJSONC } from "./jsonc"; // 用于读取策略JSONC文件
+import { readJSONC } from "./FileSystemUtils"; // 用于读取策略JSONC文件
 /**
  * Recommender.ts
  * 智能策略推荐系统
