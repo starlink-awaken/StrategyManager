@@ -1,19 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "经济型：最大化已订阅的 Coding Plan 与免费额度，适合大批量处理",
+  "description": "经济型：最大化已订阅的 Coding Plan 与免费额度，结合新补充模型，适合大批量处理",
   "metadata": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "updated": "2026-02-25",
     "cost_level": "ultra-low",
     "use_case": "探索、学习、快速迭代、重度使用且希望零额外成本",
     "monthly_cost": "¥0 (仅消耗已购订阅)",
     "resources_used": [
-      "GitHub Copilot Pro+ (无限量)",
-      "ZhiPu CodingPlan Pro (年付订阅)",
-      "MiniMax Coding Plan Pro (年付订阅)",
-      "方舟 CodingPlan Pro (季付订阅)",
-      "DeepSeek (¥300 额度)",
-      "硅基流动 (¥200 额度)"
+      "GitHub Copilot Pro+",
+      "ZhiPu CodingPlan Pro",
+      "MiniMax Coding Plan Pro",
+      "Kimi Coding Plan Pro",
+      "方舟 CodingPlan Pro (ark-cn)",
+      "Step 额度",
+      "DeepSeek / 硅基流动"
     ]
   },
   "lsp": {
@@ -24,23 +25,40 @@
       "emergencySwitchTo": "cheap"
     },
     "provider_quotas": {
-      "zhipuai-coding-plan": {
-        "priority": 1,
-        "maxRequestsPerDay": 50000,
-        "maxConcurrentRequests": 40,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/doubao-1.5-pro"]
-      },
       "minimax-cn-coding-plan": {
         "priority": 1,
         "maxRequestsPerDay": 50000,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["zhipuai-coding-plan/glm-4.7", "ark/doubao-1.5-pro"]
+        "fallbackModels": ["kimi/kimi-coding-pro", "ark-cn/doubao-1.5-pro"]
       },
-      "ark": {
+      "kimi": {
+        "priority": 1,
+        "maxRequestsPerDay": 50000,
+        "maxConcurrentRequests": 30,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+      },
+      "zhipuai-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+      },
+      "ark-cn": {
         "priority": 1,
         "maxRequestsPerDay": 30000,
         "maxConcurrentRequests": 20,
         "fallbackModels": ["zhipuai-coding-plan/glm-4.7", "minimax-cn-coding-plan/MiniMax-M2.5"]
+      },
+      "step": {
+        "priority": 3,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 30
+      },
+      "dashscope": {
+        "priority": 3,
+        "maxRequestsPerDay": 10000,
+        "maxConcurrentRequests": 20
       },
       "github-copilot": {
         "priority": 2,
@@ -68,17 +86,22 @@
   "agents": {
     "sisyphus": {
       "model": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "fallback": ["zhipuai-coding-plan/glm-4.7", "ark/doubao-1.5-pro", "github-copilot/gpt-4o"],
+      "fallback": ["kimi/kimi-coding-pro", "ark-cn/doubao-1.5-pro", "github-copilot/gpt-4o"],
       "temperature": 0.3
     },
     "prometheus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "kimi/kimi-coding-pro",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
     "oracle": {
-      "model": "ark/doubao-1.5-pro",
-      "fallback": ["github-copilot/gpt-5-mini", "deepseek/deepseek-v3-2"],
+      "model": "ark-cn/doubao-1.5-pro",
+      "fallback": ["dashscope/qwen2.5-coder-32b-instruct", "zhipuai-coding-plan/glm-4.7"],
+      "temperature": 0.3
+    },
+    "explore": {
+      "model": "step/step-2-16k",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5"],
       "temperature": 0.3
     }
   },
@@ -88,19 +111,21 @@
       "temperature": 0.4
     },
     "ultrabrain": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "kimi/kimi-coding-pro",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
     "deep": {
-      "model": "ark/doubao-1.5-pro"
+      "model": "dashscope/qwen-max-latest",
+      "fallback": ["ark-cn/doubao-1.5-pro"]
     },
     "quick": {
-      "model": "github-copilot/gpt-4o",
+      "model": "step/step-2-16k",
+      "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.3
     },
     "unspecified-low": {
-      "model": "github-copilot/gpt-4o",
+      "model": "step/step-2-16k",
       "temperature": 0.3
     },
     "unspecified-high": {
@@ -108,7 +133,8 @@
       "temperature": 0.3
     },
     "writing": {
-      "model": "ark/doubao-1.5-pro"
+      "model": "kimi/kimi-coding-pro",
+      "fallback": ["ark-cn/doubao-1.5-pro"]
     },
     "artistry": {
       "model": "minimax-cn-coding-plan/MiniMax-M2.5"

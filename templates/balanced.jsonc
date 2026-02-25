@@ -1,24 +1,26 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "均衡型：日常主力，合理分配已订阅的高级服务，性价比与体验的最优解",
+  "description": "均衡型：日常主力，合理分配已订阅的 Pro 服务与免费额度，性价比与体验最优",
   "metadata": {
-    "version": "3.0.0",
+    "version": "3.1.0",
     "updated": "2026-02-25",
     "cost_level": "medium",
-    "use_case": "默认日常策略（组合使用已订阅的 API，覆盖 95% 场景）",
-    "optimization": "Copilot 核心 + ZhiPu/MiniMax/Ark 大并发支持 + DeepSeek API 兜底",
+    "use_case": "默认日常策略（结合 Copilot、各种 Coding Plan 与充足的 Gemini 额度）",
+    "optimization": "Copilot 核心 + Kimi/MiniMax/Ark/ZhiPu 大并发 + Gemini 充足额度支持创意/深度",
     "monthly_cost": "¥0-100 (主要消耗已有订阅，少部分 API 补足)",
     "resources_used": [
       "GitHub Copilot Pro+",
       "ZhiPu CodingPlan Pro",
       "MiniMax Coding Plan Pro",
-      "方舟 CodingPlan Pro",
-      "DeepSeek API",
-      "硅基流动中国"
+      "Kimi Coding Plan Pro",
+      "方舟 CodingPlan Pro (ark-cn)",
+      "Google Pro (Gemini)",
+      "DashScope (Qwen)",
+      "DeepSeek API / 硅基流动"
     ]
   },
   "lsp": {
-    "scene_coverage": ["daily", "coding", "tools", "finance", "general", "collaboration"],
+    "scene_coverage": ["daily", "coding", "tools", "finance", "general", "collaboration", "creative", "writing"],
     "budget": {
       "monthlyLimitUSD": 100,
       "dailyAlertThreshold": 0.8,
@@ -30,26 +32,44 @@
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 20
       },
-      "zhipuai-coding-plan": {
+      "kimi": {
         "priority": 1,
-        "maxRequestsPerDay": 10000,
-        "maxCostPerRequest": 0.005,
+        "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark/doubao-1.5-pro"]
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
       },
       "minimax-cn-coding-plan": {
         "priority": 1,
         "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.005,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["ark/doubao-1.5-pro", "zhipuai-coding-plan/glm-5"]
+        "fallbackModels": ["kimi/kimi-coding-pro", "ark-cn/doubao-1.5-pro"]
       },
-      "ark": {
+      "ark-cn": {
         "priority": 2,
         "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.005,
         "maxConcurrentRequests": 20,
         "fallbackModels": ["zhipuai-coding-plan/glm-5", "minimax-cn-coding-plan/MiniMax-M2.5"]
+      },
+      "zhipuai-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+      },
+      "google": {
+        "priority": 1,
+        "maxRequestsPerDay": 5000,
+        "maxCostPerRequest": 0.02,
+        "maxConcurrentRequests": 15
+      },
+      "dashscope": {
+        "priority": 2,
+        "maxRequestsPerDay": 5000,
+        "maxCostPerRequest": 0.02,
+        "maxConcurrentRequests": 10
       },
       "deepseek": {
         "priority": 3,
@@ -72,12 +92,12 @@
   "agents": {
     "sisyphus": {
       "model": "github-copilot/gpt-4o",
-      "fallback": ["zhipuai-coding-plan/glm-5", "minimax-cn-coding-plan/MiniMax-M2.5", "ark/doubao-1.5-pro", "deepseek/deepseek-v3-2"],
+      "fallback": ["kimi/kimi-coding-pro", "minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro", "deepseek/deepseek-v3-2"],
       "temperature": 0.5,
       "maxTokens": 4000
     },
     "prometheus": {
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "github-copilot/claude-3.5-sonnet",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -86,13 +106,13 @@
       "maxTokens": 4500
     },
     "oracle": {
-      "model": "github-copilot/gpt-5-mini",
-      "fallback": ["zhipuai-coding-plan/glm-5", "minimax-cn-coding-plan/MiniMax-M2.5"],
+      "model": "dashscope/qwen-max-latest",
+      "fallback": ["github-copilot/gpt-4o", "ark-cn/doubao-1.5-pro"],
       "temperature": 0.5,
       "maxTokens": 5000
     },
     "hephaestus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "kimi/kimi-coding-pro",
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -102,59 +122,60 @@
       "maxTokens": 4000
     },
     "explore": {
-      "model": "ark/doubao-1.5-pro",
+      "model": "ark-cn/doubao-1.5-pro",
       "temperature": 0.5,
       "maxTokens": 4000
     },
     "multimodal-looker": {
-      "model": "github-copilot/gpt-4o",
+      "model": "google/gemini-2.5-pro",
+      "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.5,
-      "maxTokens": 3000
+      "maxTokens": 4000
     },
     "metis": {
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "google/gemini-2.5-pro",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 40000
       },
-      "temperature": 0.5,
-      "maxTokens": 3500
+      "temperature": 0.6,
+      "maxTokens": 4000
     },
     "momus": {
-      "model": "zhipuai-coding-plan/glm-5",
+      "model": "dashscope/qwen-max-latest",
       "temperature": 0.5,
-      "maxTokens": 3000
+      "maxTokens": 4000
     },
     "atlas": {
-      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
+      "model": "kimi/kimi-coding-pro",
       "temperature": 0.5,
       "maxTokens": 4000
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "github-copilot/gpt-5-mini",
-      "fallback": ["github-copilot/gpt-4o"],
+      "model": "github-copilot/gpt-4o",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5"],
       "temperature": 0.5,
       "maxTokens": 4000
     },
     "ultrabrain": {
-      "model": "github-copilot/claude-opus-4.6",
+      "model": "google/gemini-2.5-pro",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
       },
       "temperature": 0.5,
-      "maxTokens": 5000
+      "maxTokens": 8000
     },
     "artistry": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": ["ark/doubao-1.5-pro", "minimax-cn-coding-plan/MiniMax-M2.5"],
-      "temperature": 0.5,
-      "maxTokens": 4500
+      "model": "google/gemini-2.5-pro",
+      "fallback": ["ark-cn/doubao-1.5-pro", "kimi/kimi-coding-pro"],
+      "temperature": 0.7,
+      "maxTokens": 6000
     },
     "quick": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "step/step-2-16k",
       "temperature": 0.5,
       "maxTokens": 2000
     },
@@ -164,23 +185,21 @@
       "maxTokens": 2500
     },
     "unspecified-high": {
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "github-copilot/claude-3.5-sonnet",
       "temperature": 0.5,
       "maxTokens": 5000
     },
     "writing": {
-      "model": "ark/doubao-1.5-pro",
-      "temperature": 0.5,
-      "maxTokens": 4000
+      "model": "google/gemini-2.5-pro",
+      "fallback": ["kimi/kimi-coding-pro"],
+      "temperature": 0.6,
+      "maxTokens": 6000
     },
     "deep": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "thinking": {
-        "type": "enabled",
-        "budgetTokens": 80000
-      },
-      "temperature": 0.5,
-      "maxTokens": 6000
+      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "fallback": ["google/gemini-2.5-pro"],
+      "temperature": 0.6,
+      "maxTokens": 8000
     }
   },
   "background_task": {
@@ -188,45 +207,12 @@
     "staleTimeoutMs": 300000,
     "providerConcurrency": {
       "github-copilot": 15,
-      "zhipuai-coding-plan": 20,
+      "kimi": 20,
       "minimax-cn-coding-plan": 20,
-      "ark": 15,
+      "ark-cn": 15,
+      "zhipuai-coding-plan": 20,
+      "google": 10,
       "deepseek": 5
-    },
-    "modelConcurrency": {
-      "github-copilot/claude-opus-4.6": 2,
-      "github-copilot/claude-sonnet-4.6": 4,
-      "github-copilot/gpt-5-mini": 4,
-      "github-copilot/gpt-4o": 10,
-      "zhipuai-coding-plan/glm-5": 10,
-      "minimax-cn-coding-plan/MiniMax-M2.5": 10,
-      "ark/doubao-1.5-pro": 10
     }
-  },
-  "sisyphus_agent": {
-    "disabled": false,
-    "default_builder_enabled": false,
-    "planner_enabled": true,
-    "replace_plan": true
-  },
-  "git_master": {
-    "commit_footer": true,
-    "include_co_authored_by": true
-  },
-  "tmux": {
-    "enabled": true,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
-  },
-  "experimental": {
-    "aggressive_truncation": false,
-    "auto_resume": true,
-    "truncate_all_tool_outputs": false
-  },
-  "disabled_mcps": [
-    "github"
-  ],
-  "disabled_hooks": []
+  }
 }
