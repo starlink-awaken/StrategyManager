@@ -125,7 +125,9 @@
       "temperature": 0.3
     },
     "unspecified-low": {
-      "model": "step/step-2-16k",
+      "model": "github-copilot/raptor-mini",
+      "temperature": 0.3
+
       "temperature": 0.3
     },
     "unspecified-high": {

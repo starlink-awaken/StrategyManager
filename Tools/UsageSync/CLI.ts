@@ -333,7 +333,8 @@ export class UsageSyncCLI {
         const auth = JSON.parse(fs.readFileSync(authPath, "utf-8"));
         console.log("已登录的服务:");
         for (const [service, info] of Object.entries(auth)) {
-          const serviceInfo = info as any;
+          const serviceInfo = info as { access?: string; key?: string; refresh?: string };
+
           const status =
             serviceInfo.access || serviceInfo.key
               ? "\x1b[32m✓\x1b[0m"
@@ -448,7 +449,8 @@ export class UsageSyncCLI {
         }
       } catch (e) {
         console.log(
-          `\x1b[31m✗ ${provider.padEnd(20)}\x1b[0m ${(e as any).message || "Unknown error"}\x1b[0m`,
+          `\x1b[31m✗ ${provider.padEnd(20)}\x1b[0m ${e instanceof Error ? e.message : "Unknown error"}\x1b[0m`,
+
         );
       }
     }

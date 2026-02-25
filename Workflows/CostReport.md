@@ -69,7 +69,10 @@ GitHub Copilot 分析:
 - 建议: 增加免费模型使用比例
 
 优化建议:
-1. 将 Claude Sonnet 替换为 GLM-4.7（60倍额度）
+1. 将 Claude Sonnet 替换为 GLM-5（高额度配额）
+2. 日常任务使用 GPT-5-mini（免费）
+3. 深度工作使用 Anthropic Claude 3.5 Opus
+
 2. 日常任务使用 GPT-5-mini（免费）
 3. 深度工作使用 Anthropic 高级模型
 ```
@@ -281,7 +284,11 @@ const rules = [
 
 | 当前使用       | 建议替代                 | 成本节省 | 质量影响 |
 | -------------- | ------------------------ | -------- | -------- |
-| GPT-5.2-Codex  | Claude Sonnet 4.5        | 40%      | 轻微     |
+| GPT-5.1-Codex  | Claude Sonnet 4.6        | 40%      | 轻微     |
+| o1-mini        | Claude 3.5 Sonnet       | 30%      | 无       |
+| GPT-5-standard | GLM-5 (高配额)           | 90%      | 中等     |
+| GPT-4o         | Gemini 3.1 Flash         | 70%      | 轻微     |
+
 | o1-mini        | Claude Sonnet + thinking | 30%      | 无       |
 | GPT-5-standard | GLM-4.7 (60倍)           | 90%      | 中等     |
 | GPT-4o         | Gemini 3 Flash           | 70%      | 轻微     |

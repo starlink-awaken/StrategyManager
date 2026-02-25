@@ -48,7 +48,10 @@
 - tools/ManageStrategies.ts — 包含 validateStrategy 与 validateStrategyFile 的实现（参考本工作流）。
 
 ## 注意事项
-- 验证仅检查字段存在性与基本格式，不对 model 名称的合法性或可用性进行在线验证。
+- 验证流程包含静态 Schema 检查与 **健康状态 (Health Status)** 校验。
+- 如果模型或其所属厂商在 `HealthManager` 中被标记为禁用，验证将抛出 Warning。
+- 在未来可扩展：
+
 - 在未来可扩展：
   - 增加 schema 验证（例如使用 JSON Schema）
   - 对 model 名称进行白名单或在线可用性检测
