@@ -659,6 +659,14 @@ export function listStrategiesWithOptions(options?: {
     const files = fs.readdirSync(dir);
 
     for (const file of files) {
+      // 识别两种格式: strategy-*.jsonc 或 *.jsonc (如 smart.jsonc, balanced.jsonc)
+      const isStrategyFormat = file.startsWith("strategy-") && file.endsWith(".jsonc");
+      const isCoreTemplate = ["smart.jsonc", "balanced.jsonc", "fast.jsonc", "cheap.jsonc"].includes(file);
+      const isValidFile = (isStrategyFormat || isCoreTemplate) && !file.includes(".backup");
+
+      if (!isValidFile) {
+        continue;
+      }
       if (
         !file.startsWith("strategy-") ||
         !file.endsWith(".jsonc") ||

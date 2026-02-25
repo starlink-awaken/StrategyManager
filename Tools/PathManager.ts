@@ -153,7 +153,12 @@ export class PathManager {
 
     return fs
       .readdirSync(templatesDir)
-      .filter((file) => file.startsWith("strategy-") && file.endsWith(".jsonc"))
+      .filter((file) => {
+        // 识别两种格式: strategy-*.jsonc 或 *.jsonc (如 smart.jsonc, balanced.jsonc)
+        const isStrategyFormat = file.startsWith("strategy-") && file.endsWith(".jsonc");
+        const isCoreTemplate = ["smart.jsonc", "balanced.jsonc", "fast.jsonc", "cheap.jsonc"].includes(file);
+        return isStrategyFormat || isCoreTemplate;
+      })
       .map((file) => path.basename(file, ".jsonc"));
   }
 
