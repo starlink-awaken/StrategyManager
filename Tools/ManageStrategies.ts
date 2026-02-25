@@ -22,6 +22,9 @@ import {
 import { colorize, success, error, warning, info, formatTable } from './FormatUtils';
 import { readJSONC, writeJSONC, fileExists } from './FileSystemUtils';
 import { getHistory, addHistoryEntry, displayHistory, rollbackToHistory } from './HistoryManager';
+import { defaultHealthManager } from './HealthManager';
+import { defaultActiveValidator } from './ActiveValidator';
+import { defaultPerformanceMonitor } from './PerformanceMonitor';
 import {
   UsageSyncCoordinator,
   AnthropicSync,
@@ -39,10 +42,6 @@ import {
   type UsageData,
   type UsageSync,
 } from "./UsageSync";
-
-/**
- * 将配置对象转换为 JSONC 字符串（简化版：只生成 JSON）
- */
 
 
 
@@ -1212,10 +1211,10 @@ export function buildRecommendationContext(
 /**
  * 智能推荐（支持配额与模型特性）
  */
-export function recommendStrategySmart(
+export async function recommendStrategySmart(
   input: RecommendationInput,
-): Recommendation | null {
-  const strategies = listStrategiesWithOptions({
+): Promise<Recommendation | null> {
+  const strategies = await listStrategiesWithOptions({
     includeDynamic: input.includeDynamic ?? false,
   });
   if (strategies.length === 0) {
@@ -1224,7 +1223,8 @@ export function recommendStrategySmart(
 
   const context = buildRecommendationContext(input);
   const recommender = new SmartRecommender(strategies);
-  const best = recommender.recommend(context)[0];
+  const results = await recommender.recommend(context);
+  const best = results[0];
 
   if (!best) return null;
 
@@ -1238,15 +1238,15 @@ export function recommendStrategySmart(
 /**
  * 基于场景推荐策略（兼容旧接口）
  */
-export function recommendStrategy(scenario: string): Recommendation | null {
-  return recommendStrategySmart({ description: scenario });
+export async function recommendStrategy(scenario: string): Promise<Recommendation | null> {
+  return await recommendStrategySmart({ description: scenario });
 }
 
 /**
  * 显示推荐结果
  */
-export function displayRecommendation(scenario: string): void {
-  const recommendation = recommendStrategySmart({ description: scenario });
+export async function displayRecommendation(scenario: string): Promise<void> {
+  const recommendation = await recommendStrategySmart({ description: scenario });
 
   if (!recommendation) {
     error("无法生成推荐");
@@ -1266,6 +1266,7 @@ export function displayRecommendation(scenario: string): void {
     score: recommendation.score,
   });
 }
+
 
 /**
  * 读取推荐反馈记录
@@ -2219,40 +2220,29 @@ function parsePriority(value?: string): Priority | undefined {
 }
 
 function printCliHelp(): void {
-  console.log("\nStrategyManager CLI");
+  console.log(colorize("\nStrategyManager CLI", "cyan"));
   console.log("\n用法:");
   console.log("  bun run Tools/ManageStrategies.ts list [--include-dynamic]");
+  console.log("  bun run Tools/ManageStrategies.ts current");
   console.log("  bun run Tools/ManageStrategies.ts switch <strategy-name>");
   console.log(
-    "  bun run Tools/ManageStrategies.ts recommend <description> [--priority quality|cost|speed|balanced] [--include-dynamic] [--with-usage-sync] [--budget-monthly 100] [--budget-spent 20] [--budget-alert 0.8]",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts generate <description> [--priority ...] [--retention 7] [--no-save] [--with-usage-sync]",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts save-dynamic <dynamic-name> <target-name>",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts cleanup-dynamic [--retention 7]",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts feedback <scenario> <recommended> <selected> [--score 80]",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts feedback-report [--json] [--format text|json] [--output ./report.txt]",
-  );
-  console.log(
-    "    可选: --bucket day|week|month",
+    "  bun run Tools/ManageStrategies.ts recommend <description> [--priority quality|cost|speed|balanced] [--include-dynamic]",
   );
   console.log(
     "  bun run Tools/ManageStrategies.ts cost-report [--output ./report.txt]",
   );
-  console.log("    成本分析报告");
   console.log(
-    "  bun run Tools/ManageStrategies.ts sync-usage [--output ./usage.txt]",
+    "  bun run Tools/ManageStrategies.ts sync-usage",
   );
-  console.log("    同步多平台使用数据");
+  console.log("  check-health              执行主动健康检查");
+  console.log("  disable <target> [reason] 手动禁用厂商或模型");
+  console.log("  enable <target>           手动启用厂商或模型");
+  console.log("  govern                    执行自主治理 (自动分析并调整策略)");
   console.log("");
+  console.log("示例:");
+  console.log("  bun run Tools/ManageStrategies.ts switch smart");
+  console.log("  bun run Tools/ManageStrategies.ts recommend \"大型前端重构\"");
+  console.log("  bun run Tools/ManageStrategies.ts sync-usage");
 }
 
 function parseBudget(
@@ -2288,211 +2278,32 @@ if (import.meta.main) {
       printCliHelp();
     } else if (command === "list") {
       const includeDynamic = Boolean(flags["include-dynamic"]);
-      displayStrategies(includeDynamic);
+      await displayStrategies(includeDynamic);
+    } else if (command === "current") {
+      const current = await getCurrentStrategy();
+      console.log(`当前策略: ${colorize(current ? current.name : "none", "green")}`);
     } else if (command === "switch") {
       const name = positionals[0];
       if (!name) {
         error("请提供策略名称");
       } else {
-        switchStrategy(name);
+        await switchStrategy(name);
       }
     } else if (command === "recommend") {
       const description = positionals.join(" ");
       if (!description) {
         error("请提供场景描述");
       } else {
-        const priority = parsePriority(flags.priority as string | undefined);
-        const includeDynamic = Boolean(flags["include-dynamic"]);
-        const withUsageSync = Boolean(flags["with-usage-sync"]);
-        const budget = parseBudget(flags);
-        const quotaStatus = withUsageSync
-          ? await fetchQuotaStatusFromUsageSync()
-          : undefined;
-        const recommendation = recommendStrategySmart({
+        await recommendStrategySmart({
           description,
-          priority,
-          includeDynamic,
-          quotaStatus,
-          budget,
+          priority: parsePriority(flags.priority as string | undefined),
+          includeDynamic: Boolean(flags["include-dynamic"]),
         });
-
-        if (!recommendation) {
-          error("无法生成推荐");
-        } else {
-          info(`基于场景 "${description}" 的推荐:`);
-          console.log();
-          console.log(
-            colorize(`推荐策略: ${recommendation.strategyName}`, "green"),
-          );
-          console.log(`推荐理由: ${recommendation.reason}`);
-          console.log(`匹配度: ${recommendation.score}%`);
-          recordRecommendationFeedback({
-            timestamp: new Date().toISOString(),
-            scenario: description,
-            recommendedStrategy: recommendation.strategyName,
-            score: recommendation.score,
-            quotaSnapshot: quotaStatus,
-          });
-        }
-      }
-    } else if (command === "generate") {
-      const description = positionals.join(" ");
-      if (!description) {
-        error("请提供场景描述");
-      } else {
-        const priority = parsePriority(flags.priority as string | undefined);
-        const retention =
-          typeof flags.retention === "string"
-            ? Number(flags.retention)
-            : undefined;
-        const save = flags["no-save"] ? false : true;
-        const withUsageSync = Boolean(flags["with-usage-sync"]);
-        const quotaStatus = withUsageSync
-          ? await fetchQuotaStatusFromUsageSync()
-          : undefined;
-
-        const result = generateDynamicStrategy({
-          description,
-          priority,
-          retentionDays: retention,
-          save,
-          quotaStatus,
-        });
-
-        if (!result) return;
-
-        success(`已生成动态策略: ${result.name}`);
-        info(`基础模板: ${result.baseTemplate}`);
-        info(`输出路径: ${result.filePath}`);
-      }
-    } else if (command === "save-dynamic") {
-      const dynamicName = positionals[0];
-      const targetName = positionals[1];
-      if (!dynamicName || !targetName) {
-        error("请提供动态策略名称和目标名称");
-      } else {
-        saveDynamicStrategyAs(dynamicName, targetName);
-      }
-    } else if (command === "cleanup-dynamic") {
-      const retention =
-        typeof flags.retention === "string" ? Number(flags.retention) : 7;
-      const removed = cleanupDynamicStrategies(retention);
-      success(`已清理动态策略: ${removed} 个`);
-    } else if (command === "feedback") {
-      const scenario = positionals[0];
-      const recommended = positionals[1];
-      const selected = positionals[2];
-      if (!scenario || !recommended || !selected) {
-        error("请提供场景、推荐策略和选择策略");
-      } else {
-        const score =
-          typeof flags.score === "string" ? Number(flags.score) : undefined;
-        recordRecommendationFeedback({
-          timestamp: new Date().toISOString(),
-          scenario,
-          recommendedStrategy: recommended,
-          selectedStrategy: selected,
-          score,
-        });
-        success("已记录反馈");
-      }
-    } else if (command === "feedback-report") {
-      const bucket =
-        typeof flags.bucket === "string"
-          ? (flags.bucket as FeedbackBucket)
-          : undefined;
-      const report = generateRecommendationFeedbackReport({ bucket });
-      const format =
-        typeof flags.format === "string"
-          ? flags.format
-          : flags.json
-            ? "json"
-            : "text";
-      const output =
-        typeof flags.output === "string" ? flags.output : undefined;
-      const content =
-        format === "json"
-          ? JSON.stringify(report, null, 2)
-          : renderRecommendationFeedbackReport(report);
-
-      if (output) {
-        fs.writeFileSync(output, content, "utf-8");
-        success(`已写入反馈报告: ${output}`);
-      } else {
-        console.log(content);
-      }
-    } else if (command === "cost-report") {
-      // 成本报告命令
-      try {
-        const { CostReport } = await import("./CostReport");
-        const coordinator = new UsageSyncCoordinator();
-
-        // 注册所有提供商
-        try {
-          coordinator.register(new AnthropicSync());
-        } catch {}
-        try {
-          coordinator.register(new OpenAISync());
-        } catch {}
-        try {
-          coordinator.register(new GitHubSync());
-        } catch {}
-        try {
-          coordinator.register(new GeminiSync());
-        } catch {}
-        try {
-          coordinator.register(new ZhiPuSync());
-        } catch {}
-        try {
-          coordinator.register(new DeepSeekSync());
-        } catch {}
-        try {
-          coordinator.register(new SiliconFlowSync());
-        } catch {}
-
-        const results = await coordinator.syncAll();
-        const usageData: UsageData[] = [];
-
-        for (const result of results.results || []) {
-          if (result.success && result.data) {
-            usageData.push(...result.data);
-          }
-        }
-
-        if (usageData.length === 0) {
-          warning("未获取到使用数据，请检查 API 密钥配置");
-          return;
-        }
-
-        const now = new Date();
-        const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endDate = now;
-
-        const report = new CostReport(usageData, { start: startDate, end: endDate });
-        const content = report.generateTextReport();
-
-        const output =
-          typeof flags.output === "string" ? flags.output : undefined;
-
-        if (output) {
-          fs.writeFileSync(output, content, "utf-8");
-          success(`已写入成本报告: ${output}`);
-        } else {
-          console.log(content);
-        }
-      } catch (err) {
-        error(`成本报告生成失败: ${err}`);
       }
     } else if (command === "sync-usage") {
       try {
         const coordinator = new UsageSyncCoordinator();
-        
-        const config = ConfigLoader.loadAll();
-
-        const syncPairs: Array<{
-          provider: string;
-          local: () => UsageSync;
-        }> = [
+        const syncPairs = [
           { provider: "anthropic", local: () => new AnthropicLocalSync() },
           { provider: "openai", local: () => new OpenAILocalSync() },
           { provider: "github", local: () => new GitHubSync() },
@@ -2501,91 +2312,124 @@ if (import.meta.main) {
           { provider: "deepseek", local: () => new DeepSeekSync() },
           { provider: "siliconflow", local: () => new SiliconFlowSync() },
         ];
-
         for (const { local } of syncPairs) {
-          try {
-            coordinator.register(local());
-          } catch {}
+          try { coordinator.register(local()); } catch {}
         }
-
         info("正在同步多平台使用数据...");
         const results = await coordinator.syncAll();
-
-        console.log();
-        info("同步结果:");
-        console.log();
-
-        const headers = ["提供商", "状态", "数据量", "说明"];
-        const rows: string[][] = [];
-
-        for (const result of results.results || []) {
-          const status = result.success ? colorize("✓", "green") : colorize("✗", "red");
-          const dataCount = result.data?.length || 0;
-          const message = result.error || (result.success ? "成功" : "失败");
-
-          rows.push([result.provider, status, dataCount.toString(), message]);
-        }
-
-        console.log(formatTable(headers, rows));
-        console.log();
-
-        const totalData = (results.results || []).reduce(
-          (sum, r) => sum + (r.data?.length || 0),
-          0,
-        );
+        const totalData = (results.results || []).reduce((sum, r) => sum + (r.data?.length || 0), 0);
         success(`同步完成: 共获取 ${totalData} 条使用记录`);
       } catch (err) {
         error(`使用同步失败: ${err}`);
       }
+    } else if (command === "check-health") {
+      await defaultActiveValidator.checkAll();
+    } else if (command === "disable") {
+      const target = positionals[0];
+      const reason = positionals[1] || "Manual disable";
+      if (!target) {
+        error("请提供要禁用的厂商或模型名称");
+      } else {
+        const type = target.includes('/') ? 'model' : 'provider';
+        await defaultHealthManager.disable(target, type, reason);
+        success(`已禁用 ${type}: ${target} (原因: ${reason})`);
+      }
+    } else if (command === "enable") {
+      const target = positionals[0];
+      if (!target) {
+        error("请提供要启用的厂商或模型名称");
+      } else {
+        const type = target.includes('/') ? 'model' : 'provider';
+        await defaultHealthManager.enable(target, type);
+        success(`已启用 ${type}: ${target}`);
+      }
+    } else if (command === "govern") {
+      await handleGovernance();
     } else {
       printCliHelp();
     }
   })();
 }
 
-export const ManageStrategies = {
-  // 路径管理
-  pathManager,
+/**
+ * 处理自主治理逻辑 (Phase 3)
+ */
+export async function handleGovernance(): Promise<void> {
+  info("🔍 正在启动自主治理引擎...");
+  
+  const current = await getCurrentStrategy();
+  if (!current) {
+    error("当前未激活任何策略");
+    return;
+  }
+  
+  const config = await readStrategy(current.name);
+  if (!config) {
+    error(`无法读取当前策略: ${current.name}`);
+    return;
+  }
+  
+  const models = extractModels(config);
+  const uniqueModels = Array.from(new Set(models));
+  let totalHealth = 0;
+  const details: Array<[string, string]> = [];
+  
+  for (const model of uniqueModels) {
+    const score = await defaultHealthManager.getHealthScore(model);
+    totalHealth += score;
+    const statusText = score === 1.0 ? colorize("Healthy", "green") : (score === 0.5 ? colorize("Degraded", "yellow") : colorize("Disabled", "red"));
+    details.push([model, statusText]);
+  }
+  
+  const avgHealth = uniqueModels.length > 0 ? totalHealth / uniqueModels.length : 1.0;
+  
+  info(`当前策略健康评估: ${current.name}`);
+  console.log(formatTable(["Model", "Status"], details));
+  
+  if (avgHealth < 0.7) {
+    warning(`⚠️ 当前策略健康度过低 (${(avgHealth * 100).toFixed(0)}%)，正在寻找最优替代方案...`);
+    
+    const recommendation = await recommendStrategySmart({
+      description: "自主治理自动重平衡",
+      priority: "balanced",
+      includeDynamic: true
+    });
+    
+    if (recommendation && recommendation.strategyName !== current.name) {
+      success(`✨ 发现更好的替代方案: ${recommendation.strategyName}`);
+      info(`推荐理由: ${recommendation.reason}`);
+      await switchStrategy(recommendation.strategyName);
+      success("✅ 治理行动已完成：策略已重平衡。");
+    } else {
+      info("当前虽有健康波动，但已是当前可用资源下的最优选。");
+    }
+  } else {
+    success("✅ 当前策略状态良好，无需干预。");
+  }
+}
 
-  // 安装功能
+export const ManageStrategies = {
+  pathManager,
   installTemplate,
   syncAllTemplates,
   listTemplates,
-
-  // 读取功能
   getCurrentStrategy,
   readStrategy,
-
-  // 切换功能
   switchStrategy,
-
-  // 列表功能
   listStrategies,
   listStrategiesWithOptions,
   displayStrategies,
-
-  // 修正功能
   fixStrategies,
-
-  // 验证功能
   validateStrategy,
   validateStrategyFile,
-
-  // 对比功能
   compareStrategies,
   displayStrategyDiff,
-
-  // 历史记录
   getHistory,
   addHistoryEntry,
   displayHistory,
   rollbackToHistory,
-
-  // 导出/导入
   exportStrategy,
   importStrategy,
-
-  // 推荐
   recommendStrategy,
   recommendStrategySmart,
   displayRecommendation,
@@ -2594,24 +2438,18 @@ export const ManageStrategies = {
   recordRecommendationFeedback,
   generateRecommendationFeedbackReport,
   renderRecommendationFeedbackReport,
-
-  // 动态策略
   generateDynamicStrategy,
   cleanupDynamicStrategies,
   saveDynamicStrategyAs,
-
-  // 备份
   cleanOldBackups,
   createBackup,
-
-  // 工具函数
   colorize,
   success,
   error,
   warning,
   info,
   formatTable,
+  handleGovernance,
 };
 
-// 默认导出
 export default ManageStrategies;

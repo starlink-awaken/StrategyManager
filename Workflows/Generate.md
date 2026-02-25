@@ -39,7 +39,10 @@
 - 分析当前各提供商的配额使用情况
 - 识别配额紧张的提供商（使用率 ≥ 80%）
 - 为受限提供商的模型选择替代方案：
-  - **quality 优先**: claude-sonnet → gpt-5.2-codex → glm-4.7
+  - **quality 优先**: claude-sonnet-4.6 → gpt-5.1-codex-max → glm-5
+  - **cost 优先**: glm-5 → gemini-3.1-flash → claude-3-5-haiku
+  - **speed 优先**: gemini-3.1-flash → claude-3-5-haiku → gpt-5-mini
+
   - **cost 优先**: glm-4.7 → gemini-flash → claude-haiku
   - **speed 优先**: gemini-flash → claude-haiku → gpt-5.2-codex
   - **balanced**: 综合考虑，优先使用高额度资源

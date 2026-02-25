@@ -162,10 +162,21 @@ export class UsageSyncCoordinator {
         timestamp: new Date(),
       };
     } catch (error: any) {
+      // Phase 2: 自动化感知异常
+      const errorMessage = error.message || String(error);
+      if (errorMessage.includes("429") || errorMessage.includes("rate limit") || errorMessage.includes("503") || errorMessage.includes("overloaded")) {
+        try {
+           const { defaultHealthManager } = require("../HealthManager");
+           defaultHealthManager.markDegraded(provider, `Auto-detected: ${errorMessage}`, 600);
+        } catch (e) {
+           // Ignore health manager errors during usage sync
+        }
+      }
+
       return {
         success: false,
         provider,
-        error: error.message,
+        error: error.message || String(error),
         duration: Date.now() - startTime,
         timestamp: new Date(),
       };

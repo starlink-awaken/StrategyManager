@@ -109,7 +109,9 @@
       "maxTokens": 8000
     },
     "prometheus": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.1-codex-max",
+      "fallback": ["github-copilot/claude-3-5-sonnet", "google/gemini-3.1-pro-preview"],
+
       "fallback": ["github-copilot/claude-3.5-sonnet", "google/gemini-3.1-pro-preview"],
       "thinking": {
         "type": "enabled",
@@ -125,7 +127,9 @@
       "maxTokens": 8000
     },
     "hephaestus": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.1-codex-max",
+      "fallback": ["github-copilot/claude-3-5-sonnet"],
+
       "fallback": ["github-copilot/claude-3.5-sonnet"],
       "temperature": 0.55,
       "maxTokens": 8000

@@ -28,6 +28,11 @@ triggers:
 | "generate dynamic strategy"              | `Workflows/Generate.md`       |
 | "sync usage" / "usage report"            | `Workflows/UsageSync.md`      |
 | "cost report"                            | `Workflows/CostReport.md`     |
+| "check health" / "provider status"    | `Workflows/Health.md`         |
+| "disable provider" / "enable model"     | `Workflows/Health.md`         |
+
+| "govern strategy"                      | `Workflows/Govern.md`         |
+
 
 ## Quick Reference
 

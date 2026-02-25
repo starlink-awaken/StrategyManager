@@ -15,6 +15,10 @@ Workflows/
 ├── Export.md       # 策略导出工作流
 ├── FeedbackReport.md # 反馈报告工作流
 ├── Fix.md          # 策略修复工作流
+├── Health.md         # 健康检查与熔断工作流
+├── Generate.md     # 动态生成工作流
+
+├── Fix.md          # 策略修复工作流
 ├── Generate.md     # 动态生成工作流
 ├── History.md      # 历史管理工作流
 ├── Import.md       # 策略导入工作流

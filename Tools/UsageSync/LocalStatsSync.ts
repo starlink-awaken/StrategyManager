@@ -120,7 +120,9 @@ export class DeepSeekSync extends LocalStatsSyncBase {
     
     if (stats.models) {
       for (const [modelName, modelStats] of Object.entries(stats.models)) {
-        const m = modelStats as any;
+        const m = modelStats as { totalInput: number; totalOutput: number; requestCount: number };
+
+
         
         // DeepSeek 成本: $0.14/M input, $0.28/M output
         const inputCost = (m.totalInput || 0) * 0.14 / 1000000;
@@ -212,7 +214,9 @@ export class SiliconFlowSync extends LocalStatsSyncBase {
     
     if (stats.models) {
       for (const [modelName, modelStats] of Object.entries(stats.models)) {
-        const m = modelStats as any;
+        const m = modelStats as { totalInput: number; totalOutput: number; requestCount: number };
+
+
         
         // Silicon Flow 成本: 根据具体模型而定，这里使用通用价格
         const inputCost = (m.totalInput || 0) * 0.01 / 1000000;
