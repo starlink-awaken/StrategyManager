@@ -1,20 +1,11 @@
 {
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "经济型：最大化免费额度，批量处理优先",
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "metadata": {
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "经济型：最大化免费额度，批量处理优先",
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "description": "经济型：最大化免费额度，批量处理优先",
   "metadata": {
     "version": "1.1.1",
     "updated": "2026-02-13",
     "cost_level": "ultra-low",
-    "cost_level": "ultra-low",
     "use_case": "探索、学习、快速迭代、成本压力大",
-    "monthly_cost": "¥50-150",
     "monthly_cost": "¥50-150",
     "resources_used": [
       "GitHub Copilot Pro+ (免费模型)",
@@ -24,13 +15,12 @@
       "Google Pro (Gemini Flash 便宜)"
     ]
   },
-
   "lsp": {
     "scene_coverage": ["daily", "tools", "education", "health", "entertainment", "chinese"],
     "budget": {
       "monthlyLimitUSD": 150,
       "dailyAlertThreshold": 0.8,
-      "emergencySwitchTo": "cheap",
+      "emergencySwitchTo": "cheap"
     },
     "provider_quotas": {
       "kimi": {
@@ -77,163 +67,52 @@
       "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing"]
     }
   },
-  // ================================================
-  // Strategy-3: 经济型 (ECONOMICAL)
-  // ================================================
-  // 策略：完全榨干免费和大额度资源，顶级模型仅用于不可替代场景
-  // 适用场景：学习、实验、个人项目
-  // 成本：极低（月度顶级模型调用 <50 次，余额资源消耗 <10 元/月）
-  // 资源利用率：Github Copilot Free 80% | ZhiPuAI 15% | 顶级模型 <5%
-  // ================================================
   "agents": {
-    // 主编排器 - GPT-4o (Github Copilot Free，无限免费)
     "sisyphus": {
       "model": "github-copilot/gpt-4o",
       "fallback": ["deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
       "temperature": 0.3
     },
-    // 规划器 - GPT-5-mini (Copilot Free，免费但更强)
     "prometheus": {
       "model": "github-copilot/gpt-5-mini",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
-    // 架构/调试 - GLM-5 (ZhiPuAI Max，大用量兜底)
-    // 仅不可替代场景才调用顶级模型（每日配额 5 次）
     "oracle": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
-    },
-
-
-
-  // ========== Category 配置 ==========
+    }
+  },
   "categories": {
-    // 前端 UI/UX - Gemini 2.5 Flash (Gemini Pro)
     "visual-engineering": {
       "model": "google/gemini-3-flash-preview",
       "temperature": 0.4
     },
-    // 深度逻辑推理 - GPT-5-mini (Copilot Free，免费且支持 thinking)
     "ultrabrain": {
       "model": "github-copilot/gpt-5-mini",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
-    // 创意任务 - Gemini 2.5 Flash (Gemini Pro)
-
-    // 深度思考 - GPT-5-mini (Copilot Free)
-    // 紧急 fallback: Claude Sonnet 4.5 (2并发)
     "deep": {
-      "model": "github-copilot/gpt-5-mini",
-      "fallback": {
-        "model": "anthropic/claude-sonnet-4.6",
-        "condition": "紧急"
-      }
+      "model": "github-copilot/gpt-5-mini"
     },
-    // 简单任务 - GPT-5-mini (Github Copilot Free)
     "quick": {
       "model": "github-copilot/gpt-5-mini",
       "temperature": 0.3
     },
-    // 通用低难度 - GPT-4o (Github Copilot Free)
     "unspecified-low": {
       "model": "github-copilot/gpt-4o",
       "temperature": 0.3
     },
-    // 通用高难度 - GLM-5 (ZhiPuAI Max)
     "unspecified-high": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "temperature": 0.3
     },
-    // 文档写作 - Gemini 3 Flash (Gemini Pro)
     "writing": {
-      "model": "google/gemini-3-flash-preview",
-      "temperature": 0.5
-    }
-  },
-  // ========== 并发控制 ==========
-  "sisyphus_agent": {
-    "disabled": false,
-    "default_builder_enabled": false,
-    "planner_enabled": true,
-    "replace_plan": true
-  },
-  "git_master": {
-    "commit_footer": true,
-    "include_co_authored_by": true
-  },
-  "tmux": {
-    "enabled": true,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
-  },
-  "experimental": {
-    "aggressive_truncation": false,
-    "auto_resume": true,
-    "truncate_all_tool_outputs": false,
-    "dynamic_context_pruning": {
-      "enabled": false
-    }
-  },
-  "disabled_mcps": ["github"],
-
-  "background_task": {
-    "defaultConcurrency": 12,
-    "staleTimeoutMs": 300000,
-    // Provider 级别并发限制
-    "providerConcurrency": {
-      "github-copilot": 30, // Github Copilot Free 允许 30 并发（主力）
-      "zhipuai-coding-plan": 15, // ZhiPuAI 允许 15 并发（次要）
-      "google": 12, // Gemini Pro x2 允许 12 并发
-      "antigravity": 1, // Gemini antigravity 限制 1 并发（仅紧急）
-      "anthropic": 1, // Claude Pro 限制 1 并发（仅紧急）
-      "openai": 1 // ChatGPT Plus 限制 1 并发（仅紧急）
+      "model": "google/gemini-3-flash-preview"
     },
-    // 模型级别并发限制
-    "modelConcurrency": {
-      "github-copilot/gpt-4o": 25, // GPT-4o 允许 25 并发（主力）
-      "github-copilot/gpt-5-mini": 35, // GPT-5-mini 允许 35 并发（主力）
-      "zhipuai-coding-plan/glm-4.7": 18, // GLM-5 允许 18 并发
-      "google/gemini-3-flash-preview": 15, // Gemini Flash 允许 15 并发
-      "google/gemini-3-pro-preview": 18, // Gemini 3 pro 允许 18 并发
-      "google/gemini-2.5-pro": 3, // Gemini Pro 限制 3 并发
-      "anthropic/claude-sonnet-4-6": 2 // Claude Sonnet 限制 2 并发（紧急）
+    "artistry": {
+      "model": "google/gemini-3-flash-preview"
     }
-  },
-  // ========== Sisyphus Agent 配置 ==========
-  "sisyphus_agent": {
-    "disabled": false,
-    "default_builder_enabled": false,
-    "planner_enabled": true,
-    "replace_plan": true
-  },
-  // ========== Git 配置 ==========
-  "git_master": {
-    "commit_footer": true,
-    "include_co_authored_by": true
-  },
-  // ========== Tmux 集成 ==========
-  "tmux": {
-    "enabled": true,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
-  },
-  // ========== 实验性功能 ==========
-  "experimental": {
-    "aggressive_truncation": false,
-    "auto_resume": true,
-    "truncate_all_tool_outputs": false,
-    "dynamic_context_pruning": {
-      "enabled": false
-    }
-  },
-  // ========== MCP 配置 ==========
-  "disabled_mcps": ["github"],
-  // ========== Hooks 配置 ==========
-  "disabled_hooks": []
+  }
 }

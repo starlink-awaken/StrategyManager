@@ -530,13 +530,6 @@ export function listStrategiesWithOptions(options?: {
       if (!isValidFile) {
         continue;
       }
-      if (
-        !file.startsWith("strategy-") ||
-        !file.endsWith(".jsonc") ||
-        file.includes(".backup")
-      ) {
-        continue;
-      }
 
       const filePath = path.join(dir, file);
       try {
