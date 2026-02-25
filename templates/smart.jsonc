@@ -22,7 +22,19 @@
     ]
   },
   "lsp": {
-    "scene_coverage": ["core development", "architecture design", "code review", "research", "creative", "writing", "multimedia", "collaboration", "education", "documentation", "agent-heavy"],
+    "scene_coverage": [
+      "core development",
+      "architecture design",
+      "code review",
+      "research",
+      "creative",
+      "writing",
+      "multimedia",
+      "collaboration",
+      "education",
+      "documentation",
+      "agent-heavy"
+    ],
     "budget": {
       "monthlyLimitUSD": 3000,
       "dailyAlertThreshold": 0.8,
@@ -33,20 +45,29 @@
         "priority": 1,
         "maxRequestsPerDay": 10000,
         "maxConcurrentRequests": 10,
-        "fallbackModels": ["openai/gpt-5.2", "google/gemini-3.1-pro-preview"]
+        "fallbackModels": [
+          "openai/gpt-5.2",
+          "google/gemini-3.1-pro-preview"
+        ]
       },
       "openai": {
         "priority": 1,
         "maxRequestsPerDay": 10000,
         "maxConcurrentRequests": 10,
-        "fallbackModels": ["anthropic/claude-opus-4-6", "deepseek/deepseek-v3-2"]
+        "fallbackModels": [
+          "anthropic/claude-opus-4-6",
+          "deepseek/deepseek-v3-2"
+        ]
       },
       "google": {
         "priority": 1,
         "maxRequestsPerDay": 15000,
         "maxCostPerRequest": 0.03,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["openai/gpt-5.2", "dashscope/qwen-max-latest"]
+        "fallbackModels": [
+          "openai/gpt-5.2",
+          "dashscope/qwen-max-latest"
+        ]
       },
       "github-copilot": {
         "priority": 1,
@@ -57,7 +78,9 @@
         "priority": 2,
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["ark-cn/Kimi-K2-thinking"]
+        "fallbackModels": [
+          "ark-cn/Kimi-K2-thinking"
+        ]
       },
       "ark-cn": {
         "priority": 2,
@@ -78,7 +101,9 @@
         "priority": 2,
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5"]
+        "fallbackModels": [
+          "minimax-cn-coding-plan/MiniMax-M2.5"
+        ]
       },
       "siliconflow": {
         "priority": 3,
@@ -89,18 +114,32 @@
         "priority": 3,
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["dashscope/qwen-max-latest"]
+        "fallbackModels": [
+          "dashscope/qwen-max-latest"
+        ]
       }
     },
     "constraints": {
       "maxToolsPerRequest": 15,
-      "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing", "git_operations"]
+      "allowedTools": [
+        "web_search",
+        "file_io",
+        "code_generation",
+        "shell_execution",
+        "data_processing",
+        "git_operations"
+      ]
     }
   },
   "agents": {
     "sisyphus": {
       "model": "github-copilot/claude-opus-4.6",
-      "fallback": ["anthropic/claude-opus-4-6", "dashscope/qwen-max-latest", "ark-cn/Doubao-Seed-2.0-Code", "siliconflow/deepseek-ai/DeepSeek-V3"],
+      "fallback": [
+        "anthropic/claude-opus-4-6",
+        "dashscope/qwen-max-latest",
+        "ark-cn/Doubao-Seed-2.0-Code",
+        "siliconflow/deepseek-ai/DeepSeek-V3"
+      ],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 200000
@@ -110,9 +149,10 @@
     },
     "prometheus": {
       "model": "openai/gpt-5.1-codex-max",
-      "fallback": ["github-copilot/claude-3-5-sonnet", "google/gemini-3.1-pro-preview"],
-
-      "fallback": ["github-copilot/claude-3.5-sonnet", "google/gemini-3.1-pro-preview"],
+      "fallback": [
+        "github-copilot/claude-3.5-sonnet",
+        "google/gemini-3.1-pro-preview"
+      ],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 150000
@@ -122,27 +162,35 @@
     },
     "oracle": {
       "model": "siliconflow/deepseek-ai/DeepSeek-R1",
-      "fallback": ["anthropic/claude-opus-4-6", "dashscope/qwen-max-latest"],
+      "fallback": [
+        "anthropic/claude-opus-4-6",
+        "dashscope/qwen-max-latest"
+      ],
       "temperature": 0.6,
       "maxTokens": 8000
     },
     "hephaestus": {
       "model": "openai/gpt-5.1-codex-max",
-      "fallback": ["github-copilot/claude-3-5-sonnet"],
-
-      "fallback": ["github-copilot/claude-3.5-sonnet"],
+      "fallback": [
+        "github-copilot/claude-3.5-sonnet"
+      ],
       "temperature": 0.55,
       "maxTokens": 8000
     },
     "multimodal-looker": {
       "model": "google/gemini-3.1-pro-preview",
-      "fallback": ["github-copilot/gpt-4o"],
+      "fallback": [
+        "github-copilot/gpt-4o"
+      ],
       "temperature": 0.5,
       "maxTokens": 6000
     },
     "metis": {
       "model": "anthropic/claude-sonnet-4-6",
-      "fallback": ["github-copilot/claude-3.5-sonnet", "dashscope/qwen-max-latest"],
+      "fallback": [
+        "github-copilot/claude-3.5-sonnet",
+        "dashscope/qwen-max-latest"
+      ],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -152,25 +200,34 @@
     },
     "momus": {
       "model": "siliconflow/deepseek-ai/DeepSeek-R1",
-      "fallback": ["anthropic/claude-sonnet-4-6", "google/gemini-3.1-pro-preview"],
+      "fallback": [
+        "anthropic/claude-sonnet-4-6",
+        "google/gemini-3.1-pro-preview"
+      ],
       "temperature": 0.6,
       "maxTokens": 8000
     },
     "librarian": {
       "model": "kimi/kimi-coding-pro",
-      "fallback": ["anthropic/claude-sonnet-4-6"],
+      "fallback": [
+        "anthropic/claude-sonnet-4-6"
+      ],
       "temperature": 0.4,
       "maxTokens": 6000
     },
     "explore": {
       "model": "step/step-2-16k",
-      "fallback": ["zhipuai-coding-plan/glm-5"],
+      "fallback": [
+        "zhipuai-coding-plan/glm-5"
+      ],
       "temperature": 0.3,
       "maxTokens": 4000
     },
     "fast-writer": {
       "model": "google/gemini-3.1-pro-preview",
-      "fallback": ["anthropic/claude-sonnet-4-6"],
+      "fallback": [
+        "anthropic/claude-sonnet-4-6"
+      ],
       "temperature": 0.6,
       "maxTokens": 8000
     }
@@ -183,19 +240,25 @@
     },
     "ultrabrain": {
       "model": "siliconflow/deepseek-ai/DeepSeek-R1",
-      "fallback": ["anthropic/claude-opus-4-6"],
+      "fallback": [
+        "anthropic/claude-opus-4-6"
+      ],
       "temperature": 0.6,
       "maxTokens": 8000
     },
     "deep": {
       "model": "siliconflow/deepseek-ai/DeepSeek-R1",
-      "fallback": ["dashscope/qwen-max-latest"],
+      "fallback": [
+        "dashscope/qwen-max-latest"
+      ],
       "temperature": 0.6,
       "maxTokens": 8000
     },
     "artistry": {
       "model": "google/gemini-3.1-pro-preview",
-      "fallback": ["kimi/kimi-coding-pro"],
+      "fallback": [
+        "kimi/kimi-coding-pro"
+      ],
       "temperature": 0.8,
       "maxTokens": 8000
     },
@@ -216,7 +279,10 @@
     },
     "writing": {
       "model": "google/gemini-3.1-pro-preview",
-      "fallback": ["kimi/kimi-coding-pro", "ark-cn/Kimi-K2-thinking"],
+      "fallback": [
+        "kimi/kimi-coding-pro",
+        "ark-cn/Kimi-K2-thinking"
+      ],
       "temperature": 0.7,
       "maxTokens": 8000
     }

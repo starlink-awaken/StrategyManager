@@ -6,7 +6,16 @@
 - [x] **Health State Management**: 建立持久化健康状态文件，供验证器读取。
 
 ## Phase 2: 自动化故障检测与响应 (短期目标)
-- [ ] **Auto-Detection**: 在 `UsageSync` 或 `ManageStrategies` 运行期间，如果检测到特定的 API 错误（如 429 Rate Limit, 503 Overloaded），自动在健康状态中标记该模型。
+- [x] **Auto-Detection**: 在 `UsageSync` 或 `ManageStrategies` 运行期间捕获 429/503 错误，自动标记为 `Degraded`。
+- [x] **Smart Fallback**: `Recommender` 评分算法已集成健康权重，自动避开风险模型。
+- [x] **Auto-Recovery**: 实现 TTL 机制，故障节点在冷却时间后自动尝试恢复。
+
+## Phase 3: 闭环动态优化 (已完成基础架构)
+- [x] **Performance Benchmarking**: 实现 `PerformanceMonitor` 记录延迟与成功率。
+- [x] **Autonomous Re-balancing**: 实现 `govern` 命令，支持检测到低健康度时自动热切换策略。
+- [x] **Automation Script**: 提供 `scripts/auto-govern.sh` 用于 Cron 自动化挂载。
+
+
 - [ ] **Smart Fallback**: 修改 `Recommender` 算法，在生成推荐策略时，自动避开健康状态为 "Degraded" 或 "Disabled" 的模型。
 - [ ] **Health Notification**: 当模型状态发生变更时，通过系统通知（如 Discord/Slack Webhook）告知管理员。
 

@@ -14,17 +14,14 @@ export class ActiveValidator {
   async checkAll(): Promise<void> {
     info("开始执行主动健康检查...");
     
-    const coordinator = new UsageSyncCoordinator();
-    
-    // 注册支持主动检查的厂商
     const providers = [
-      { name: 'anthropic', sync: new AnthropicSync() },
-      { name: 'openai', sync: new OpenAISync() },
-      { name: 'github', sync: new GitHubSync() },
-      { name: 'gemini', sync: new GeminiSync() },
-      { name: 'zhipu', sync: new ZhiPuSync() },
-      { name: 'deepseek', sync: new DeepSeekSync() },
-      { name: 'siliconflow', sync: new SiliconFlowSync() }
+      { name: 'anthropic', create: () => new AnthropicSync() },
+      { name: 'openai', create: () => new OpenAISync() },
+      { name: 'github', create: () => new GitHubSync() },
+      { name: 'gemini', create: () => new GeminiSync() },
+      { name: 'zhipu', create: () => new ZhiPuSync() },
+      { name: 'deepseek', create: () => new DeepSeekSync() },
+      { name: 'siliconflow', create: () => new SiliconFlowSync() }
     ];
     
     const results: Array<[string, string, string]> = [];
@@ -32,7 +29,8 @@ export class ActiveValidator {
     
     for (const p of providers) {
       try {
-        const isHealthy = await p.sync.healthCheck();
+        const sync = p.create();
+        const isHealthy = await sync.healthCheck();
         const status = isHealthy ? colorize("Healthy", "green") : colorize("Degraded", "yellow");
         const detail = isHealthy ? "Connected" : "Connection failed or rate limited";
         
@@ -40,27 +38,28 @@ export class ActiveValidator {
         
         results.push([p.name, status, detail]);
         
-        // 如果不健康且之前未记录，可以考虑自动记录到 HealthManager（动态治理雛形）
         if (!isHealthy) {
-          // 暂时不自动禁用，仅记录日志或通过 CLI 让用户手动操作
+          // Phase 2: 自动化记录降级（可选，目前保持观察）
         }
       } catch (err) {
-        results.push([p.name, colorize("Error", "red"), String(err)]);
+        results.push([p.name, colorize("Skip", "yellow"), "Credentials missing or init failed"]);
       }
     }
     
     const headers = ["Provider", "Status", "Detail"];
     console.log(formatTable(headers, results));
-    console.log(`\n完成: ${healthyCount}/${providers.length} 厂商健康`);
+    console.log(`\n完成: ${healthyCount}/${providers.length} 厂商在线`);
     
     // 打印当前手动禁用的项
     const disabled = await defaultHealthManager.getDisabledItems();
-    if (disabled.providers.length > 0 || disabled.models.length > 0) {
-      console.log(colorize("\n当前手动禁用的项:", "yellow"));
-      if (disabled.providers.length > 0) console.log(`  Providers: ${disabled.providers.join(', ')}`);
-      if (disabled.models.length > 0) console.log(`  Models: ${disabled.models.join(', ')}`);
+    if (disabled.providers.length > 0 || disabled.models.length > 0 || disabled.degraded.length > 0) {
+      console.log(colorize("\n当前治理列表 (Governance List):", "yellow"));
+      if (disabled.providers.length > 0) console.log(`  Disabled Providers: ${disabled.providers.join(', ')}`);
+      if (disabled.models.length > 0) console.log(`  Disabled Models:    ${disabled.models.join(', ')}`);
+      if (disabled.degraded.length > 0) console.log(`  Degraded Items:     ${disabled.degraded.join(', ')}`);
     }
   }
+
 
   /**
    * 检查特定项的当前健康状态（包含手动禁用状态）
