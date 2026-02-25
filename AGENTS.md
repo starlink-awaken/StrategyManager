@@ -20,6 +20,8 @@ AI 策略配置生命周期管理工具 - OpenCode Skill，支持 Claude、Copil
 - `bun test:unit`: 运行所有单元测试
 - `bun test:coverage`: 生成测试覆盖率报告
 - `bun test:pathmanager / :validator / :recommender`: 针对特定模块运行测试
+- `scripts/auto-govern.sh`: 自动化治理 Cron 脚本 (Phase 3)
+
 
 ## 代码风格指南
 
