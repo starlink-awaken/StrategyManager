@@ -14,7 +14,7 @@ import type {
   RecommendationContext,
   ScenarioConfig,
   HistoryData,
-} from "./Recommender";
+} from "./interfaces";
 
 // ==================== 增强上下文类型 ====================
 

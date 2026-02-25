@@ -11,7 +11,8 @@
  * - 归一化分数输出
  */
 
-import type { ScenarioType, Priority } from "./Recommender";
+import type { ScenarioType, Priority } from "./interfaces";
+
 
 // ==================== 类型定义 ====================
 

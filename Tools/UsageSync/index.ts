@@ -39,7 +39,8 @@ import {
   QuotaConfig,
 } from "./interfaces";
 import { QuotaMonitor } from "./QuotaMonitor";
-import type { StrategyConfig } from "../ManageStrategies";
+import type { StrategyConfig } from "../interfaces";
+
 
 /**
  * 将策略的 lsp.provider_quotas 转换为 QuotaConfig[]

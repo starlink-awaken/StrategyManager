@@ -5,7 +5,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import type { HistoryEntry } from "./ManageStrategies";
+import type { HistoryEntry } from "./interfaces";
+
 import { fileExists } from "./FileSystemUtils";
 import { error, success, info, formatTable } from "./FormatUtils";
 

@@ -5,11 +5,16 @@
  * 提供多层次验证（错误/警告/信息）和自动修复建议
  */
 
-import type { StrategyConfig } from "./ManageStrategies";
+import { colorize, success, error, warning, info } from "./FormatUtils";
+import { defaultHealthManager } from "./HealthManager";
+import type { 
+  StrategyConfig, 
+  AgentConfig, 
+  CategoryConfig,
+  ValidationSeverity 
+} from "./interfaces";
 
 // ==================== 类型定义 ====================
-
-export type ValidationSeverity = "error" | "warning" | "info";
 
 export interface ValidationError {
   field: string;
@@ -98,8 +103,7 @@ export class StrategyValidator {
 
     // 验证 agents 配置
     if (config.agents) {
-      for (const [agentName, agentConfig] of Object.entries(config.agents)) {
-        // 检查 agentConfig 是否存在以及 model 字段
+      for (const [agentName, agentConfig] of Object.entries(config.agents) as [string, AgentConfig][]) {
         if (!agentConfig || typeof agentConfig !== "object") {
           result.errors.push({
             field: `agents.${agentName}`,
@@ -118,10 +122,7 @@ export class StrategyValidator {
 
     // 验证 categories 配置
     if (config.categories) {
-      for (const [categoryName, categoryConfig] of Object.entries(
-        config.categories,
-      )) {
-        // 检查 categoryConfig 是否存在以及 model 字段
+      for (const [categoryName, categoryConfig] of Object.entries(config.categories) as [string, CategoryConfig][]) {
         if (!categoryConfig || typeof categoryConfig !== "object") {
           result.errors.push({
             field: `categories.${categoryName}`,
@@ -151,28 +152,53 @@ export class StrategyValidator {
       "anthropic/claude-opus-4-6",
       "anthropic/claude-sonnet-4-6",
       "anthropic/claude-haiku-4-5",
+      "anthropic/claude-3-5-sonnet",
+      "anthropic/claude-3-5-haiku",
+      "anthropic/claude-3-opus",
       // OpenAI
       "openai/gpt-5.2",
       "openai/gpt-5.2-codex",
       "openai/gpt-5.1-codex-max",
-      "github-copilot/gpt-5-mini",
+      "openai/gpt-5-mini",
       "openai/gpt-4.1",
+      "openai/gpt-4o",
+      "openai/gpt-4o-mini",
+      "openai/o1-preview",
+      "openai/o1-mini",
       // Google
+      "google/gemini-3.1-pro-preview",
+      "google/gemini-3.1-flash",
       "google/gemini-3-pro",
       "google/gemini-3-flash",
       "google/antigravity-gemini-3-pro",
       // GitHub Copilot
       "github-copilot/claude-opus-4.6",
       "github-copilot/claude-sonnet-4.6",
+      "github-copilot/claude-3-5-sonnet",
       "github-copilot/grok-code-fast-1",
       "github-copilot/raptor-mini",
       "github-copilot/gpt-5.2-codex",
       "github-copilot/gpt-5-mini",
       "github-copilot/gpt-4.1",
+      "github-copilot/gpt-4o",
       // ZhiPu
+      "zhipuai-coding-plan/glm-5",
       "zhipuai-coding-plan/glm-4.7",
       // DeepSeek
+      "deepseek/deepseek-v3",
       "deepseek/deepseek-v3-2",
+      "deepseek/deepseek-r1",
+      // Domestic Models
+      "ark-cn/Doubao-Seed",
+      "ark-cn/Doubao-pro-32k",
+      "dashscope/qwen-2.5-72b",
+      "dashscope/qwen-max",
+      "kimi/moonshot-v1-8k",
+      "step/step-1-8k",
+      "minimax/MiniMax-M2.5",
+      // SiliconFlow
+      "siliconflow/deepseek-ai/DeepSeek-V3",
+      "siliconflow/deepseek-ai/DeepSeek-R1",
     ];
 
     const checkModel = (model: string, field: string) => {
@@ -189,7 +215,7 @@ export class StrategyValidator {
     };
 
     if (config.agents) {
-      for (const [agentName, agentConfig] of Object.entries(config.agents)) {
+      for (const [agentName, agentConfig] of Object.entries(config.agents) as [string, AgentConfig][]) {
         if (agentConfig.model) {
           checkModel(agentConfig.model, `agents.${agentName}.model`);
         }
@@ -197,9 +223,7 @@ export class StrategyValidator {
     }
 
     if (config.categories) {
-      for (const [categoryName, categoryConfig] of Object.entries(
-        config.categories,
-      )) {
+      for (const [categoryName, categoryConfig] of Object.entries(config.categories) as [string, CategoryConfig][]) {
         if (categoryConfig.model) {
           checkModel(categoryConfig.model, `categories.${categoryName}.model`);
         }
@@ -233,7 +257,7 @@ export class StrategyValidator {
     };
 
     if (config.agents) {
-      for (const [agentName, agentConfig] of Object.entries(config.agents)) {
+      for (const [agentName, agentConfig] of Object.entries(config.agents) as [string, AgentConfig][]) {
         if (agentConfig.model) {
           checkExpensive(agentConfig.model, `agents.${agentName}.model`);
         }
@@ -241,9 +265,7 @@ export class StrategyValidator {
     }
 
     if (config.categories) {
-      for (const [categoryName, categoryConfig] of Object.entries(
-        config.categories,
-      )) {
+      for (const [categoryName, categoryConfig] of Object.entries(config.categories) as [string, CategoryConfig][]) {
         if (categoryConfig.model) {
           checkExpensive(
             categoryConfig.model,
@@ -286,9 +308,8 @@ export class StrategyValidator {
       return;
     }
 
-    // 检查高成本模型的并发是否过高
     for (const [model, limit] of Object.entries(concurrency)) {
-      if (model.includes("opus") && limit > 3) {
+      if (model.includes("opus") && (limit as number) > 3) {
         result.warnings.push({
           field: `background_task.modelConcurrency.${model}`,
           message: `高成本模型 ${model} 并发限制为 ${limit}，可能导致成本激增`,
@@ -299,7 +320,7 @@ export class StrategyValidator {
         });
       }
 
-      if (model.includes("github-copilot") && limit > 50) {
+      if (model.includes("github-copilot") && (limit as number) > 50) {
         result.warnings.push({
           field: `background_task.modelConcurrency.${model}`,
           message: `GitHub Copilot 模型 ${model} 并发限制为 ${limit}，可能超出配额`,
@@ -331,7 +352,7 @@ export class StrategyValidator {
     };
 
     if (config.agents) {
-      for (const agentConfig of Object.values(config.agents)) {
+      for (const agentConfig of Object.values(config.agents) as AgentConfig[]) {
         if (agentConfig.model) {
           checkCopilot(agentConfig.model);
         }
@@ -339,7 +360,7 @@ export class StrategyValidator {
     }
 
     if (config.categories) {
-      for (const categoryConfig of Object.values(config.categories)) {
+      for (const categoryConfig of Object.values(config.categories) as CategoryConfig[]) {
         if (categoryConfig.model) {
           checkCopilot(categoryConfig.model);
         }
@@ -348,8 +369,6 @@ export class StrategyValidator {
 
     const utilizationRate = totalModels > 0 ? copilotModels / totalModels : 0;
 
-    // 只有在配置了足够多的模型时才检查利用率（至少5个）
-    // 阈值设为25%，即至少1/4的模型应使用GitHub Copilot
     if (totalModels >= 5 && utilizationRate < 0.25) {
       result.warnings.push({
         field: "github-copilot",
@@ -378,19 +397,16 @@ export class StrategyValidator {
    * 生成优化建议
    */
   private generateSuggestions(result: ValidationResult): void {
-    // 配置完整时的建议
     if (result.errors.length === 0 && result.warnings.length === 0) {
       result.suggestions.push("配置完整且合理，无明显问题");
       return;
     }
 
-    // 有错误时的建议
     if (result.errors.length > 0) {
       result.suggestions.push(
         `发现 ${result.errors.length} 个错误，需要修复后才能使用此策略`,
       );
 
-      // 针对特定错误类型的建议
       const hasModelError = result.errors.some((e) =>
         e.field.includes("model"),
       );
@@ -401,13 +417,11 @@ export class StrategyValidator {
       }
     }
 
-    // 有警告时的建议
     if (result.warnings.length > 0) {
       result.suggestions.push(
         `发现 ${result.warnings.length} 个警告，建议优化以提升性价比`,
       );
 
-      // 针对特定警告类型的建议
       const hasCostWarning = result.warnings.some((w) =>
         w.field.includes("cost"),
       );
@@ -425,14 +439,20 @@ export class StrategyValidator {
       }
     }
 
-    // 有信息提示时的建议
     if (result.info.length > 0 && result.warnings.length === 0) {
       result.suggestions.push("配置基本合理，有一些可选的优化建议");
     }
   }
 }
 
-// ==================== 辅助函数 ====================
+/**
+ * 验证策略配置 (Standalone)
+ */
+export function validateStrategy(config: StrategyConfig, strategyName?: string): boolean {
+  const validator = new StrategyValidator();
+  const result = validator.validate(config, strategyName);
+  return result.valid;
+}
 
 /**
  * 格式化验证结果

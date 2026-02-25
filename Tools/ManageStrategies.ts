@@ -1,2021 +1,98 @@
 /**
  * ManageStrategies.ts
- * 策略管理系统核心工具
- *
- * 提供策略的读取、切换、列表、修正、验证、对比、历史记录、导出/导入和智能推荐功能
+ * 策略管理 CLI 工具入口
+ * 
+ * 职责：
+ * 1. CLI 命令解析与路由
+ * 2. 聚合各模块功能对外提供 API
+ * 3. 处理高层治理逻辑 (Governance)
  */
 
 import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
-import { PathManager, defaultPathManager } from "./PathManager";
-import {
-  SmartRecommender,
-  parseRecommendationContext,
-  type ScenarioType,
-  type Priority,
-  type QuotaStatus,
-  type RecommendationContext,
-  type HistoryData,
-  type BudgetConfig,
-} from "./Recommender";
-import { colorize, success, error, warning, info, formatTable } from './FormatUtils';
+import { defaultPathManager } from "./PathManager";
 import { readJSONC, writeJSONC, fileExists } from './FileSystemUtils';
-import { getHistory, addHistoryEntry, displayHistory, rollbackToHistory } from './HistoryManager';
+import { addHistoryEntry, getHistory, displayHistory, rollbackToHistory } from './HistoryManager';
+import { colorize, success, error, info, warning, formatTable } from './FormatUtils';
+import { validateStrategy } from "./Validator";
 import { defaultHealthManager } from './HealthManager';
 import { defaultActiveValidator } from './ActiveValidator';
-import { defaultPerformanceMonitor } from './PerformanceMonitor';
+
+// 导入拆分后的模块
+import {
+  extractModels,
+  normalizeMetadata,
+  validateMetadata,
+  isSymlink,
+  readSymlink,
+  getCurrentStrategy,
+  readStrategy,
+  listStrategiesWithOptions,
+  switchStrategy,
+  applyToolConstraints,
+} from "./StrategyCore";
+
+import {
+  fixStrategies,
+  compareStrategies,
+  displayStrategyDiff,
+  exportStrategy,
+  importStrategy,
+} from "./StrategyOperations";
+
+import {
+  buildRecommendationContext,
+  recommendStrategySmart,
+  displayRecommendation,
+  loadRecommendationFeedback,
+  recordRecommendationFeedback,
+  generateRecommendationFeedbackReport,
+  renderRecommendationFeedbackReport,
+} from "./RecommendationEngine";
+
+import {
+  generateDynamicStrategy,
+  cleanupDynamicStrategies,
+  saveDynamicStrategyAs,
+} from "./DynamicStrategy";
+
 import {
   UsageSyncCoordinator,
-  AnthropicSync,
   AnthropicLocalSync,
-  OpenAISync,
   OpenAILocalSync,
   GitHubSync,
-  GeminiSync,
   GeminiLocalSync,
-  ZhiPuSync,
   ZhiPuLocalSync,
   DeepSeekSync,
   SiliconFlowSync,
-  ConfigLoader,
-  type UsageData,
-  type UsageSync,
 } from "./UsageSync";
 
+import type {
+  StrategyConfig,
+  StrategyMetadata,
+  RecommendationInput,
+  BudgetConfig,
+} from "./interfaces";
 
-
-
-
-// ==================== 类型定义 ====================
-
-/**
- * 策略配置接口
- */
-export interface AgentPermissionConfig {
-  edit?: "ask" | "allow" | "deny";
-  bash?: "ask" | "allow" | "deny" | Record<string, "ask" | "allow" | "deny">;
-  webfetch?: "ask" | "allow" | "deny";
-  doom_loop?: "ask" | "allow" | "deny";
-  external_directory?: "ask" | "allow" | "deny";
-}
-
-export interface AgentThinkingConfig {
-  type: "enabled" | "disabled";
-  budgetTokens?: number;
-}
-
-export interface AgentConfig {
-  model?: string;
-  variant?: string;
-  category?: string;
-  skills?: string[];
-  temperature?: number;
-  top_p?: number;
-  prompt?: string;
-  prompt_append?: string;
-  tools?: Record<string, boolean>;
-  disable?: boolean;
-  description?: string;
-  mode?: "subagent" | "primary" | "all";
-  color?: string;
-  permission?: AgentPermissionConfig;
-  maxTokens?: number;
-  thinking?: AgentThinkingConfig;
-  reasoningEffort?: "low" | "medium" | "high" | "xhigh";
-  textVerbosity?: "low" | "medium" | "high";
-  providerOptions?: Record<string, any>;
-}
-
-export interface CategoryConfig {
-  description?: string;
-  model?: string;
-  variant?: string;
-  temperature?: number;
-  top_p?: number;
-  maxTokens?: number;
-  thinking?: AgentThinkingConfig;
-  reasoningEffort?: "low" | "medium" | "high" | "xhigh";
-  textVerbosity?: "low" | "medium" | "high";
-  tools?: Record<string, boolean>;
-  prompt_append?: string;
-  is_unstable_agent?: boolean;
-}
-
-export interface StrategyConfig {
-  $schema?: string;
-  description?: string;
-  lsp?: Record<string, any>;
-  agents?: Record<string, AgentConfig>;
-  categories?: Record<string, CategoryConfig>;
-  background_task?: {
-    modelConcurrency?: Record<string, number>;
-  };
-  metadata?: {
-    version?: string;
-    updated?: string;
-    cost_level?: "low" | "medium" | "high";
-    use_case?: string;
-    optimization?: string;
-  };
-}
-
-/**
- * 策略元信息
- */
-export interface StrategyMetadata {
-  name: string;
-  filePath: string;
-  description: string;
-  costLevel: string;
-  version?: string;
-  isCurrent: boolean;
-  useCase?: string;
-  models?: string[];
-  source?: "installed" | "dynamic";
-}
-
-/**
- * 历史记录项
- */
-export interface HistoryEntry {
-  timestamp: string;
-  strategyName: string;
-  strategyPath: string;
-  action: "switch" | "rollback" | "import";
-  backupPath?: string;
-}
-
-/**
- * 策略差异
- */
-export interface StrategyDiff {
-  added: string[];
-  removed: string[];
-  modified: string[];
-}
-
-/**
- * 推荐结果
- */
-export interface Recommendation {
-  strategyName: string;
-  reason: string;
-  score: number;
-}
-
-export interface RecommendationInput {
-  description: string;
-  priority?: Priority;
-  budget?: BudgetConfig;
-  history?: HistoryData;
-  quotaStatus?: QuotaStatus[];
-  includeDynamic?: boolean;
-}
-
-export interface RecommendationFeedback {
-  timestamp: string;
-  scenario: string;
-  recommendedStrategy: string;
-  selectedStrategy?: string;
-  score?: number;
-  quotaSnapshot?: QuotaStatus[];
-}
-
-export interface DynamicStrategyOptions {
-  description: string;
-  priority?: Priority;
-  quotaStatus?: QuotaStatus[];
-  save?: boolean;
-  retentionDays?: number;
-}
-
-export interface DynamicStrategyResult {
-  name: string;
-  filePath: string;
-  baseTemplate: string;
-  config: StrategyConfig;
-}
-
-// ==================== 常量定义 ====================
-
-// 使用默认路径管理器（用户模式）
 const pathManager = defaultPathManager;
-const CONFIG_DIR = pathManager.getConfigDir();
 const STRATEGIES_DIR = pathManager.getStrategiesDir();
-const DYNAMIC_STRATEGIES_DIR = pathManager.getDynamicStrategiesDir();
 const CONFIG_FILE = pathManager.getConfigFileWithComments();
-const HISTORY_FILE = pathManager.getHistoryFile();
-const RECOMMENDATION_FEEDBACK_FILE =
-  pathManager.getRecommendationFeedbackFile();
 const MAX_BACKUPS = 5;
 
-// 确保必要的目录存在
-pathManager.ensureDirectories();
-
-// ==================== 元数据规范化 ====================
+// ==================== 备份管理 (保持在主入口) ====================
 
 /**
- * 规范化策略元数据
- */
-export function normalizeMetadata(
-  config: StrategyConfig,
-  strategyName: string,
-): StrategyConfig {
-  const now = new Date().toISOString().split("T")[0];
-
-  if (!config.metadata) {
-    config.metadata = {};
-  }
-
-  // 补充缺失的字段
-  if (!config.metadata.version) {
-    config.metadata.version = "1.0.0";
-  }
-
-  if (!config.metadata.updated) {
-    config.metadata.updated = now;
-  }
-
-  if (!config.metadata.cost_level) {
-    // 根据策略名称推断成本等级
-    if (
-      strategyName.includes("super") ||
-      strategyName.includes("performance")
-    ) {
-      config.metadata.cost_level = "high";
-    } else if (strategyName.includes("economical")) {
-      config.metadata.cost_level = "low";
-    } else {
-      config.metadata.cost_level = "medium";
-    }
-  }
-
-  if (!config.metadata.use_case) {
-    config.metadata.use_case = "通用场景";
-  }
-
-  return config;
-}
-
-/**
- * 验证元数据完整性
- */
-export function validateMetadata(config: StrategyConfig): string[] {
-  const warnings: string[] = [];
-
-  if (!config.metadata) {
-    warnings.push("缺少 metadata 字段（建议补充）");
-    return warnings;
-  }
-
-  if (!config.metadata.version) {
-    warnings.push("metadata 缺少 version 字段");
-  }
-
-  if (!config.metadata.updated) {
-    warnings.push("metadata 缺少 updated 字段");
-  }
-
-  if (!config.metadata.cost_level) {
-    warnings.push("metadata 缺少 cost_level 字段");
-  }
-
-  if (!config.metadata.use_case) {
-    warnings.push("metadata 缺少 use_case 字段");
-  }
-
-  return warnings;
-}
-
-
-
-/**
- * 检查是否为软链接
- */
-export function isSymlink(filePath: string): boolean {
-  try {
-    return fs.lstatSync(filePath).isSymbolicLink();
-  } catch {
-    return false;
-  }
-}
-
-/**
- * 读取软链接目标
- */
-export function readSymlink(filePath: string): string | null {
-  try {
-    return fs.readlinkSync(filePath);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * 提取策略中使用的模型列表
- */
-export function extractModels(config: StrategyConfig): string[] {
-  const models: string[] = [];
-
-  if (config.agents) {
-    for (const agent of Object.values(config.agents)) {
-      if (agent?.model && typeof agent.model === "string") {
-        models.push(agent.model);
-      }
-    }
-  }
-
-  if (config.categories) {
-    for (const category of Object.values(config.categories)) {
-      if (category?.model && typeof category.model === "string") {
-        models.push(category.model);
-      }
-    }
-  }
-
-  return Array.from(new Set(models));
-}
-
-
-// ==================== 策略读取功能 ====================
-
-/**
- * 读取当前激活策略
- */
-export function getCurrentStrategy(): StrategyMetadata | null {
-  if (!fileExists(CONFIG_FILE)) {
-    return null;
-  }
-
-  if (isSymlink(CONFIG_FILE)) {
-    const target = readSymlink(CONFIG_FILE);
-    if (!target) return null;
-
-    const name = path.basename(target, ".jsonc");
-    try {
-      const config = readJSONC(target);
-      return {
-        name,
-        filePath: target,
-        description: config.metadata?.description || config.description || "无描述",
-        costLevel: config.metadata?.cost_level || "unknown",
-        version: config.metadata?.version,
-        isCurrent: true,
-        useCase: config.metadata?.use_case,
-        models: extractModels(config),
-        source: target.startsWith(DYNAMIC_STRATEGIES_DIR)
-          ? "dynamic"
-          : "installed",
-      };
-    } catch (err) {
-      error(`读取策略失败: ${target}`);
-      return null;
-    }
-  }
-
-  return null;
-}
-
-/**
- * 读取指定策略配置
- */
-export function readStrategy(strategyName: string): StrategyConfig | null {
-  const strategyFile = path.join(STRATEGIES_DIR, `${strategyName}.jsonc`);
-
-  const dynamicFile = path.join(
-    DYNAMIC_STRATEGIES_DIR,
-    `${strategyName}.jsonc`,
-  );
-
-  if (!fileExists(strategyFile) && !fileExists(dynamicFile)) {
-    error(`策略文件不存在: ${strategyFile}`);
-    return null;
-  }
-
-  try {
-    return fileExists(strategyFile)
-      ? readJSONC(strategyFile)
-      : readJSONC(dynamicFile);
-  } catch (err) {
-    error(`读取策略失败: ${strategyName}`);
-    return null;
-  }
-}
-
-// ==================== 策略切换功能 ====================
-
-/**
- * 切换策略
- */
-export function switchStrategy(strategyName: string): boolean {
-  const strategyFile = path.join(STRATEGIES_DIR, `${strategyName}.jsonc`);
-  const dynamicFile = path.join(
-    DYNAMIC_STRATEGIES_DIR,
-    `${strategyName}.jsonc`,
-  );
-
-  const targetFile = fileExists(strategyFile) ? strategyFile : dynamicFile;
-
-  if (!fileExists(targetFile)) {
-    error(`策略文件不存在: ${strategyName}`);
-    return false;
-  }
-
-  // 验证策略有效性
-  let config = readStrategy(strategyName);
-  if (!config) {
-    return false;
-  }
-
-  // 规范化元数据
-  config = normalizeMetadata(config, strategyName);
-
-  if (!validateStrategy(config)) {
-    error(`策略验证失败: ${strategyName}`);
-    return false;
-  }
-
-  // 备份现有配置（如果是普通文件）
-  if (fileExists(CONFIG_FILE) && !isSymlink(CONFIG_FILE)) {
-    const backupPath = `${CONFIG_FILE}.backup.${Date.now()}`;
-    info(`备份现有配置: ${backupPath}`);
-    fs.copyFileSync(CONFIG_FILE, backupPath);
-  }
-
-  // 记录历史
-  const current = getCurrentStrategy();
-  if (current) {
-    addHistoryEntry({
-      timestamp: new Date().toISOString(),
-      strategyName: current.name,
-      strategyPath: current.filePath,
-      action: "switch",
-      backupPath:
-        fileExists(CONFIG_FILE) && !isSymlink(CONFIG_FILE)
-          ? `${CONFIG_FILE}.backup.${Date.now()}`
-          : undefined,
-    });
-  }
-  // 应用工具约束过滤
-  applyToolConstraints(config);
-
-  // 写回修改后的配置
-  const jsoncContent = JSON.stringify(config, null, 2) + "\n";
-  fs.writeFileSync(targetFile, jsoncContent, "utf8");
-  info(`已应用工具约束并更新配置: ${targetFile}`);
-
-  // 创建软链接（只维护 .jsonc）
-  try {
-    const configFileJsonc = pathManager.getConfigFileWithComments();
-    execSync(`ln -sf "${targetFile}" "${configFileJsonc}"`, { stdio: "inherit" });
-    info(`已更新 JSONC 软链: ${configFileJsonc}`);
-
-    success(`已切换到策略: ${strategyName}`);
-    info(`软链目标: ${targetFile}`);
-    info(`描述: ${config.description}`);
-    
-    // 重启提醒
-    console.log();
-    console.log(colorize("⚠️  请重启 Claude Code 或 OpenCode 使新策略生效", "yellow"));
-
-    // 添加新历史记录
-    addHistoryEntry({
-      timestamp: new Date().toISOString(),
-      strategyName,
-      strategyPath: targetFile,
-      action: "switch",
-    });
-
-    updateLastRecommendationSelection(strategyName);
-
-    return true;
-  } catch (err) {
-    error(`切换策略失败: ${err}`);
-    return false;
-  }
-}
-
-// ==================== 策略列表功能 ====================
-
-/**
- * 获取所有可用策略
- */
-export function listStrategies(): StrategyMetadata[] {
-  return listStrategiesWithOptions({ includeDynamic: false });
-}
-
-export function listStrategiesWithOptions(options?: {
-  includeDynamic?: boolean;
-}): StrategyMetadata[] {
-  if (!fileExists(STRATEGIES_DIR)) {
-    error(`策略目录不存在: ${STRATEGIES_DIR}`);
-    return [];
-  }
-
-  const current = getCurrentStrategy();
-  const strategies: StrategyMetadata[] = [];
-
-  const collectFromDir = (dir: string, source: "installed" | "dynamic") => {
-    if (!fileExists(dir)) return;
-    const files = fs.readdirSync(dir);
-
-    for (const file of files) {
-      // 识别两种格式: strategy-*.jsonc 或 *.jsonc (如 smart.jsonc, balanced.jsonc)
-      const isStrategyFormat = file.startsWith("strategy-") && file.endsWith(".jsonc");
-      const isCoreTemplate = ["smart.jsonc", "balanced.jsonc", "fast.jsonc", "cheap.jsonc"].includes(file);
-      const isValidFile = (isStrategyFormat || isCoreTemplate) && !file.includes(".backup");
-
-      if (!isValidFile) {
-        continue;
-      }
-
-      const filePath = path.join(dir, file);
-      try {
-        const config = readJSONC(filePath);
-        const name = path.basename(file, ".jsonc");
-
-        strategies.push({
-          name,
-          filePath,
-          description: config.metadata?.description || config.description || "无描述",
-          costLevel: config.metadata?.cost_level || "unknown",
-          version: config.metadata?.version,
-          isCurrent:
-            current?.filePath === filePath ||
-            (current?.name === name && current?.source === source),
-          useCase: config.metadata?.use_case,
-          models: extractModels(config),
-          source,
-        });
-      } catch (err) {
-        console.error(`加载策略失败 ${file}:`, err);
-        warning(`跳过无效策略文件: ${file}`);
-      }
-
-    }
-  };
-
-  collectFromDir(STRATEGIES_DIR, "installed");
-
-  if (options?.includeDynamic) {
-    collectFromDir(DYNAMIC_STRATEGIES_DIR, "dynamic");
-  }
-
-  return strategies.sort((a, b) => a.name.localeCompare(b.name));
-}
-
-/**
- * 显示策略列表
- */
-export function displayStrategies(includeDynamic: boolean = false): void {
-  const strategies = listStrategiesWithOptions({ includeDynamic });
-
-  if (strategies.length === 0) {
-    error("没有找到可用的策略");
-    return;
-  }
-
-  info("可用策略:");
-  console.log();
-
-  const headers = ["名称", "成本级别", "描述", "来源", "状态"];
-  const rows: string[][] = [];
-
-  for (const strategy of strategies) {
-    rows.push([
-      strategy.name,
-      strategy.costLevel,
-      strategy.description.substring(0, 30) +
-        (strategy.description.length > 30 ? "..." : ""),
-      strategy.source === "dynamic" ? "动态" : "预置",
-      strategy.isCurrent ? colorize("[当前]", "green") : "",
-    ]);
-  }
-
-  console.log(formatTable(headers, rows));
-}
-
-// ==================== 策略修正功能 ====================
-
-/**
- * 修正策略文件中的模型命名
- */
-export function fixStrategies(): boolean {
-  if (!fileExists(STRATEGIES_DIR)) {
-    error(`策略目录不存在: ${STRATEGIES_DIR}`);
-    return false;
-  }
-
-  // 创建备份
-  const backupDir = path.join(
-    process.env.HOME || "",
-    ".config",
-    "opencode",
-    `strategies-backup-${Date.now()}`,
-  );
-
-  try {
-    fs.mkdirSync(backupDir, { recursive: true });
-
-    const files = fs.readdirSync(STRATEGIES_DIR);
-    for (const file of files) {
-      if (file.endsWith(".jsonc")) {
-        fs.copyFileSync(
-          path.join(STRATEGIES_DIR, file),
-          path.join(backupDir, file),
-        );
-      }
-    }
-
-    info(`备份已创建: ${backupDir}`);
-  } catch (err) {
-    error(`创建备份失败: ${err}`);
-    return false;
-  }
-
-  // 修正 Google 模型命名
-  const replacements = [
-    ["google/gemini-3-pro", "google/antigravity-gemini-3-pro"],
-    ["google/gemini-3-flash", "google/antigravity-gemini-3-flash"],
-    ["google/gemini-2.0-", "google/antigravity-gemini-2.0-"],
-    ["google/gemini-2.5-", "google/antigravity-gemini-2.5-"],
-  ];
-
-  let fixedCount = 0;
-
-  try {
-    const files = fs.readdirSync(STRATEGIES_DIR);
-    for (const file of files) {
-      if (!file.endsWith(".jsonc")) {
-        continue;
-      }
-
-      const filePath = path.join(STRATEGIES_DIR, file);
-      let content = fs.readFileSync(filePath, "utf-8");
-      let modified = false;
-
-      for (const [from, to] of replacements) {
-        if (content.includes(from)) {
-          content = content.replace(
-            new RegExp(from.replace(/\//g, "\\/"), "g"),
-            to,
-          );
-          modified = true;
-        }
-      }
-
-      if (modified) {
-        fs.writeFileSync(filePath, content, "utf-8");
-        info(`已修正: ${file}`);
-        fixedCount++;
-      }
-    }
-
-    success(`修正完成: ${fixedCount} 个策略文件`);
-    return true;
-  } catch (err) {
-    error(`修正失败: ${err}`);
-    return false;
-  }
-}
-
-// ==================== 策略验证功能 ====================
-
-/**
- * 验证策略配置
- */
-export function validateStrategy(config: StrategyConfig): boolean {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const isObject = (value: unknown): value is Record<string, any> =>
-    typeof value === "object" && value !== null;
-  const isString = (value: unknown): value is string =>
-    typeof value === "string";
-  const isNumber = (value: unknown): value is number =>
-    typeof value === "number" && !Number.isNaN(value);
-  const isBoolean = (value: unknown): value is boolean =>
-    typeof value === "boolean";
-  const isStringArray = (value: unknown): value is string[] =>
-    Array.isArray(value) && value.every((item) => typeof item === "string");
-
-  // 检查必需字段
-  if (!config.description) {
-    warnings.push("缺少 description 字段（建议补充）");
-  }
-
-  // 验证 agents 配置
-  if (config.agents) {
-    for (const [agentName, agentConfig] of Object.entries(config.agents)) {
-      if (!isObject(agentConfig)) {
-        errors.push(`agent ${agentName} 配置不是对象`);
-        continue;
-      }
-
-      if (agentConfig.model !== undefined && !isString(agentConfig.model)) {
-        errors.push(`agent ${agentName} 的 model 必须是字符串`);
-      }
-
-      if (agentConfig.model === undefined) {
-        warnings.push(`agent ${agentName} 未配置 model`);
-      }
-
-      if (agentConfig.variant !== undefined && !isString(agentConfig.variant)) {
-        errors.push(`agent ${agentName} 的 variant 必须是字符串`);
-      }
-
-      if (
-        agentConfig.category !== undefined &&
-        !isString(agentConfig.category)
-      ) {
-        errors.push(`agent ${agentName} 的 category 必须是字符串`);
-      }
-
-      if (
-        agentConfig.skills !== undefined &&
-        !isStringArray(agentConfig.skills)
-      ) {
-        errors.push(`agent ${agentName} 的 skills 必须是字符串数组`);
-      }
-
-      if (
-        agentConfig.temperature !== undefined &&
-        !isNumber(agentConfig.temperature)
-      ) {
-        errors.push(`agent ${agentName} 的 temperature 必须是数字`);
-      }
-
-      if (agentConfig.top_p !== undefined && !isNumber(agentConfig.top_p)) {
-        errors.push(`agent ${agentName} 的 top_p 必须是数字`);
-      }
-
-      if (
-        agentConfig.maxTokens !== undefined &&
-        !isNumber(agentConfig.maxTokens)
-      ) {
-        errors.push(`agent ${agentName} 的 maxTokens 必须是数字`);
-      }
-
-      if (agentConfig.prompt !== undefined && !isString(agentConfig.prompt)) {
-        errors.push(`agent ${agentName} 的 prompt 必须是字符串`);
-      }
-
-      if (
-        agentConfig.prompt_append !== undefined &&
-        !isString(agentConfig.prompt_append)
-      ) {
-        errors.push(`agent ${agentName} 的 prompt_append 必须是字符串`);
-      }
-
-      if (agentConfig.tools !== undefined && !isObject(agentConfig.tools)) {
-        errors.push(`agent ${agentName} 的 tools 必须是对象`);
-      }
-
-      if (
-        agentConfig.disable !== undefined &&
-        !isBoolean(agentConfig.disable)
-      ) {
-        errors.push(`agent ${agentName} 的 disable 必须是布尔值`);
-      }
-
-      if (
-        agentConfig.description !== undefined &&
-        !isString(agentConfig.description)
-      ) {
-        errors.push(`agent ${agentName} 的 description 必须是字符串`);
-      }
-
-      if (agentConfig.mode !== undefined && !isString(agentConfig.mode)) {
-        errors.push(`agent ${agentName} 的 mode 必须是字符串`);
-      }
-
-      if (agentConfig.color !== undefined && !isString(agentConfig.color)) {
-        errors.push(`agent ${agentName} 的 color 必须是字符串`);
-      }
-
-      if (
-        agentConfig.permission !== undefined &&
-        !isObject(agentConfig.permission)
-      ) {
-        errors.push(`agent ${agentName} 的 permission 必须是对象`);
-      }
-
-      if (
-        agentConfig.thinking !== undefined &&
-        !isObject(agentConfig.thinking)
-      ) {
-        errors.push(`agent ${agentName} 的 thinking 必须是对象`);
-      }
-
-      if (
-        agentConfig.reasoningEffort !== undefined &&
-        !isString(agentConfig.reasoningEffort)
-      ) {
-        errors.push(`agent ${agentName} 的 reasoningEffort 必须是字符串`);
-      }
-
-      if (
-        agentConfig.textVerbosity !== undefined &&
-        !isString(agentConfig.textVerbosity)
-      ) {
-        errors.push(`agent ${agentName} 的 textVerbosity 必须是字符串`);
-      }
-
-      if (
-        agentConfig.providerOptions !== undefined &&
-        !isObject(agentConfig.providerOptions)
-      ) {
-        errors.push(`agent ${agentName} 的 providerOptions 必须是对象`);
-      }
-    }
-  }
-
-  // 验证 categories 配置
-  if (config.categories) {
-    for (const [categoryName, categoryConfig] of Object.entries(
-      config.categories,
-    )) {
-      if (!isObject(categoryConfig)) {
-        errors.push(`category ${categoryName} 配置不是对象`);
-        continue;
-      }
-
-      if (
-        categoryConfig.model !== undefined &&
-        !isString(categoryConfig.model)
-      ) {
-        errors.push(`category ${categoryName} 的 model 必须是字符串`);
-      }
-
-      if (categoryConfig.model === undefined) {
-        warnings.push(`category ${categoryName} 未配置 model`);
-      }
-
-      if (
-        categoryConfig.variant !== undefined &&
-        !isString(categoryConfig.variant)
-      ) {
-        errors.push(`category ${categoryName} 的 variant 必须是字符串`);
-      }
-
-      if (
-        categoryConfig.description !== undefined &&
-        !isString(categoryConfig.description)
-      ) {
-        errors.push(`category ${categoryName} 的 description 必须是字符串`);
-      }
-
-      if (
-        categoryConfig.temperature !== undefined &&
-        !isNumber(categoryConfig.temperature)
-      ) {
-        errors.push(`category ${categoryName} 的 temperature 必须是数字`);
-      }
-
-      if (
-        categoryConfig.top_p !== undefined &&
-        !isNumber(categoryConfig.top_p)
-      ) {
-        errors.push(`category ${categoryName} 的 top_p 必须是数字`);
-      }
-
-      if (
-        categoryConfig.maxTokens !== undefined &&
-        !isNumber(categoryConfig.maxTokens)
-      ) {
-        errors.push(`category ${categoryName} 的 maxTokens 必须是数字`);
-      }
-
-      if (
-        categoryConfig.thinking !== undefined &&
-        !isObject(categoryConfig.thinking)
-      ) {
-        errors.push(`category ${categoryName} 的 thinking 必须是对象`);
-      }
-
-      if (
-        categoryConfig.reasoningEffort !== undefined &&
-        !isString(categoryConfig.reasoningEffort)
-      ) {
-        errors.push(`category ${categoryName} 的 reasoningEffort 必须是字符串`);
-      }
-
-      if (
-        categoryConfig.textVerbosity !== undefined &&
-        !isString(categoryConfig.textVerbosity)
-      ) {
-        errors.push(`category ${categoryName} 的 textVerbosity 必须是字符串`);
-      }
-
-      if (
-        categoryConfig.tools !== undefined &&
-        !isObject(categoryConfig.tools)
-      ) {
-        errors.push(`category ${categoryName} 的 tools 必须是对象`);
-      }
-
-      if (
-        categoryConfig.prompt_append !== undefined &&
-        !isString(categoryConfig.prompt_append)
-      ) {
-        errors.push(`category ${categoryName} 的 prompt_append 必须是字符串`);
-      }
-
-      if (
-        categoryConfig.is_unstable_agent !== undefined &&
-        !isBoolean(categoryConfig.is_unstable_agent)
-      ) {
-        errors.push(
-          `category ${categoryName} 的 is_unstable_agent 必须是布尔值`,
-        );
-      }
-    }
-  }
-
-  if (warnings.length > 0) {
-    warning("策略验证警告:");
-    for (const item of warnings) {
-      console.log(`  - ${item}`);
-    }
-  }
-
-  if (errors.length > 0) {
-    error("策略验证失败:");
-    for (const err of errors) {
-      console.log(`  - ${err}`);
-    }
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * 验证策略文件
- */
-export function validateStrategyFile(strategyName: string): boolean {
-  const config = readStrategy(strategyName);
-  if (!config) {
-    return false;
-  }
-
-  return validateStrategy(config);
-}
-
-// ==================== 策略对比功能 ====================
-
-/**
- * 比较两个策略的差异
- */
-export function compareStrategies(
-  name1: string,
-  name2: string,
-): StrategyDiff | null {
-  const config1 = readStrategy(name1);
-  const config2 = readStrategy(name2);
-
-  if (!config1 || !config2) {
-    return null;
-  }
-
-  const diff: StrategyDiff = {
-    added: [],
-    removed: [],
-    modified: [],
-  };
-
-  // 对比 metadata
-  const meta1 = config1.metadata || {};
-  const meta2 = config2.metadata || {};
-
-  if (meta1.version !== meta2.version) {
-    diff.modified.push(
-      `metadata.version (${meta1.version || "无"} → ${meta2.version || "无"})`,
-    );
-  }
-
-  if (meta1.cost_level !== meta2.cost_level) {
-    diff.modified.push(
-      `metadata.cost_level (${meta1.cost_level || "无"} → ${meta2.cost_level || "无"})`,
-    );
-  }
-
-  if (meta1.use_case !== meta2.use_case) {
-    diff.modified.push(
-      `metadata.use_case (${meta1.use_case || "无"} → ${meta2.use_case || "无"})`,
-    );
-  }
-
-  if (config1.description !== config2.description) {
-    diff.modified.push(
-      `description (${config1.description?.substring(0, 30) || "无"}... → ${config2.description?.substring(0, 30) || "无"}...)`,
-    );
-  }
-
-  // 对比 agents
-  const agents1 = config1.agents || {};
-  const agents2 = config2.agents || {};
-
-  const allAgents = Array.from(
-    new Set([...Object.keys(agents1), ...Object.keys(agents2)]),
-  );
-
-  for (const agent of allAgents) {
-    if (!agents1[agent]) {
-      diff.added.push(`agent: ${agent}`);
-    } else if (!agents2[agent]) {
-      diff.removed.push(`agent: ${agent}`);
-    } else if (agents1[agent].model !== agents2[agent].model) {
-      diff.modified.push(
-        `agent: ${agent} (${agents1[agent].model} → ${agents2[agent].model})`,
-      );
-    }
-  }
-
-  // 对比 categories
-  const cats1 = config1.categories || {};
-  const cats2 = config2.categories || {};
-
-  const allCats = Array.from(
-    new Set([...Object.keys(cats1), ...Object.keys(cats2)]),
-  );
-
-  for (const cat of allCats) {
-    if (!cats1[cat]) {
-      diff.added.push(`category: ${cat}`);
-    } else if (!cats2[cat]) {
-      diff.removed.push(`category: ${cat}`);
-    } else if (cats1[cat].model !== cats2[cat].model) {
-      diff.modified.push(
-        `category: ${cat} (${cats1[cat].model} → ${cats2[cat].model})`,
-      );
-    }
-  }
-
-  return diff;
-}
-
-/**
- * 显示策略差异
- */
-export function displayStrategyDiff(name1: string, name2: string): void {
-  const diff = compareStrategies(name1, name2);
-
-  if (!diff) {
-    error("无法比较策略");
-    return;
-  }
-
-  info(`对比: ${name1} → ${name2}`);
-  console.log();
-
-  if (diff.added.length > 0) {
-    console.log(colorize("新增:", "green"));
-    for (const item of diff.added) {
-      console.log(`  + ${item}`);
-    }
-    console.log();
-  }
-
-  if (diff.removed.length > 0) {
-    console.log(colorize("移除:", "red"));
-    for (const item of diff.removed) {
-      console.log(`  - ${item}`);
-    }
-    console.log();
-  }
-
-  if (diff.modified.length > 0) {
-    console.log(colorize("修改:", "yellow"));
-    for (const item of diff.modified) {
-      console.log(`  ~ ${item}`);
-    }
-    console.log();
-  }
-
-  if (
-    diff.added.length === 0 &&
-    diff.removed.length === 0 &&
-    diff.modified.length === 0
-  ) {
-    success("策略配置完全相同");
-  }
-}
-
-// ==================== 历史记录功能 ====================
-
-// ==================== 导出/导入功能 ====================
-
-// ==================== 导出/导入功能 ====================
-
-/**
- * 导出策略为 JSON 文件
- */
-export function exportStrategy(
-  strategyName: string,
-  outputPath: string,
-): boolean {
-  const config = readStrategy(strategyName);
-  if (!config) {
-    return false;
-  }
-
-  try {
-    writeJSONC(outputPath, config);
-    success(`已导出策略: ${strategyName} → ${outputPath}`);
-    return true;
-  } catch (err) {
-    error(`导出失败: ${err}`);
-    return false;
-  }
-}
-
-/**
- * 导入策略并验证
- */
-export function importStrategy(
-  strategyName: string,
-  inputPath: string,
-): boolean {
-  if (!fileExists(inputPath)) {
-    error(`文件不存在: ${inputPath}`);
-    return false;
-  }
-
-  try {
-    let config = readJSONC(inputPath);
-
-    // 规范化元数据
-    config = normalizeMetadata(config, strategyName);
-
-    if (!validateStrategy(config)) {
-      return false;
-    }
-
-    const outputPath = path.join(STRATEGIES_DIR, `${strategyName}.jsonc`);
-    writeJSONC(outputPath, config);
-
-    success(`已导入策略: ${strategyName} ← ${inputPath}`);
-
-    addHistoryEntry({
-      timestamp: new Date().toISOString(),
-      strategyName,
-      strategyPath: outputPath,
-      action: "import",
-    });
-
-    return true;
-  } catch (err) {
-    error(`导入失败: ${err}`);
-    return false;
-  }
-}
-
-// ==================== 智能推荐功能 ====================
-
-/**
- * 构建推荐上下文
- */
-export function buildRecommendationContext(
-  input: RecommendationInput,
-): RecommendationContext {
-  const parsed = parseRecommendationContext(input.description);
-
-  if (input.priority) {
-    if (parsed.scenario) {
-      parsed.scenario.priority = input.priority;
-    } else {
-      parsed.scenario = {
-        type: "daily" as ScenarioType,
-        priority: input.priority,
-      };
-    }
-  }
-
-  if (input.budget) {
-    parsed.budget = input.budget;
-  }
-
-  if (input.history) {
-    parsed.history = input.history;
-  }
-
-  if (input.quotaStatus) {
-    parsed.quotaStatus = input.quotaStatus;
-  }
-
-  return parsed;
-}
-
-/**
- * 智能推荐（支持配额与模型特性）
- */
-export async function recommendStrategySmart(
-  input: RecommendationInput,
-): Promise<Recommendation | null> {
-  const strategies = await listStrategiesWithOptions({
-    includeDynamic: input.includeDynamic ?? false,
-  });
-  if (strategies.length === 0) {
-    return null;
-  }
-
-  const context = buildRecommendationContext(input);
-  const recommender = new SmartRecommender(strategies);
-  const results = await recommender.recommend(context);
-  const best = results[0];
-
-  if (!best) return null;
-
-  return {
-    strategyName: best.strategyName,
-    reason: best.reason,
-    score: best.score,
-  };
-}
-
-/**
- * 基于场景推荐策略（兼容旧接口）
- */
-export async function recommendStrategy(scenario: string): Promise<Recommendation | null> {
-  return await recommendStrategySmart({ description: scenario });
-}
-
-/**
- * 显示推荐结果
- */
-export async function displayRecommendation(scenario: string): Promise<void> {
-  const recommendation = await recommendStrategySmart({ description: scenario });
-
-  if (!recommendation) {
-    error("无法生成推荐");
-    return;
-  }
-
-  info(`基于场景 "${scenario}" 的推荐:`);
-  console.log();
-  console.log(colorize(`推荐策略: ${recommendation.strategyName}`, "green"));
-  console.log(`推荐理由: ${recommendation.reason}`);
-  console.log(`匹配度: ${recommendation.score}%`);
-
-  recordRecommendationFeedback({
-    timestamp: new Date().toISOString(),
-    scenario,
-    recommendedStrategy: recommendation.strategyName,
-    score: recommendation.score,
-  });
-}
-
-
-/**
- * 读取推荐反馈记录
- */
-export function loadRecommendationFeedback(): RecommendationFeedback[] {
-  if (!fileExists(RECOMMENDATION_FEEDBACK_FILE)) {
-    return [];
-  }
-
-  try {
-    const content = fs.readFileSync(RECOMMENDATION_FEEDBACK_FILE, "utf-8");
-    const data = JSON.parse(content);
-    return Array.isArray(data) ? data : [];
-  } catch (err) {
-    warning("读取推荐反馈失败，已忽略");
-    return [];
-  }
-}
-
-/**
- * 记录推荐反馈
- */
-export function recordRecommendationFeedback(
-  entry: RecommendationFeedback,
-): void {
-  const entries = loadRecommendationFeedback();
-  entries.push(entry);
-
-  try {
-    fs.writeFileSync(
-      RECOMMENDATION_FEEDBACK_FILE,
-      JSON.stringify(entries, null, 2),
-      "utf-8",
-    );
-  } catch (err) {
-    warning("写入推荐反馈失败");
-  }
-}
-
-export function updateLastRecommendationSelection(
-  selectedStrategy: string,
-): void {
-  const entries = loadRecommendationFeedback();
-  if (entries.length === 0) return;
-
-  const last = entries[entries.length - 1];
-  if (last.selectedStrategy) return;
-
-  const lastTime = Date.parse(last.timestamp || "");
-  if (!Number.isNaN(lastTime)) {
-    const ageHours = (Date.now() - lastTime) / (1000 * 60 * 60);
-    if (ageHours > 24) return;
-  }
-
-  last.selectedStrategy = selectedStrategy;
-
-  try {
-    fs.writeFileSync(
-      RECOMMENDATION_FEEDBACK_FILE,
-      JSON.stringify(entries, null, 2),
-      "utf-8",
-    );
-  } catch (err) {
-    warning("更新推荐反馈失败");
-  }
-}
-
-export type FeedbackBucket = "day" | "week" | "month";
-
-export function generateRecommendationFeedbackReport(options?: {
-  bucket?: FeedbackBucket;
-}): {
-  total: number;
-  accepted: number;
-  acceptanceRate: number;
-  funnel: {
-    recommended: number;
-    selected: number;
-    acceptanceRate: number;
-  };
-  topRecommended: Array<{ strategy: string; count: number }>;
-  topSelected: Array<{ strategy: string; count: number }>;
-  byScenario: Array<{ scenario: string; count: number; accepted: number }>;
-  byTimeBucket: Array<{
-    bucket: string;
-    total: number;
-    accepted: number;
-    acceptanceRate: number;
-  }>;
-} {
-  const entries = loadRecommendationFeedback();
-  const total = entries.length;
-  const acceptedEntries = entries.filter((e) => !!e.selectedStrategy);
-  const accepted = acceptedEntries.length;
-  const acceptanceRate = total === 0 ? 0 : accepted / total;
-  const bucket = options?.bucket ?? "day";
-
-  const countBy = (items: string[]): Map<string, number> => {
-    const map = new Map<string, number>();
-    for (const item of items) {
-      map.set(item, (map.get(item) || 0) + 1);
-    }
-    return map;
-  };
-
-  const recommendedMap = countBy(
-    entries.map((e) => e.recommendedStrategy).filter(Boolean),
-  );
-  const selectedMap = countBy(
-    acceptedEntries
-      .map((e) => e.selectedStrategy)
-      .filter((v): v is string => !!v),
-  );
-
-  const scenarioMap = new Map<string, { count: number; accepted: number }>();
-  for (const entry of entries) {
-    const key = entry.scenario || "unknown";
-    const existing = scenarioMap.get(key) || { count: 0, accepted: 0 };
-    existing.count += 1;
-    if (entry.selectedStrategy) existing.accepted += 1;
-    scenarioMap.set(key, existing);
-  }
-
-  const bucketMap = new Map<string, { total: number; accepted: number }>();
-  const getBucketKey = (timestamp: string): string | null => {
-    const date = new Date(timestamp);
-    if (Number.isNaN(date.getTime())) return null;
-
-    if (bucket === "day") {
-      return date.toISOString().split("T")[0];
-    }
-
-    if (bucket === "month") {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      return `${year}-${month}`;
-    }
-
-    const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = tmp.getUTCDay() || 7;
-    tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
-    const weekNo = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-    const week = String(weekNo).padStart(2, "0");
-    return `${tmp.getUTCFullYear()}-W${week}`;
-  };
-
-  for (const entry of entries) {
-    const key = getBucketKey(entry.timestamp);
-    if (!key) continue;
-    const existing = bucketMap.get(key) || { total: 0, accepted: 0 };
-    existing.total += 1;
-    if (entry.selectedStrategy) existing.accepted += 1;
-    bucketMap.set(key, existing);
-  }
-
-  const toTopList = (map: Map<string, number>) =>
-    Array.from(map.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([strategy, count]) => ({ strategy, count }));
-
-  return {
-    total,
-    accepted,
-    acceptanceRate,
-    funnel: {
-      recommended: total,
-      selected: accepted,
-      acceptanceRate,
-    },
-    topRecommended: toTopList(recommendedMap),
-    topSelected: toTopList(selectedMap),
-    byScenario: Array.from(scenarioMap.entries())
-      .sort((a, b) => b[1].count - a[1].count)
-      .map(([scenario, stats]) => ({
-        scenario,
-        count: stats.count,
-        accepted: stats.accepted,
-      })),
-    byTimeBucket: Array.from(bucketMap.entries())
-      .sort((a, b) => (a[0] > b[0] ? 1 : -1))
-      .map(([key, stats]) => ({
-        bucket: key,
-        total: stats.total,
-        accepted: stats.accepted,
-        acceptanceRate: stats.total === 0 ? 0 : stats.accepted / stats.total,
-      })),
-  };
-}
-
-export function renderRecommendationFeedbackReport(report: {
-  total: number;
-  accepted: number;
-  acceptanceRate: number;
-  funnel: {
-    recommended: number;
-    selected: number;
-    acceptanceRate: number;
-  };
-  topRecommended: Array<{ strategy: string; count: number }>;
-  topSelected: Array<{ strategy: string; count: number }>;
-  byScenario: Array<{ scenario: string; count: number; accepted: number }>;
-  byTimeBucket: Array<{
-    bucket: string;
-    total: number;
-    accepted: number;
-    acceptanceRate: number;
-  }>;
-}): string {
-  const lines: string[] = [];
-  lines.push("推荐反馈统计");
-  lines.push(`总推荐次数: ${report.total}`);
-  lines.push(`采纳次数: ${report.accepted}`);
-  lines.push(`采纳率: ${(report.acceptanceRate * 100).toFixed(1)}%`);
-  lines.push("");
-
-  lines.push("转化漏斗:");
-  lines.push(`  推荐: ${report.funnel.recommended}`);
-  lines.push(`  选择: ${report.funnel.selected}`);
-  lines.push(`  采纳率: ${(report.funnel.acceptanceRate * 100).toFixed(1)}%`);
-  lines.push("");
-
-  lines.push("Top 推荐策略:");
-  for (const item of report.topRecommended) {
-    lines.push(`  ${item.strategy}: ${item.count}`);
-  }
-  lines.push("");
-
-  lines.push("Top 选择策略:");
-  for (const item of report.topSelected) {
-    lines.push(`  ${item.strategy}: ${item.count}`);
-  }
-  lines.push("");
-
-  if (report.byScenario.length > 0) {
-    lines.push("场景采纳率:");
-    const headers = ["场景", "推荐次数", "采纳次数", "采纳率"];
-    const rows = report.byScenario.map((item) => {
-      const rate = item.count === 0 ? 0 : item.accepted / item.count;
-      return [
-        item.scenario,
-        item.count.toString(),
-        item.accepted.toString(),
-        `${(rate * 100).toFixed(1)}%`,
-      ];
-    });
-    lines.push(formatTable(headers, rows));
-  }
-
-  if (report.byTimeBucket.length > 0) {
-    lines.push("");
-    lines.push("时间分桶统计:");
-    const headers = ["时间", "推荐次数", "采纳次数", "采纳率"];
-    const rows = report.byTimeBucket.map((item) => [
-      item.bucket,
-      item.total.toString(),
-      item.accepted.toString(),
-      `${(item.acceptanceRate * 100).toFixed(1)}%`,
-    ]);
-    lines.push(formatTable(headers, rows));
-  }
-
-  return lines.join("\n");
-}
-
-function deriveQuotaStatusFromUsageData(data: UsageData[]): QuotaStatus[] {
-  const result: QuotaStatus[] = [];
-  const byProvider = new Map<string, UsageData[]>();
-  const costByProvider = new Map<string, number>();
-
-  for (const item of data) {
-    const list = byProvider.get(item.provider) || [];
-    list.push(item);
-    byProvider.set(item.provider, list);
-    if (typeof item.cost === "number") {
-      costByProvider.set(
-        item.provider,
-        (costByProvider.get(item.provider) || 0) + item.cost,
-      );
-    }
-  }
-
-  const maxCostAcross = Math.max(0, ...Array.from(costByProvider.values()));
-
-  for (const [provider, items] of byProvider.entries()) {
-    const normalizedProvider = provider === "gemini" ? "google" : provider;
-    const withMeta = items.find((i) => i.metadata);
-    const metadata = withMeta?.metadata as
-      | {
-          usagePercentage?: number;
-          quotaPercentage?: number;
-          resetTime?: string;
-        }
-      | undefined;
-
-    const usagePercentFromMeta =
-      typeof metadata?.usagePercentage === "number"
-        ? metadata.usagePercentage / 100
-        : typeof metadata?.quotaPercentage === "number"
-          ? 1 - metadata.quotaPercentage / 100
-          : undefined;
-
-    if (usagePercentFromMeta !== undefined) {
-      const remainingPercent = Math.max(
-        0,
-        Math.min(1, 1 - usagePercentFromMeta),
-      );
-      result.push({
-        provider: normalizedProvider,
-        remaining: remainingPercent,
-        total: 1,
-        usagePercent: usagePercentFromMeta,
-        resetDate: metadata?.resetTime
-          ? new Date(metadata.resetTime)
-          : undefined,
-      });
-      continue;
-    }
-
-    const totalCost = costByProvider.get(provider) || 0;
-    if (totalCost <= 0 || maxCostAcross <= 0) continue;
-
-    const usagePercentFallback = Math.min(0.9, totalCost / maxCostAcross);
-    const remainingPercentFallback = Math.max(0.1, 1 - usagePercentFallback);
-    result.push({
-      provider: normalizedProvider,
-      remaining: remainingPercentFallback,
-      total: 1,
-      usagePercent: usagePercentFallback,
-      resetDate: undefined,
-    });
-  }
-
-  return result;
-}
-
-async function fetchQuotaStatusFromUsageSync(): Promise<QuotaStatus[]> {
-  const coordinator = new UsageSyncCoordinator();
-  
-  const config = ConfigLoader.loadAll();
-
-  const syncPairs: Array<{
-    provider: string;
-    api: () => UsageSync;
-    local: (() => UsageSync) | null;
-  }> = [
-    { provider: "anthropic", api: () => new AnthropicSync(), local: () => new AnthropicLocalSync() },
-    { provider: "openai", api: () => new OpenAISync(), local: () => new OpenAILocalSync() },
-    { provider: "github", api: () => new GitHubSync(), local: null },
-    { provider: "gemini", api: () => new GeminiSync(), local: () => new GeminiLocalSync() },
-    { provider: "zhipu", api: () => new ZhiPuSync(), local: () => new ZhiPuLocalSync() },
-    { provider: "deepseek", api: () => new DeepSeekSync(), local: null },
-    { provider: "siliconflow", api: () => new SiliconFlowSync(), local: null },
-  ];
-
-  for (const { api, local } of syncPairs) {
-    try {
-      coordinator.register(api());
-    } catch {
-      if (local) {
-        try {
-          coordinator.register(local());
-        } catch {}
-      }
-    }
-  }
-
-  const results = await coordinator.syncAll();
-  const failedProviders = results.results?.filter(r => !r.success && r.provider) || [];
-
-  for (const failed of failedProviders) {
-    const pair = syncPairs.find(p => p.provider === failed.provider);
-    if (pair?.local) {
-      try {
-        const localSync = pair.local();
-        coordinator.unregister(failed.provider);
-        coordinator.register(localSync);
-      } catch {}
-    }
-  }
-
-  let finalResults = results;
-  if (failedProviders.length > 0) {
-    finalResults = await coordinator.syncAll();
-  }
-
-  const data: UsageData[] = [];
-  for (const result of finalResults.results || []) {
-    if (result.success && result.data) {
-      data.push(...result.data);
-    }
-  }
-
-  return deriveQuotaStatusFromUsageData(data);
-}
-
-// ==================== 动态策略生成 ====================
-
-const SCENARIO_TEMPLATE_MAP: Record<ScenarioType, string[]> = {
-  "agent-heavy": ["fast", "balanced"],
-  education: ["balanced", "smart"],
-  health: ["balanced", "smart"],
-  finance: ["smart", "fast"],
-  coding: ["balanced", "fast"],
-  research: ["smart", "fast"],
-  creative: ["smart", "balanced"],
-  daily: ["balanced", "fast"],
-  writing: ["smart", "balanced"],
-  multimedia: ["smart", "balanced"],
-  social: ["smart", "balanced"],
-  tools: ["balanced", "fast"],
-  entertainment: ["balanced", "fast"],
-  documentation: ["balanced", "fast"]
-};
-
-const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
-  quality: {
-    models: [
-      "anthropic/claude-sonnet-4-6",
-      "openai/gpt-5.2-codex",
-      "zhipuai-coding-plan/glm-4.7",
-    ],
-  },
-  cost: {
-    models: [
-      "zhipuai-coding-plan/glm-4.7",
-      "google/gemini-3-flash",
-      "anthropic/claude-haiku-4-5",
-    ],
-  },
-  speed: {
-    models: [
-      "google/gemini-3-flash",
-      "anthropic/claude-haiku-4-5",
-      "openai/gpt-5.2-codex",
-    ],
-  },
-  balanced: {
-    models: [
-      "openai/gpt-5.2-codex",
-      "zhipuai-coding-plan/glm-4.7",
-      "anthropic/claude-haiku-4-5",
-      "google/gemini-3-flash",
-    ],
-  },
-};
-
-function getProviderFromModel(model: string): string {
-  const lower = model.toLowerCase();
-  if (lower.startsWith("anthropic/")) return "anthropic";
-  if (lower.startsWith("openai/")) return "openai";
-  if (lower.startsWith("google/")) return "google";
-  if (lower.startsWith("zai-") || lower.includes("zhipu")) return "zhipu";
-  if (lower.startsWith("github/")) return "github";
-  return "unknown";
-}
-
-function isQuotaTight(provider: string, quotaStatus?: QuotaStatus[]): boolean {
-  if (!quotaStatus) return false;
-  const quota = quotaStatus.find((q) => q.provider === provider);
-  if (!quota) return false;
-
-  const usage =
-    quota.usagePercent > 0
-      ? quota.usagePercent
-      : quota.total > 0
-        ? 1 - Math.min(quota.remaining / quota.total, 1)
-        : 0;
-  return usage >= 0.8;
-}
-
-function selectFallbackModel(
-  priority: Priority,
-  quotaStatus?: QuotaStatus[],
-): string | null {
-  const candidates = MODEL_FALLBACKS[priority]?.models || [];
-  for (const model of candidates) {
-    const provider = getProviderFromModel(model);
-    if (!isQuotaTight(provider, quotaStatus)) {
-      return model;
-    }
-  }
-  return candidates[0] || null;
-}
-
-function optimizeAgentModels(
-  config: StrategyConfig,
-  priority: Priority,
-  quotaStatus?: QuotaStatus[],
-): void {
-  if (!config.agents) return;
-
-  for (const agent of Object.values(config.agents)) {
-    if (!agent?.model) continue;
-    const provider = getProviderFromModel(agent.model);
-
-    if (isQuotaTight(provider, quotaStatus)) {
-      const replacement = selectFallbackModel(priority, quotaStatus);
-      if (replacement) {
-        agent.model = replacement;
-      }
-    }
-  }
-}
-
-function applyToolConstraints(config: StrategyConfig): void {
-  const constraints = config.lsp?.constraints || {};
-  const allowedTools = (constraints as { allowedTools?: string[] }).allowedTools;
-  const maxTools = (constraints as { maxTools?: number }).maxTools;
-
-  if (!allowedTools && !maxTools) return; // 无约束则跳过
-
-  // 过滤 agents 中的 tools
-  for (const agent of Object.values(config.agents || {})) {
-    if (!agent?.tools) continue;
-
-    // Cast to any to handle both string[] and Record<string, boolean>
-    const toolsAny = (agent as any).tools as string[];
-    let filtered: string[] = toolsAny;
-
-    if (allowedTools && Array.isArray(allowedTools)) {
-      filtered = filtered.filter((tool: string) => allowedTools.includes(tool));
-    }
-    if (typeof maxTools === 'number' && filtered.length > maxTools) {
-      filtered = filtered.slice(0, maxTools);
-    }
-
-    (agent as any).tools = filtered;
-  }
-
-  // 过滤 categories 中的 tools
-  for (const category of Object.values(config.categories || {})) {
-    if (!category?.tools) continue;
-
-    const toolsAny = (category as any).tools as string[];
-    let filtered: string[] = toolsAny;
-
-    if (allowedTools && Array.isArray(allowedTools)) {
-      filtered = filtered.filter((tool: string) => allowedTools.includes(tool));
-    }
-    if (typeof maxTools === 'number' && filtered.length > maxTools) {
-      filtered = filtered.slice(0, maxTools);
-    }
-
-    (category as any).tools = filtered;
-  }
-}
-
-function tuneAgentParameters(
-  config: StrategyConfig,
-  scenarioType: ScenarioType,
-): void {
-  if (!config.agents) return;
-
-  const tuning = {
-    temperature: {
-      coding: 0.2,
-      research: 0.2,
-      creative: 0.75,
-      writing: 0.6,
-      multimedia: 0.7,
-      social: 0.7,
-      documentation: 0.25,
-      daily: 0.3,
-      tools: 0.25,
-      education: 0.4,
-      health: 0.35,
-      finance: 0.2,
-      entertainment: 0.6,
-    } as Record<ScenarioType, number>,
-    maxTokens: {
-      coding: 5000,
-      research: 7000,
-      creative: 5000,
-      writing: 4500,
-      multimedia: 4500,
-      social: 4000,
-      documentation: 3500,
-      daily: 3500,
-      tools: 3000,
-      education: 4000,
-      health: 4000,
-      finance: 4500,
-      entertainment: 3500,
-    } as Record<ScenarioType, number>,
-  };
-
-  for (const agent of Object.values(config.agents)) {
-    if (!agent) continue;
-    if (typeof agent.temperature === "number") {
-      agent.temperature = tuning.temperature[scenarioType];
-    }
-    if (typeof agent.maxTokens === "number") {
-      agent.maxTokens = tuning.maxTokens[scenarioType];
-    }
-  }
-}
-
-function formatTimestamp(date: Date): string {
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return (
-    date.getFullYear().toString() +
-    pad(date.getMonth() + 1) +
-    pad(date.getDate()) +
-    pad(date.getHours()) +
-    pad(date.getMinutes())
-  );
-}
-
-export function cleanupDynamicStrategies(retentionDays: number = 7): number {
-  if (!fileExists(DYNAMIC_STRATEGIES_DIR)) {
-    return 0;
-  }
-
-  const now = Date.now();
-  const maxAge = retentionDays * 24 * 60 * 60 * 1000;
-  let removed = 0;
-
-  for (const file of fs.readdirSync(DYNAMIC_STRATEGIES_DIR)) {
-    if (!file.endsWith(".jsonc") || !file.startsWith("strategy-")) {
-      continue;
-    }
-
-    const filePath = path.join(DYNAMIC_STRATEGIES_DIR, file);
-    const stat = fs.statSync(filePath);
-    if (now - stat.mtime.getTime() > maxAge) {
-      fs.unlinkSync(filePath);
-      removed++;
-    }
-  }
-
-  return removed;
-}
-
-export function generateDynamicStrategy(
-  options: DynamicStrategyOptions,
-): DynamicStrategyResult | null {
-  const parsed = parseRecommendationContext(options.description);
-  const scenarioType = parsed.scenario?.type || ("daily" as ScenarioType);
-  const priority = options.priority || parsed.scenario?.priority || "balanced";
-
-  const templates = SCENARIO_TEMPLATE_MAP[scenarioType] || [
-    "balanced",
-    "fast",
-    "balanced",
-    "cheap",
-    "balanced",
-    "fast",
-    "balanced",
-    "cheap",
-    "fast",
-    "balanced",
-    "smart",
-    "cheap",
-    "fast",
-    "balanced",
-    "strategy-2-balanced",
-  ];
-  const baseTemplate = templates[0];
-  const templatePath = pathManager.getTemplateFilePath(baseTemplate);
-
-  if (!fileExists(templatePath)) {
-    error(`模板不存在: ${baseTemplate}`);
-    return null;
-  }
-
-  const config = readJSONC(templatePath) as StrategyConfig;
-
-  optimizeAgentModels(config, priority, options.quotaStatus);
-  tuneAgentParameters(config, scenarioType);
-
-  const today = new Date().toISOString().split("T")[0];
-  config.description = `动态生成(${scenarioType}/${priority}) ${
-    config.description || ""
-  }`.trim();
-  config.metadata = config.metadata || {};
-  config.metadata.updated = today;
-  config.metadata.use_case = `${scenarioType}`;
-  config.metadata.optimization = "dynamic-generated";
-
-  if (!validateStrategy(config)) {
-    error("动态策略生成失败: 验证未通过");
-    return null;
-  }
-
-  const timestamp = formatTimestamp(new Date());
-  const name = `strategy-generated-${scenarioType}-${timestamp}`;
-  const filePath = path.join(DYNAMIC_STRATEGIES_DIR, `${name}.jsonc`);
-
-  cleanupDynamicStrategies(options.retentionDays ?? 7);
-
-  if (options.save !== false) {
-    writeJSONC(filePath, config);
-  }
-
-  return {
-    name,
-    filePath,
-    baseTemplate,
-    config,
-  };
-}
-
-export function saveDynamicStrategyAs(
-  dynamicName: string,
-  targetName: string,
-): boolean {
-  const sourcePath = path.join(DYNAMIC_STRATEGIES_DIR, `${dynamicName}.jsonc`);
-  const targetPath = path.join(STRATEGIES_DIR, `${targetName}.jsonc`);
-
-  if (!fileExists(sourcePath)) {
-    error(`动态策略不存在: ${dynamicName}`);
-    return false;
-  }
-
-  if (fileExists(targetPath)) {
-    error(`目标策略已存在: ${targetName}`);
-    return false;
-  }
-
-  try {
-    fs.copyFileSync(sourcePath, targetPath);
-    success(`已固化动态策略: ${dynamicName} → ${targetName}`);
-    return true;
-  } catch (err) {
-    error(`固化失败: ${err}`);
-    return false;
-  }
-}
-
-// ==================== 备份管理 ====================
-
-/**
- * 清理旧备份，保留最近 MAX_BACKUPS 个
+ * 清理旧备份
  */
 export function cleanOldBackups(): void {
   const backupDir = path.join(process.env.HOME || "", ".config", "opencode");
-
-  if (!fileExists(backupDir)) {
-    return;
-  }
+  if (!fileExists(backupDir)) return;
 
   try {
     const files = fs.readdirSync(backupDir);
     const backups = files
-      .filter(
-        (f) => f.startsWith("strategies-backup-") || f.includes(".backup."),
-      )
+      .filter((f) => f.startsWith("strategies-backup-") || f.includes(".backup."))
       .map((f) => ({
         name: f,
         path: path.join(backupDir, f),
@@ -2025,12 +102,10 @@ export function cleanOldBackups(): void {
 
     if (backups.length > MAX_BACKUPS) {
       const toDelete = backups.slice(MAX_BACKUPS);
-
       for (const backup of toDelete) {
         fs.unlinkSync(backup.path);
         info(`已删除旧备份: ${backup.name}`);
       }
-
       success(`已清理 ${toDelete.length} 个旧备份，保留最近 ${MAX_BACKUPS} 个`);
     }
   } catch (err) {
@@ -2051,17 +126,12 @@ export function createBackup(): string | null {
 
   try {
     fs.mkdirSync(backupDir, { recursive: true });
-
     const files = fs.readdirSync(STRATEGIES_DIR);
     for (const file of files) {
       if (file.endsWith(".jsonc")) {
-        fs.copyFileSync(
-          path.join(STRATEGIES_DIR, file),
-          path.join(backupDir, file),
-        );
+        fs.copyFileSync(path.join(STRATEGIES_DIR, file), path.join(backupDir, file));
       }
     }
-
     info(`备份已创建: ${backupDir}`);
     return backupDir;
   } catch (err) {
@@ -2070,10 +140,10 @@ export function createBackup(): string | null {
   }
 }
 
-// ==================== 主导出 ====================
+// ==================== 模板管理 (保持在主入口) ====================
 
 /**
- * 安装策略模板到用户配置目录
+ * 安装策略模板
  */
 export function installTemplate(templateName: string): boolean {
   const templatePath = pathManager.getTemplateFilePath(templateName);
@@ -2083,7 +153,6 @@ export function installTemplate(templateName: string): boolean {
     error(`模板不存在: ${templateName}`);
     return false;
   }
-
   if (fileExists(targetPath)) {
     warning(`策略已存在: ${templateName}`);
     return false;
@@ -2100,314 +169,214 @@ export function installTemplate(templateName: string): boolean {
 }
 
 /**
- * 同步所有模板到用户配置目录
+ * 同步所有模板
  */
 export function syncAllTemplates(force: boolean = false): boolean {
   const templates = pathManager.listTemplates();
-
   if (templates.length === 0) {
     error("没有找到可用的模板");
     return false;
   }
 
-  info(`找到 ${templates.length} 个模板`);
-  let installedCount = 0;
-  let skippedCount = 0;
-  let overwrittenCount = 0;
-
+  let installed = 0, skipped = 0, overwritten = 0;
   for (const template of templates) {
     const templatePath = pathManager.getTemplateFilePath(template);
     const targetPath = pathManager.getStrategyFilePath(template);
 
     if (fileExists(targetPath)) {
       if (force) {
-        // 创建备份
-        const backupPath = path.join(
-          pathManager.getBackupDir(),
-          `${template}-${Date.now()}.jsonc`,
-        );
+        const backupPath = path.join(pathManager.getBackupDir(), `${template}-${Date.now()}.jsonc`);
         fs.copyFileSync(targetPath, backupPath);
         fs.copyFileSync(templatePath, targetPath);
         warning(`已覆盖: ${template} (备份: ${path.basename(backupPath)})`);
-        overwrittenCount++;
+        overwritten++;
       } else {
-        info(`跳过已存在: ${template}`);
-        skippedCount++;
+        skipped++;
       }
     } else {
       fs.copyFileSync(templatePath, targetPath);
       success(`已安装: ${template}`);
-      installedCount++;
+      installed++;
     }
   }
-
-  console.log();
-  success(
-    `同步完成: ${installedCount} 个新安装, ${overwrittenCount} 个覆盖, ${skippedCount} 个跳过`,
-  );
+  success(`同步完成: ${installed} 个新安装, ${overwritten} 个覆盖, ${skipped} 个跳过`);
   return true;
 }
 
 /**
- * 列出所有可用的模板
+ * 列出可用模板
  */
 export function listTemplates(): void {
   const templates = pathManager.listTemplates();
-
-  if (templates.length === 0) {
-    error("没有找到可用的模板");
-    return;
-  }
-
   info(`可用模板 (${templates.length} 个):`);
-  console.log();
-
-  for (const template of templates) {
-    const isInstalled = pathManager.isStrategyInstalled(template);
-    const status = isInstalled
-      ? colorize("[已安装]", "green")
-      : colorize("[未安装]", "yellow");
-    console.log(`  ${status} ${template}`);
+  for (const t of templates) {
+    const status = pathManager.isStrategyInstalled(t) ? colorize("[已安装]", "green") : colorize("[未安装]", "yellow");
+    console.log(`  ${status} ${t}`);
   }
 }
 
-// ==================== CLI 入口 ====================
+/**
+ * 列出并显示策略
+ */
+export async function displayStrategies(includeDynamic: boolean = false): Promise<void> {
+  const strategies = listStrategiesWithOptions({ includeDynamic });
+  const current = getCurrentStrategy();
 
-function parseArgs(argv: string[]): {
-  command: string | null;
-  positionals: string[];
-  flags: Record<string, string | boolean>;
-} {
+  info(`可用策略 (${strategies.length} 个):`);
+  const headers = ["名称", "描述", "成本", "来源", "状态"];
+  const rows = strategies.map(s => [
+    s.name,
+    s.description.substring(0, 30) + (s.description.length > 30 ? "..." : ""),
+    s.costLevel,
+    s.source === "dynamic" ? colorize("动态", "cyan") : "安装",
+    s.isCurrent ? colorize("● 激活", "green") : "",
+  ]);
+  console.log(formatTable(headers, rows));
+}
+
+// ==================== CLI 入口逻辑 ====================
+
+function parseArgs(argv: string[]): { command: string | null; positionals: string[]; flags: Record<string, string | boolean> } {
   const flags: Record<string, string | boolean> = {};
   const positionals: string[] = [];
-
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg.startsWith("--")) {
-      const keyValue = arg.slice(2).split("=");
-      const key = keyValue[0];
-      const value = keyValue[1];
-
-      if (value !== undefined) {
-        flags[key] = value;
-        continue;
-      }
-
-      const next = argv[i + 1];
-      if (next && !next.startsWith("--")) {
-        flags[key] = next;
-        i++;
-      } else {
-        flags[key] = true;
-      }
-    } else {
-      positionals.push(arg);
-    }
+      const [key, value] = arg.slice(2).split("=");
+      if (value !== undefined) { flags[key] = value; }
+      else if (argv[i + 1] && !argv[i + 1].startsWith("--")) { flags[key] = argv[++i]; }
+      else { flags[key] = true; }
+    } else { positionals.push(arg); }
   }
-
   const command = positionals.shift() || null;
   return { command, positionals, flags };
 }
 
-function parsePriority(value?: string): Priority | undefined {
+function parsePriority(value?: string): any {
   if (!value) return undefined;
   const lower = value.toLowerCase();
-  if (lower === "quality" || lower === "cost" || lower === "speed") {
-    return lower as Priority;
-  }
-  if (lower === "balanced") return "balanced";
+  if (["quality", "cost", "speed", "balanced"].includes(lower)) return lower;
   return undefined;
 }
 
 function printCliHelp(): void {
   console.log(colorize("\nStrategyManager CLI", "cyan"));
   console.log("\n用法:");
-  console.log("  bun run Tools/ManageStrategies.ts list [--include-dynamic]");
-  console.log("  bun run Tools/ManageStrategies.ts current");
-  console.log("  bun run Tools/ManageStrategies.ts switch <strategy-name>");
-  console.log(
-    "  bun run Tools/ManageStrategies.ts recommend <description> [--priority quality|cost|speed|balanced] [--include-dynamic]",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts cost-report [--output ./report.txt]",
-  );
-  console.log(
-    "  bun run Tools/ManageStrategies.ts sync-usage",
-  );
-  console.log("  check-health              执行主动健康检查");
-  console.log("  disable <target> [reason] 手动禁用厂商或模型");
-  console.log("  enable <target>           手动启用厂商或模型");
-  console.log("  govern                    执行自主治理 (自动分析并调整策略)");
-  console.log("");
-  console.log("示例:");
-  console.log("  bun run Tools/ManageStrategies.ts switch smart");
-  console.log("  bun run Tools/ManageStrategies.ts recommend \"大型前端重构\"");
-  console.log("  bun run Tools/ManageStrategies.ts sync-usage");
-}
-
-function parseBudget(
-  flags: Record<string, string | boolean>,
-): BudgetConfig | undefined {
-  const monthly =
-    typeof flags["budget-monthly"] === "string"
-      ? Number(flags["budget-monthly"])
-      : undefined;
-  if (!monthly || Number.isNaN(monthly)) return undefined;
-
-  const currentSpent =
-    typeof flags["budget-spent"] === "string"
-      ? Number(flags["budget-spent"])
-      : 0;
-  const alertThreshold =
-    typeof flags["budget-alert"] === "string"
-      ? Number(flags["budget-alert"])
-      : 0.8;
-
-  return {
-    monthly,
-    currentSpent: Number.isNaN(currentSpent) ? 0 : currentSpent,
-    alertThreshold: Number.isNaN(alertThreshold) ? 0.8 : alertThreshold,
-  };
+  console.log("  list [--include-dynamic]    列出所有可用策略");
+  console.log("  current                     显示当前激活的策略");
+  console.log("  switch <name>               切换到指定策略");
+  console.log("  validate <name>             验证指定策略的合法性");
+  console.log("  compare <n1> <n2>           比较两个策略的差异");
+  console.log("  recommend <desc>            基于环境智能推荐策略");
+  console.log("  sync-usage                  同步多平台使用数据");
+  console.log("  check-health                执行主动健康检查");
+  console.log("  disable/enable <target>     手动熔断/恢复模型厂商");
+  console.log("  govern                      执行自主治理扫描");
 }
 
 if (import.meta.main) {
   (async () => {
     const { command, positionals, flags } = parseArgs(process.argv.slice(2));
+    if (!command) return printCliHelp();
 
-    if (!command) {
-      printCliHelp();
-    } else if (command === "list") {
-      const includeDynamic = Boolean(flags["include-dynamic"]);
-      await displayStrategies(includeDynamic);
-    } else if (command === "current") {
-      const current = await getCurrentStrategy();
-      console.log(`当前策略: ${colorize(current ? current.name : "none", "green")}`);
-    } else if (command === "switch") {
-      const name = positionals[0];
-      if (!name) {
-        error("请提供策略名称");
-      } else {
-        await switchStrategy(name);
+    try {
+      switch (command) {
+        case "list": await displayStrategies(!!flags["include-dynamic"]); break;
+        case "current": 
+          const cur = getCurrentStrategy();
+          console.log(`当前策略: ${colorize(cur ? cur.name : "none", "green")}`);
+          break;
+        case "switch": 
+          if (!positionals[0]) error("请提供策略名称");
+          else await switchStrategy(positionals[0]);
+          break;
+        case "validate":
+          if (!positionals[0]) error("请提供策略名称");
+          else {
+            const config = readStrategy(positionals[0]);
+            const res = validateStrategy(config as any);
+            console.log(res ? success("验证通过") : error("验证失败"));
+          }
+          break;
+        case "compare":
+          if (!positionals[0] || !positionals[1]) error("请提供两个策略名称");
+          else displayStrategyDiff(positionals[0], positionals[1]);
+          break;
+        case "recommend":
+          if (positionals.length === 0) error("请提供场景描述");
+          else await recommendStrategySmart({
+            description: positionals.join(" "),
+            priority: parsePriority(flags.priority as string),
+            includeDynamic: !!flags["include-dynamic"]
+          });
+          break;
+        case "sync-usage":
+          const coordinator = new UsageSyncCoordinator();
+          const syncs = [new AnthropicLocalSync(), new OpenAILocalSync(), new GitHubSync(), new GeminiLocalSync(), new ZhiPuLocalSync(), new DeepSeekSync(), new SiliconFlowSync()];
+          for (const s of syncs) try { coordinator.register(s); } catch {}
+          info("同步中...");
+          const results = await coordinator.syncAll();
+          const total = (results.results || []).reduce((sum, r) => sum + (r.data?.length || 0), 0);
+          success(`同步完成: ${total} 条记录`);
+          break;
+        case "check-health": await defaultActiveValidator.checkAll(); break;
+        case "disable":
+          if (!positionals[0]) error("请提供目标");
+          else await defaultHealthManager.disable(positionals[0], positionals[0].includes('/') ? 'model' : 'provider', positionals[1] || "Manual disable");
+          break;
+        case "enable":
+          if (!positionals[0]) error("请提供目标");
+          else await defaultHealthManager.enable(positionals[0], positionals[0].includes('/') ? 'model' : 'provider');
+          break;
+        case "govern": await handleGovernance(); break;
+        default: printCliHelp();
       }
-    } else if (command === "recommend") {
-      const description = positionals.join(" ");
-      if (!description) {
-        error("请提供场景描述");
-      } else {
-        await recommendStrategySmart({
-          description,
-          priority: parsePriority(flags.priority as string | undefined),
-          includeDynamic: Boolean(flags["include-dynamic"]),
-        });
-      }
-    } else if (command === "sync-usage") {
-      try {
-        const coordinator = new UsageSyncCoordinator();
-        const syncPairs = [
-          { provider: "anthropic", local: () => new AnthropicLocalSync() },
-          { provider: "openai", local: () => new OpenAILocalSync() },
-          { provider: "github", local: () => new GitHubSync() },
-          { provider: "gemini", local: () => new GeminiLocalSync() },
-          { provider: "zhipu", local: () => new ZhiPuLocalSync() },
-          { provider: "deepseek", local: () => new DeepSeekSync() },
-          { provider: "siliconflow", local: () => new SiliconFlowSync() },
-        ];
-        for (const { local } of syncPairs) {
-          try { coordinator.register(local()); } catch {}
-        }
-        info("正在同步多平台使用数据...");
-        const results = await coordinator.syncAll();
-        const totalData = (results.results || []).reduce((sum, r) => sum + (r.data?.length || 0), 0);
-        success(`同步完成: 共获取 ${totalData} 条使用记录`);
-      } catch (err) {
-        error(`使用同步失败: ${err}`);
-      }
-    } else if (command === "check-health") {
-      await defaultActiveValidator.checkAll();
-    } else if (command === "disable") {
-      const target = positionals[0];
-      const reason = positionals[1] || "Manual disable";
-      if (!target) {
-        error("请提供要禁用的厂商或模型名称");
-      } else {
-        const type = target.includes('/') ? 'model' : 'provider';
-        await defaultHealthManager.disable(target, type, reason);
-        success(`已禁用 ${type}: ${target} (原因: ${reason})`);
-      }
-    } else if (command === "enable") {
-      const target = positionals[0];
-      if (!target) {
-        error("请提供要启用的厂商或模型名称");
-      } else {
-        const type = target.includes('/') ? 'model' : 'provider';
-        await defaultHealthManager.enable(target, type);
-        success(`已启用 ${type}: ${target}`);
-      }
-    } else if (command === "govern") {
-      await handleGovernance();
-    } else {
-      printCliHelp();
+    } catch (err) {
+      error(`执行失败: ${err}`);
     }
   })();
 }
 
 /**
- * 处理自主治理逻辑 (Phase 3)
+ * 自主治理逻辑
  */
 export async function handleGovernance(): Promise<void> {
   info("🔍 正在启动自主治理引擎...");
-  
-  const current = await getCurrentStrategy();
-  if (!current) {
-    error("当前未激活任何策略");
-    return;
-  }
-  
-  const config = await readStrategy(current.name);
-  if (!config) {
-    error(`无法读取当前策略: ${current.name}`);
-    return;
-  }
-  
+  const current = getCurrentStrategy();
+  if (!current) return error("未激活策略");
+
+  const config = readStrategy(current.name);
+  if (!config) return error("读取配置失败");
+
   const models = extractModels(config);
-  const uniqueModels = Array.from(new Set(models));
+  const details: string[][] = [];
   let totalHealth = 0;
-  const details: Array<[string, string]> = [];
-  
-  for (const model of uniqueModels) {
-    const score = await defaultHealthManager.getHealthScore(model);
+
+  for (const m of models) {
+    const score = await defaultHealthManager.getHealthScore(m);
     totalHealth += score;
-    const statusText = score === 1.0 ? colorize("Healthy", "green") : (score === 0.5 ? colorize("Degraded", "yellow") : colorize("Disabled", "red"));
-    details.push([model, statusText]);
+    details.push([m, score === 1 ? colorize("Healthy", "green") : (score === 0.5 ? colorize("Degraded", "yellow") : colorize("Disabled", "red"))]);
   }
-  
-  const avgHealth = uniqueModels.length > 0 ? totalHealth / uniqueModels.length : 1.0;
-  
-  info(`当前策略健康评估: ${current.name}`);
+
+  const avg = models.length > 0 ? totalHealth / models.length : 1;
+  info(`当前健康评估: ${current.name}`);
   console.log(formatTable(["Model", "Status"], details));
-  
-  if (avgHealth < 0.7) {
-    warning(`⚠️ 当前策略健康度过低 (${(avgHealth * 100).toFixed(0)}%)，正在寻找最优替代方案...`);
-    
-    const recommendation = await recommendStrategySmart({
-      description: "自主治理自动重平衡",
-      priority: "balanced",
-      includeDynamic: true
-    });
-    
-    if (recommendation && recommendation.strategyName !== current.name) {
-      success(`✨ 发现更好的替代方案: ${recommendation.strategyName}`);
-      info(`推荐理由: ${recommendation.reason}`);
-      await switchStrategy(recommendation.strategyName);
-      success("✅ 治理行动已完成：策略已重平衡。");
-    } else {
-      info("当前虽有健康波动，但已是当前可用资源下的最优选。");
+
+  if (avg < 0.7) {
+    warning(`健康度过低 (${(avg * 100).toFixed(0)}%)，尝试重平衡...`);
+    const rec = await recommendStrategySmart({ description: "治理重平衡", priority: "balanced", includeDynamic: true });
+    if (rec && rec.strategyName !== current.name) {
+      success(`切换到更好方案: ${rec.strategyName}`);
+      await switchStrategy(rec.strategyName);
     }
   } else {
-    success("✅ 当前策略状态良好，无需干预。");
+    success("策略健康状态良好");
   }
 }
 
+/**
+ * 兼容性导出对象
+ */
 export const ManageStrategies = {
   pathManager,
   installTemplate,
@@ -2416,12 +385,10 @@ export const ManageStrategies = {
   getCurrentStrategy,
   readStrategy,
   switchStrategy,
-  listStrategies,
   listStrategiesWithOptions,
   displayStrategies,
   fixStrategies,
   validateStrategy,
-  validateStrategyFile,
   compareStrategies,
   displayStrategyDiff,
   getHistory,
@@ -2430,10 +397,8 @@ export const ManageStrategies = {
   rollbackToHistory,
   exportStrategy,
   importStrategy,
-  recommendStrategy,
   recommendStrategySmart,
   displayRecommendation,
-  buildRecommendationContext,
   loadRecommendationFeedback,
   recordRecommendationFeedback,
   generateRecommendationFeedbackReport,

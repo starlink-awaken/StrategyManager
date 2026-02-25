@@ -1,5 +1,18 @@
 import { defaultHealthManager } from "./HealthManager";
 import { readJSONC } from "./FileSystemUtils";
+import type {
+  StrategyMetadata,
+  ScenarioType,
+  Priority,
+  Complexity,
+  ScenarioConfig,
+  BudgetConfig,
+  QuotaStatus,
+  HistoryData,
+  RecommendationInput,
+  Recommendation,
+  EstimatedCost
+} from "./interfaces";
 
 /**
  * Recommender.ts
@@ -8,92 +21,17 @@ import { readJSONC } from "./FileSystemUtils";
  * 基于多因素评分算法，为用户推荐最合适的策略
  */
 
-export interface StrategyMetadata {
-  name: string;
-  filePath: string;
-  description: string;
-  costLevel: string;
-  version?: string;
-  isCurrent: boolean;
-  useCase?: string;
-  models?: string[];
-  source?: "installed" | "dynamic";
-}
-
-// ==================== 类型定义 ====================
-
-export type ScenarioType =
-  | "agent-heavy"
-  | "education" // 教育场景
-  | "health" // 健康管理
-  | "finance" // 金融交易
-  | "coding" // 编程开发
-  | "research" // 深度研究
-  | "creative" // 创意写作
-  | "daily" // 日常工作
-  | "writing" // 写作发布
-  | "multimedia" // 多媒体创作
-  | "social" // 新媒体运营
-  | "tools" // 日常工具
-  | "entertainment" // 娱乐
-  | "documentation"; // 公文处理
-
-export type Priority = "quality" | "cost" | "speed" | "balanced";
-export type Complexity = "simple" | "medium" | "complex";
-
-export interface ScenarioConfig {
-  type: ScenarioType;
-  priority: Priority;
-  complexity?: Complexity;
-}
-
-export interface BudgetConfig {
-  monthly: number; // 月度预算
-  currentSpent: number; // 本月已用
-  alertThreshold: number; // 告警阈值 (0-1)
-}
-
-export interface QuotaStatus {
-  provider: string; // 厂商标识
-  remaining: number; // 剩余额度 (USD)
-  total: number; // 总额度 (USD)
-  usagePercent: number; // 使用百分比 (0-1)
-  resetDate?: Date; // 重置日期
-}
-
-export interface HistoryData {
-  recentStrategies: string[]; // 最近使用的策略
-  frequentScenarios: string[]; // 常用场景
-  avgCostPerDay?: number; // 平均每日成本
-}
-
-export interface TimeContext {
-  isUrgent: boolean; // 是否紧急
-  deadline?: Date; // 截止日期
-}
+// ==================== 接口定义 (仅保留 Recommender 特有接口) ====================
 
 export interface RecommendationContext {
   scenario?: ScenarioConfig;
   budget?: BudgetConfig;
   history?: HistoryData;
-  timeContext?: TimeContext;
   quotaStatus?: QuotaStatus[];
-}
-
-export interface EstimatedCost {
-  perUse: number; // 单次使用成本
-  monthly: number; // 月度预估成本
-  breakdown?: string; // 成本细分说明
-}
-
-export interface Recommendation {
-  strategyName: string;
-  score: number; // 总分 (0-100)
-  reason: string; // 推荐理由
-  estimatedCost: EstimatedCost;
-  pros: string[]; // 优势
-  cons: string[]; // 劣势
-  confidence: number; // 置信度 (0-1)
+  timeContext?: {
+    isUrgent: boolean;
+    deadline?: Date;
+  };
 }
 
 // ==================== 场景映射配置 ====================
@@ -410,7 +348,7 @@ export class SmartRecommender {
     return totalHealth / strategy.models.length;
   }
 
-  private getProviderFromModel(model: string): string {
+  public getProviderFromModel(model: string): string {
     const lower = model.toLowerCase();
     if (lower.startsWith("anthropic/")) return "anthropic";
     if (lower.startsWith("openai/")) return "openai";
@@ -513,16 +451,21 @@ export function parseRecommendationContext(description: string): RecommendationC
   return context;
 }
 
-export async function recommendStrategySmart(input: {
-  description: string,
-  priority?: Priority,
-  includeDynamic?: boolean,
-  quotaStatus?: QuotaStatus[],
-  budget?: BudgetConfig
-}): Promise<Recommendation | null> {
-  // 注意：这个实现在 ManageStrategies.ts 中有更完整的逻辑。
-  // 这里仅提供基础推荐逻辑。
-  return null; 
+/**
+ * 智能推荐（基础实现，ManageStrategies 中有更完整的包装）
+ */
+export async function recommendStrategySmart(input: RecommendationInput): Promise<Recommendation | null> {
+  // 注意：这个实现在 ManageStrategies.ts 中有更完整的逻辑（包含策略库加载）。
+  // 这里仅保留函数签名以满足依赖。
+  return null;
 }
 
 export function recordRecommendationFeedback(feedback: any): void {}
+
+/**
+ * 助手函数：从模型 ID 提取厂商名称
+ */
+export function getProviderFromModel(model: string): string {
+  const recommender = new SmartRecommender([]);
+  return recommender.getProviderFromModel(model);
+}
