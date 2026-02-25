@@ -82,7 +82,6 @@
       "model": "github-copilot/grok-code-fast-1",
       "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/kimi-coding-pro", "ark-cn/Doubao-Seed-Code"],
 
-      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/kimi-coding-pro", "ark-cn/Doubao-Seed-Code"],
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -112,9 +111,6 @@
       "maxTokens": 4000
     },
 
-      "temperature": 0.5,
-      "maxTokens": 4000
-    },
     "explore": {
       "model": "step/step-2-16k",
       "temperature": 0.5,
