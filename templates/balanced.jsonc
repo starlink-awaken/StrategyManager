@@ -1,88 +1,83 @@
 {
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "均衡型：日常主力，性价比最优",
+  "description": "均衡型：日常主力，合理分配已订阅的 Pro 服务与免费额度，性价比与体验最优",
   "metadata": {
-    "version": "2.2.1",
-    "updated": "2026-02-13",
+    "version": "3.1.0",
+    "updated": "2026-02-25",
     "cost_level": "medium",
-    "use_case": "默认日常策略（Copilot优先，覆盖80%场景）",
-    "optimization": "GPT-5 mini 核心 + 全链路 fallback + 场景细分优化",
-    "monthly_cost": "¥500-800",
+    "use_case": "默认日常策略（结合 Copilot、各种 Coding Plan 与充足的 Gemini 额度）",
+    "optimization": "Copilot 核心 + Kimi/MiniMax/Ark/ZhiPu 大并发 + Gemini 充足额度支持创意/深度",
+    "monthly_cost": "¥0-100 (主要消耗已有订阅，少部分 API 补足)",
     "resources_used": [
-      "GitHub Copilot Pro+ (GPT-4o 免费主力)",
-      "ZhiPu CodingPlan Pro (GLM-5 60倍)",
-      "方舟 CodingPlan Pro (20倍)",
+      "GitHub Copilot Pro+",
+      "ZhiPu CodingPlan Pro",
       "MiniMax Coding Plan Pro",
-      "DeepSeek API (¥300)",
-      "硅基流动中国 (¥200)",
-      "OpenRouter ($100)"
-    ],
-    "scene_coverage": "85%",
-    "scene_mapping": {
-      "个人项目开发": "visual-engineering (Copilot Codex)",
-      "子女教育": "artistry (Copilot Sonnet)",
-      "公文处理": "quick (GPT-4o免费)",
-      "健康管理": "deep (Copilot Opus)",
-      "AI项目探索": "visual-engineering + ultrabrain",
-      "日常工具": "quick (免费)",
-      "笔记管理": "unspecified-low (GLM高并发)",
-      "娱乐": "quick (免费)",
-      "常规写作": "writing (Copilot Sonnet)",
-      "多媒体创作": "artistry (Copilot Sonnet)",
-      "新媒体运营": "writing + artistry"
-    }
+      "Kimi Coding Plan Pro",
+      "方舟 CodingPlan Pro (ark-cn)",
+      "Google Pro (Gemini)",
+      "DashScope (Qwen)",
+      "DeepSeek API / 硅基流动"
+    ]
   },
   "lsp": {
-    "scene_coverage": [
-      "daily",
-      "coding",
-      "tools",
-      "finance",
-      "general",
-      "collaboration"
-    ],
+    "scene_coverage": ["daily", "coding", "tools", "finance", "general", "collaboration", "creative", "writing"],
     "budget": {
-      "monthlyLimitUSD": 1000,
+      "monthlyLimitUSD": 100,
       "dailyAlertThreshold": 0.8,
-      "emergencySwitchTo": "cheap",
+      "emergencySwitchTo": "cheap"
     },
     "provider_quotas": {
-      "openai": {
+      "github-copilot": {
         "priority": 1,
-        "maxRequestsPerDay": 2000,
-        "maxCostPerRequest": 0.05,
-        "maxConcurrentRequests": 10,
-        "fallbackModels": ["google/gemini-3-flash-preview", "zhipuai-coding-plan/glm-4.7"]
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20
       },
-      "anthropic": {
+      "kimi": {
         "priority": 1,
-        "maxRequestsPerDay": 2000,
-        "maxCostPerRequest": 0.05,
-        "maxConcurrentRequests": 10,
-        "fallbackModels": ["openai/gpt-4o", "google/gemini-3-flash-preview"]
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 30,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-2.0-Code"]
       },
-      "google": {
-        "priority": 2,
-        "maxRequestsPerDay": 3000,
-        "maxCostPerRequest": 0.03,
-        "maxConcurrentRequests": 15,
-        "fallbackModels": ["zhipuai-coding-plan/glm-4.7", "openai/gpt-4o"]
-      },
-      "zhipuai": {
-        "priority": 2,
+      "minimax-cn-coding-plan": {
+        "priority": 1,
         "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.005,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["openai/gpt-4o", "kimi/kimi-coding-pro"]
+        "fallbackModels": ["kimi/kimi-coding-pro", "ark-cn/Kimi-K2.5"]
       },
-      "kimi": {
+      "ark-cn": {
+        "priority": 2,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["zhipuai-coding-plan/glm-5", "minimax-cn-coding-plan/MiniMax-M2.5"]
+      },
+      "zhipuai-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.005,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code"]
+      },
+      "google": {
+        "priority": 1,
+        "maxRequestsPerDay": 5000,
+        "maxCostPerRequest": 0.02,
+        "maxConcurrentRequests": 15
+      },
+      "dashscope": {
+        "priority": 2,
+        "maxRequestsPerDay": 5000,
+        "maxCostPerRequest": 0.02,
+        "maxConcurrentRequests": 10
+      },
+      "deepseek": {
         "priority": 3,
         "maxRequestsPerDay": 2000,
         "maxCostPerRequest": 0.01,
         "maxConcurrentRequests": 10
       },
-      "step": {
+      "siliconflow": {
         "priority": 3,
         "maxRequestsPerDay": 2000,
         "maxCostPerRequest": 0.01,
@@ -91,375 +86,133 @@
     },
     "constraints": {
       "maxToolsPerRequest": 10,
-      "allowedTools": [
-        "web_search",
-        "file_io",
-        "code_generation",
-        "shell_execution",
-        "data_processing",
-        "git_operations"
-      ]
+      "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing", "git_operations"]
     }
   },
   "agents": {
     "sisyphus": {
       "model": "github-copilot/gpt-4o",
-      "tools": [],
-      "fallback": [
-        "zhipuai-coding-plan/glm-4.7",
-        "minimax-cn-coding-plan/MiniMax-M2.5",
-        "ark/glm-5",
-        "deepseek/deepseek-v3-2",
-        "siliconflow/deepseek-v3",
-        "openrouter/deepseek/deepseek-chat-v3"
-      ],
+      "fallback": ["kimi/kimi-coding-pro", "minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code", "deepseek/deepseek-v3-2"],
       "temperature": 0.5,
-      "maxTokens": 4000,
-      "description": "优先使用免费 GPT-4o，低成本高效能"
+      "maxTokens": 4000
     },
     "prometheus": {
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "github-copilot/claude-3.5-sonnet",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
       },
       "temperature": 0.5,
-      "maxTokens": 4500,
-      "description": "规划器保持高质量（Copilot优先）"
+      "maxTokens": 4500
     },
     "oracle": {
-      "model": "github-copilot/gpt-5-mini",
-      "fallback": "github-copilot/gpt-4o",
-      "fallbackReason": "成本优化 - GPT-4o 免费兜底",
-      "reasoningEffort": "medium",
+      "model": "dashscope/qwen-max-latest",
+      "fallback": ["github-copilot/gpt-4o", "ark-cn/Doubao-Seed-Code"],
       "temperature": 0.5,
-      "maxTokens": 5000,
-      "description": "关键架构决策（Copilot Codex）"
+      "maxTokens": 5000
     },
     "hephaestus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "kimi/kimi-coding-pro",
       "temperature": 0.5,
-      "maxTokens": 4000,
-      "description": "深度工作用大额度"
+      "maxTokens": 4000
     },
     "librarian": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.5,
-      "maxTokens": 2500,
-      "description": "快速查询用大额度"
+      "maxTokens": 4000
     },
     "explore": {
-      "model": "anthropic/claude-haiku-4-5",
+      "model": "ark-cn/Doubao-Seed-Code",
       "temperature": 0.5,
-      "maxTokens": 2000,
-      "description": "轻量级探索"
+      "maxTokens": 4000
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-flash-preview",
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.5,
-      "maxTokens": 3000,
-      "description": "多模态用 Flash"
+      "maxTokens": 4000
     },
     "metis": {
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "google/gemini-3.1-pro-preview",
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 80000
+        "budgetTokens": 40000
       },
-      "fallback": "anthropic/claude-sonnet-4-6",
-      "fallbackReason": "成本优化 - Sonnet 兜底 (thinking 50k)",
-      "temperature": 0.5,
-      "maxTokens": 3500,
-      "description": "规划前分析（Copilot优先）"
+      "temperature": 0.6,
+      "maxTokens": 4000
     },
     "momus": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "dashscope/qwen-max-latest",
       "temperature": 0.5,
-      "maxTokens": 3000,
-      "description": "规划审查"
+      "maxTokens": 4000
     },
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "kimi/kimi-coding-pro",
       "temperature": 0.5,
-      "maxTokens": 4000,
-      "description": "执行器用大额度"
+      "maxTokens": 4000
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "github-copilot/gpt-5-mini",
-      "tools": [],
-      "fallback": "github-copilot/gpt-4o",
-      "fallbackReason": "成本优化 - GPT-4o 免费兜底",
-      "reasoningEffort": "medium",
+      "model": "github-copilot/gpt-4o",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5"],
       "temperature": 0.5,
-      "maxTokens": 4000,
-      "description": "个人项目开发、AI探索 - 代码专精模型",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "maxTokens": 4000
     },
     "ultrabrain": {
-      "model": "github-copilot/claude-opus-4.6",
-      "variant": "max",
+      "model": "google/gemini-3.1-pro-preview",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
       },
       "temperature": 0.5,
-      "maxTokens": 5000,
-      "description": "复杂架构决策（Copilot Opus）",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "maxTokens": 8000
     },
     "artistry": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "fallback": "google/gemini-3-flash-preview",
-      "fallbackReason": "成本优化 - Flash 快速兜底",
-      "temperature": 0.5,
-      "maxTokens": 4500,
-      "description": "子女教育、多媒体创作 - 温和耐心+创意",
-      "systemPrompt": "在处理教育相关话题时，展现耐心和同理心，因材施教，关注心理健康。在创意内容时，发挥想象力和表达力。",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["ark-cn/Doubao-Seed-Code", "kimi/kimi-coding-pro"],
+      "temperature": 0.7,
+      "maxTokens": 6000
     },
     "quick": {
-      "model": "github-copilot/gpt-4o",
+      "model": "step/step-2-16k",
       "temperature": 0.5,
-      "maxTokens": 2000,
-      "description": "公文处理、日常工具、娱乐 - 免费快速模型",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "maxTokens": 2000
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.5,
-      "maxTokens": 2500,
-      "description": "文件编辑、代码清理",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "maxTokens": 2500
     },
     "unspecified-high": {
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "github-copilot/claude-3.5-sonnet",
       "temperature": 0.5,
-      "maxTokens": 5000,
-      "description": "复杂功能实现、架构设计",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "maxTokens": 5000
     },
     "writing": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "temperature": 0.5,
-      "maxTokens": 4000,
-      "description": "个人写作、新媒体、技术文章 - 专业文笔",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["kimi/kimi-coding-pro"],
+      "temperature": 0.6,
+      "maxTokens": 6000
     },
     "deep": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "thinking": {
-        "type": "enabled",
-        "budgetTokens": 80000
-      },
-      "fallback": "github-copilot/claude-opus-4.6",
-      "fallbackReason": "质量兜底 - 深度任务用 Opus",
-      "temperature": 0.5,
-      "maxTokens": 6000,
-      "description": "健康管理、深度分析、重要决策 - 最强推理+专业提示",
-      "systemPrompt": "在处理健康、金融等敏感领域时，务必：1) 明确你的局限性 2) 建议咨询专业人士 3) 提供多种可能性和风险评估 4) 保持审慎和负责的态度。",
-      "providers": [
-        {
-          "provider": "kimi/kimi-coding-pro",
-          "model": "kimi-coding-pro",
-          "priority": 4
-        },
-        {
-          "provider": "step/step3-flash",
-          "model": "step3-flash",
-          "priority": 5
-        }
-      ]
+      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "fallback": ["google/gemini-3.1-pro-preview"],
+      "temperature": 0.6,
+      "maxTokens": 8000
     }
   },
   "background_task": {
-    "defaultConcurrency": 12,
+    "defaultConcurrency": 15,
     "staleTimeoutMs": 300000,
     "providerConcurrency": {
-      "anthropic": 2,
-      "openai": 2,
-      "google": 5,
-      "zhipuai-coding-plan": 25,
-      "github-copilot": 12
-    },
-    "modelConcurrency": {
-      "anthropic/claude-opus-4-6": 1,
-      "anthropic/claude-sonnet-4-6": 2,
-      "anthropic/claude-haiku-4-5": 4,
-      "google/gemini-3-pro-preview": 3,
-      "google/gemini-3-flash-preview": 10,
-      "openai/gpt-5.3-codex": 2,
-      "zhipuai-coding-plan/glm-4.7": 30,
-      "github-copilot/claude-opus-4.6": 2,
-      "github-copilot/claude-sonnet-4.6": 4,
-      "github-copilot/gpt-4o": 10
+      "github-copilot": 15,
+      "kimi": 20,
+      "minimax-cn-coding-plan": 20,
+      "ark-cn": 15,
+      "zhipuai-coding-plan": 20,
+      "google": 10,
+      "deepseek": 5
     }
-  },
-  "sisyphus_agent": {
-    "disabled": false,
-    "default_builder_enabled": false,
-    "planner_enabled": true,
-    "replace_plan": true
-  },
-  "git_master": {
-    "commit_footer": true,
-    "include_co_authored_by": true
-  },
-  "tmux": {
-    "enabled": true,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
-  },
-  "experimental": {
-    "aggressive_truncation": false,
-    "auto_resume": true,
-    "truncate_all_tool_outputs": false
-  },
-  "disabled_mcps": [
-    "github"
-  ],
-  "disabled_hooks": [],
-  "budget": {
-    "daily_limit_usd": 15,
-    "monthly_limit_usd": 200,
-    "emergency_fallback": "github-copilot/gpt-4o",
-    "alert_threshold_usd": 0.8,
-    "disable_high_cost_models": [
-      "anthropic/claude-opus-4-6",
-      "openai/gpt-5.3-codex"
-    ]
-  },
-  "quota_sensitivity": "high",
-  "provider_quotas": {
-    "anthropic": {
-      "monthly_limit_tokens": 1000000,
-      "current_usage_tokens": 0,
-      "threshold_percent": 80,
-      "fallback_priority": [
-        "zhipuai-coding-plan",
-        "minimax-cn-coding-plan",
-        "github-copilot"
-      ]
-    },
-    "openai": {
-      "monthly_limit_tokens": 500000,
-      "current_usage_tokens": 0,
-      "threshold_percent": 90,
-      "fallback_priority": [
-        "zhipuai-coding-plan",
-        "minimax-cn-coding-plan"
-      ]
-    },
-    "google": {
-      "monthly_limit_tokens": 1000000,
-      "current_usage_tokens": 0,
-      "threshold_percent": 85,
-      "fallback_priority": [
-        "zhipuai-coding-plan",
-        "minimax-cn-coding-plan"
-      ]
-    }
-  },
-  "time_based_routing": {
-    "work_hours": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "reason": "工作时间效率优先"
-    },
-    "off_hours": {
-      "model": "zhipuai-coding-plan/glm-4.7",
-      "reason": "非工作时间成本优先"
-    }
-  },
-  "caching": {
-    "enabled": true,
-    "ttl_seconds": 3600,
-    "similarity_threshold": 0.85,
-    "cache_types": [
-      "code_review",
-      "refactoring",
-      "documentation",
-      "test_generation"
-    ],
-    "cache_storage": "local"
   }
 }

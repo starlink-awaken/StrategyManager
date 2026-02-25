@@ -1,65 +1,81 @@
 {
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "经济型：最大化免费额度，批量处理优先",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "经济型：最大化已订阅的 Coding Plan 与免费额度，结合新补充模型，适合大批量处理",
   "metadata": {
-    "version": "1.1.1",
-    "updated": "2026-02-13",
+    "version": "2.1.0",
+    "updated": "2026-02-25",
     "cost_level": "ultra-low",
-    "use_case": "探索、学习、快速迭代、成本压力大",
-    "monthly_cost": "¥50-150",
+    "use_case": "探索、学习、快速迭代、重度使用且希望零额外成本",
+    "monthly_cost": "¥0 (仅消耗已购订阅)",
     "resources_used": [
-      "GitHub Copilot Pro+ (免费模型)",
-      "ZhiPu CodingPlan Max (额度)",
-      "DeepSeek (额度)",
-      "硅基流动 (额度)",
-      "Google Pro (Gemini Flash 便宜)"
+      "GitHub Copilot Pro+",
+      "ZhiPu CodingPlan Pro",
+      "MiniMax Coding Plan Pro",
+      "Kimi Coding Plan Pro",
+      "方舟 CodingPlan Pro (ark-cn)",
+      "Step 额度",
+      "DeepSeek / 硅基流动"
     ]
   },
   "lsp": {
     "scene_coverage": ["daily", "tools", "education", "health", "entertainment", "chinese"],
     "budget": {
-      "monthlyLimitUSD": 150,
+      "monthlyLimitUSD": 50,
       "dailyAlertThreshold": 0.8,
       "emergencySwitchTo": "cheap"
     },
     "provider_quotas": {
+      "minimax-cn-coding-plan": {
+        "priority": 1,
+        "maxRequestsPerDay": 50000,
+        "maxConcurrentRequests": 30,
+        "fallbackModels": ["kimi/kimi-coding-pro", "ark-cn/Doubao-Seed-2.0-Code"]
+      },
       "kimi": {
         "priority": 1,
-        "maxRequestsPerDay": 20000,
-        "maxCostPerRequest": 0.01,
+        "maxRequestsPerDay": 50000,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["step/step-3-flash", "zhipuai/glm-4.7-flash"]
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code"]
+      },
+      "zhipuai-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code"]
+      },
+      "ark-cn": {
+        "priority": 1,
+        "maxRequestsPerDay": 30000,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["zhipuai-coding-plan/glm-4.7", "minimax-cn-coding-plan/MiniMax-M2.5"]
       },
       "step": {
-        "priority": 1,
-        "maxRequestsPerDay": 20000,
-        "maxCostPerRequest": 0.01,
-        "maxConcurrentRequests": 30,
-        "fallbackModels": ["kimi/kimi-coding-pro", "zhipuai/glm-4.7-flash"]
-      },
-      "zhipuai": {
-        "priority": 2,
-        "maxRequestsPerDay": 50000,
+        "priority": 3,
+        "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.005,
-        "maxConcurrentRequests": 40,
-        "fallbackModels": ["kimi/kimi-coding-pro", "step/step-3-flash"]
+        "maxConcurrentRequests": 30
       },
-      "minimax": {
-        "priority": 2,
-        "maxRequestsPerDay": 20000,
-        "maxCostPerRequest": 0.005,
+      "dashscope": {
+        "priority": 3,
+        "maxRequestsPerDay": 10000,
         "maxConcurrentRequests": 20
+      },
+      "github-copilot": {
+        "priority": 2,
+        "maxRequestsPerDay": 100000,
+        "maxConcurrentRequests": 50
       },
       "deepseek": {
         "priority": 3,
-        "maxRequestsPerDay": 50000,
+        "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.002,
-        "maxConcurrentRequests": 50
+        "maxConcurrentRequests": 20
       },
-      "github-copilot": {
-        "priority": 1,
-        "maxRequestsPerDay": 100000,
-        "maxConcurrentRequests": 100
+      "siliconflow": {
+        "priority": 3,
+        "maxRequestsPerDay": 10000,
+        "maxCostPerRequest": 0.002,
+        "maxConcurrentRequests": 20
       }
     },
     "constraints": {
@@ -67,130 +83,61 @@
       "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing"]
     }
   },
-  // ================================================
-  // Strategy-3: 经济型 (ECONOMICAL)
-  // ================================================
-  // 策略：完全榨干免费和大额度资源，顶级模型仅用于不可替代场景
-  // 适用场景：学习、实验、个人项目
-  // 成本：极低（月度顶级模型调用 <50 次，余额资源消耗 <10 元/月）
-  // 资源利用率：Github Copilot Free 80% | ZhiPuAI 15% | 顶级模型 <5%
-  // ================================================
   "agents": {
-    // 主编排器 - GPT-4o (Github Copilot Free，无限免费)
     "sisyphus": {
-      "model": "github-copilot/gpt-4o",
-      "fallback": ["deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
+      "fallback": ["kimi/kimi-coding-pro", "ark-cn/Doubao-Seed-Code", "github-copilot/gpt-4o"],
       "temperature": 0.3
     },
-    // 规划器 - GPT-5-mini (Copilot Free，免费但更强)
     "prometheus": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "kimi/kimi-coding-pro",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
-    // 架构/调试 - GLM-5 (ZhiPuAI Max，大用量兜底)
     "oracle": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "ark-cn/Doubao-Seed-Code",
+      "fallback": ["dashscope/qwen2.5-coder-32b-instruct", "zhipuai-coding-plan/glm-4.7"],
+      "temperature": 0.3
+    },
+    "explore": {
+      "model": "step/step-2-16k",
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5"],
       "temperature": 0.3
     }
   },
-  // ========== Category 配置 ==========
   "categories": {
-    // 前端 UI/UX - Gemini 2.5 Flash (Gemini Pro)
     "visual-engineering": {
-      "model": "google/gemini-3-flash-preview",
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.4
     },
-    // 深度逻辑推理 - GPT-5-mini (Copilot Free，免费且支持 thinking)
     "ultrabrain": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "kimi/kimi-coding-pro",
       "tools": ["read", "write", "edit", "bash", "grep", "task"],
       "temperature": 0.2
     },
-    // 深度思考 - GPT-5-mini (Copilot Free)
     "deep": {
-      "model": "github-copilot/gpt-5-mini",
-      "fallback": {
-        "model": "anthropic/claude-sonnet-4.6",
-        "condition": "紧急"
-      }
+      "model": "dashscope/qwen-max-latest",
+      "fallback": ["ark-cn/Doubao-Seed-Code"]
     },
-    // 简单任务 - GPT-5-mini (Github Copilot Free)
     "quick": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "step/step-2-16k",
+      "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.3
     },
-    // 通用低难度 - GPT-4o (Github Copilot Free)
     "unspecified-low": {
-      "model": "github-copilot/gpt-4o",
+      "model": "step/step-2-16k",
       "temperature": 0.3
     },
-    // 通用高难度 - GLM-5 (ZhiPuAI Max)
     "unspecified-high": {
-      "model": "zhipuai-coding-plan/glm-4.7",
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
       "temperature": 0.3
     },
-    // 文档写作 - Gemini 3 Flash (Gemini Pro)
     "writing": {
-      "model": "google/gemini-3-flash-preview",
-      "temperature": 0.5
-    }
-  },
-  // ========== 并发控制 ==========
-  "background_task": {
-    "defaultConcurrency": 12,
-    "staleTimeoutMs": 300000,
-    // Provider 级别并发限制
-    "providerConcurrency": {
-      "github-copilot": 30,
-      "zhipuai-coding-plan": 15,
-      "google": 12,
-      "antigravity": 1,
-      "anthropic": 1,
-      "openai": 1
+      "model": "kimi/kimi-coding-pro",
+      "fallback": ["ark-cn/Doubao-Seed-Code"]
     },
-    // 模型级别并发限制
-    "modelConcurrency": {
-      "github-copilot/gpt-4o": 25,
-      "github-copilot/gpt-5-mini": 35,
-      "zhipuai-coding-plan/glm-4.7": 18,
-      "google/gemini-3-flash-preview": 15,
-      "google/gemini-3-pro-preview": 18,
-      "google/gemini-2.5-pro": 3,
-      "anthropic/claude-sonnet-4-6": 2
+    "artistry": {
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5"
     }
-  },
-  // ========== Sisyphus Agent 配置 ==========
-  "sisyphus_agent": {
-    "disabled": false,
-    "default_builder_enabled": false,
-    "planner_enabled": true,
-    "replace_plan": true
-  },
-  // ========== Git 配置 ==========
-  "git_master": {
-    "commit_footer": true,
-    "include_co_authored_by": true
-  },
-  // ========== Tmux 集成 ==========
-  "tmux": {
-    "enabled": true,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
-  },
-  // ========== 实验性功能 ==========
-  "experimental": {
-    "aggressive_truncation": false,
-    "auto_resume": true,
-    "truncate_all_tool_outputs": false,
-    "dynamic_context_pruning": {
-      "enabled": false
-    }
-  },
-  // ========== MCP 配置 ==========
-  "disabled_mcps": ["github"],
-  // ========== Hooks 配置 ==========
-  "disabled_hooks": []
+  }
 }

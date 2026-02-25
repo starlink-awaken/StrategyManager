@@ -1,38 +1,70 @@
-# Workflows 知识库
+# Workflows 工作流定义
 
-**生成时间**: 2026-02-24
-**作用**: OpenCode 工作流定义中心
+**父级**: `../AGENTS.md`
 
-## OVERVIEW
-本目录包含 StrategyManager 的所有工作流定义。这些文件采用 Markdown 格式，定义了 AI 策略管理生命周期中的具体操作步骤。它们不包含业务逻辑，仅作为指令集引导工具调用。
+## 概述
 
-## STRUCTURE
-目录由 13 个核心工作流文件组成，通过根目录的 `SKILL.md` 进行路由加载。所有文件遵循 `<Verb>.md` 命名规范。
+#SV|OpenCode 工作流定义目录，包含 14 个 Markdown 格式的工作流文件，通过 `SKILL.md` 路由加载。
+
+## 结构
+
+```
+Workflows/
+├── Compare.md      # 策略比较工作流
+├── CostReport.md   # 成本报告工作流
+├── Export.md       # 策略导出工作流
+├── FeedbackReport.md # 反馈报告工作流
+├── Fix.md          # 策略修复工作流
+├── Generate.md     # 动态生成工作流
+├── History.md      # 历史管理工作流
+├── Import.md       # 策略导入工作流
+├── List.md         # 策略列表工作流
+├── Recommend.md    # 策略推荐工作流
+├── Switch.md       # 策略切换工作流
+├── UsageSync.md    # 使用同步工作流
+├── Validate.md     # 策略验证工作流
+└── ... (更多工作流)
+├── List.md          # 列出所有策略
+├── Switch.md        # 切换策略
+├── Compare.md       # 比较策略差异
+├── Recommend.md     # 智能推荐
+├── Validate.md      # 验证策略
+├── Import.md        # 导入策略
+├── Export.md        # 导出策略
+├── History.md       # 历史记录
+├── Fix.md           # 修复策略
+└── ... (更多工作流)
+```
 
 ## WHERE TO LOOK
 
-| 任务 | 对应文件 | 说明 |
-|------|----------|------|
-| 查看/列出策略 | `List.md` | 策略列表展示与过滤 |
-| 切换当前策略 | `Switch.md` | 策略切换逻辑与差异预览 |
-| 比较不同策略 | `Compare.md` | 策略字段级差异对比 |
-| 获取智能推荐 | `Recommend.md` | 场景化策略推荐引擎 |
-| 验证策略格式 | `Validate.md` | Schema 兼容性与格式验证 |
-| 导入/导出策略 | `Import.md`, `Export.md` | 策略数据的迁移与备份 |
-| 查看历史记录 | `History.md` | 操作历史追踪与版本回滚 |
-| 修复策略错误 | `Fix.md` | 自动修复建议与执行 |
-| 生成动态策略 | `Generate.md` | 基于配额感知的动态策略生成 |
-| 成本与用量同步 | `CostReport.md`, `UsageSync.md` | 多平台用量同步与成本分析 |
-| 反馈报告 | `FeedbackReport.md` | 推荐采纳率与趋势统计 |
+| 任务 | 文件 | 说明 |
+|------|------|------|
+| 列出策略 | `List.md` | 策略列表展示 |
+| 切换策略 | `Switch.md` | 策略切换逻辑 |
+| 比较策略 | `Compare.md` | 差异可视化 |
+| 推荐策略 | `Recommend.md` | 推荐引擎工作流 |
+| 验证策略 | `Validate.md` | Schema 验证流程 |
+| 导入/导出 | `Import.md` / `Export.md` | 数据转换 |
+| 历史管理 | `History.md` | 版本回滚 |
+| 自动修复 | `Fix.md` | 错误修复流程 |
 
 ## CONVENTIONS
-- **Markdown 格式**: 遵循 OpenCode 工作流规范，使用清晰的步骤描述。
-- **路由机制**: 所有工作流必须在 `SKILL.md` 中有对应的入口定义。
-- **工具调用**: 仅描述工具的使用时机和参数要求，不实现具体逻辑。
-- **无状态**: 工作流文件本身不存储任何状态，状态由 `Tools/` 模块管理。
-- **命名**: 使用 PascalCase 动词命名，如 `Switch.md`。
+
+- **格式**: Markdown，遵循 OpenCode 工作流规范
+- **路由**: 通过 `SKILL.md` 映射到 CLI 命令
+- **命名**: `<Verb>.md` 格式（List, Switch, Compare...）
+- **内容**: 包含工作流步骤、工具调用、错误处理
+- **依赖**: 可调用 `Tools/` 模块的功能
 
 ## ANTI-PATTERNS
-- **禁止业务逻辑**: 复杂的计算、文件读写逻辑必须放在 `Tools/` 目录下的 TypeScript 模块中。
-- **禁止硬编码**: 不要在工作流中硬编码路径或特定配置。
-- **禁止冗余**: 避免在多个工作流中重复定义相同的复杂步骤，应考虑提取公共工具。
+
+- 工作流文件不应包含业务逻辑（逻辑应在 Tools/ 模块）
+- 避免在 Markdown 中硬编码路径（使用配置）
+- 不要修改工作流文件结构而不更新 SKILL.md
+
+## NOTES
+
+- 工作流文件由 OpenCode 运行时动态加载
+- 修改工作流后无需重新编译
+- 新增工作流需在 `SKILL.md` 注册路由

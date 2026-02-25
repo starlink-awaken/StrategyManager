@@ -1,20 +1,24 @@
 {
-  // "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "旗舰智能策略：最强模型组合，处理最复杂任务，不差钱",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "description": "旗舰智能策略：结合顶级订阅API与国产头部模型，专攻复杂项目与深度创意任务，不差钱",
   "metadata": {
-    "version": "2.1.1",
-    "updated": "2026-02-13",
+    "version": "3.1.0",
+    "updated": "2026-02-25",
     "cost_level": "high",
-    "use_case": "关键项目、复杂架构设计、深度推理任务",
-    "optimization": "最高性能优先，不考虑成本",
-    "monthly_cost": "¥2000-3000",
+    "use_case": "关键项目、复杂架构设计、深度推理任务、文学创作与前沿探索",
+    "optimization": "全平台顶级模型互为兜底，集成 Qwen-Max、Gemini 3.1 Pro、DeepSeek R1、Doubao Seed Code",
+    "monthly_cost": "¥2000-3000 (主要消耗订阅额度与高优先级 API)",
     "resources_used": [
       "GitHub Copilot Pro+",
       "Anthropic Pro",
       "OpenAI Plus",
-      "Google Pro",
-      "ZhiPu CodingPlan Max (GLM-5)",
-      "方舟 CodingPlan Pro"
+      "Google Pro (Gemini 3.1)",
+      "DashScope (Qwen Max)",
+      "方舟 CodingPlan Pro (Doubao Seed Code)",
+      "MiniMax Coding Plan Pro",
+      "Kimi Coding Plan Pro",
+      "ZhiPu CodingPlan Pro (GLM-5)",
+      "DeepSeek API / SiliconFlow"
     ]
   },
   "lsp": {
@@ -28,72 +32,75 @@
       "anthropic": {
         "priority": 1,
         "maxRequestsPerDay": 10000,
-        "maxCostPerRequest": 0.05,
         "maxConcurrentRequests": 10,
-        "fallbackModels": ["openai/gpt-5.2", "google/gemini-3-pro-preview"]
+        "fallbackModels": ["openai/gpt-5.2", "google/gemini-3.1-pro-preview"]
       },
       "openai": {
         "priority": 1,
         "maxRequestsPerDay": 10000,
-        "maxCostPerRequest": 0.05,
         "maxConcurrentRequests": 10,
         "fallbackModels": ["anthropic/claude-opus-4-6", "deepseek/deepseek-v3-2"]
       },
       "google": {
-        "priority": 2,
-        "maxRequestsPerDay": 8000,
+        "priority": 1,
+        "maxRequestsPerDay": 15000,
         "maxCostPerRequest": 0.03,
-        "maxConcurrentRequests": 15,
-        "fallbackModels": ["openai/gpt-5.2", "deepseek/deepseek-v3-2"]
-      },
-      "deepseek": {
-        "priority": 2,
-        "maxRequestsPerDay": 20000,
-        "maxCostPerRequest": 0.01,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["openai/gpt-5.2", "zhipuai/glm-5"]
+        "fallbackModels": ["openai/gpt-5.2", "dashscope/qwen-max-latest"]
       },
-      "zhipuai": {
-        "priority": 3,
-        "maxRequestsPerDay": 50000,
-        "maxCostPerRequest": 0.005,
-        "maxConcurrentRequests": 30,
-        "fallbackModels": ["deepseek/deepseek-v3-2", "kimi/kimi-coding-pro"]
-      },
-      "kimi": { "priority": 4 },
-      "step": { "priority": 4 },
-      "minimax": { "priority": 4 },
       "github-copilot": {
         "priority": 1,
+        "maxRequestsPerDay": 100000,
+        "maxConcurrentRequests": 50
+      },
+      "dashscope": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["ark-cn/Kimi-K2-thinking"]
+      },
+      "ark-cn": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20
+      },
+      "minimax-cn-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 50000,
+        "maxConcurrentRequests": 30
+      },
+      "kimi": {
+        "priority": 2,
+        "maxRequestsPerDay": 50000,
+        "maxConcurrentRequests": 30
+      },
+      "zhipuai-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5"]
+      },
+      "siliconflow": {
+        "priority": 3,
         "maxRequestsPerDay": 10000,
-        "maxConcurrentRequests": 5
+        "maxConcurrentRequests": 20
+      },
+      "deepseek": {
+        "priority": 3,
+        "maxRequestsPerDay": 20000,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": ["dashscope/qwen-max-latest"]
       }
     },
     "constraints": {
-      "maxToolsPerRequest": 15
+      "maxToolsPerRequest": 15,
+      "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing", "git_operations"]
     }
   },
-  // ================================================
-  // Strategy-SMART: 旗舰智能
-  // ================================================
-  // 理念：用最强的模型做最重要的事，充分利用思考预算
-  // 关键特性：
-  //   1. Sisyphus 用 Opus 4.6，完整思考支持
-  //   2. 规划器用 Opus 4.6 (Antigravity)，思考预算充足
-  //   3. 架构评审用 GPT-5.3-Codex 高级推理
-  //   4. 快速任务用 ZhiPu GLM-5（60倍额度）
-  //   5. 严格并发控制，避免超限
-  // ================================================
-  // ========== Agent 配置 ==========
   "agents": {
-    // 主编排器 - Claude Opus 4.6 (Anthropic/GitHub Copilot)
-    // 职责：任务规划、多agent协调、最终决策
-    // 配置：完整思考支持，高预算用于复杂推理
     "sisyphus": {
       "model": "github-copilot/claude-opus-4.6",
-      "fallback": ["anthropic/claude-opus-4-6", "minimax-cn-coding-plan/MiniMax-M2.5", "ark/glm-5", "deepseek/deepseek-v3-2", "siliconflow/deepseek-v3", "openrouter/deepseek/deepseek-chat-v3"],
-      "fallbackReason": "极致稳定 - Anthropic Opus 4.6 互备",
-      "variant": "max",
+      "fallback": ["anthropic/claude-opus-4-6", "dashscope/qwen-max-latest", "ark-cn/Doubao-Seed-2.0-Code", "siliconflow/deepseek-ai/DeepSeek-V3"],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 200000
@@ -101,14 +108,9 @@
       "temperature": 0.6,
       "maxTokens": 8000
     },
-    // 规划器 - Claude Opus 4.6 Thinking (Google Antigravity)
-    // 职责：战略规划、需求分析、工作流设计
-    // 配置：通过 Antigravity 访问，充足思考预算
     "prometheus": {
       "model": "openai/gpt-5.3-codex",
-      "fallback": "google/antigravity-claude-opus-4-6-thinking",
-      "fallbackReason": "极致稳定 - GPT-5.3-Codex 高级推理互备",
-      "variant": "max",
+      "fallback": ["github-copilot/claude-3.5-sonnet", "google/gemini-3.1-pro-preview"],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 150000
@@ -116,43 +118,27 @@
       "temperature": 0.55,
       "maxTokens": 6000
     },
-    // 架构/代码审查 - GPT-5.3-Codex
-    // 职责：架构决策、代码审查、设计模式评估
-    // 配置：xhigh 推理能力
     "oracle": {
-      "model": "openai/gpt-5.3-codex",
-      "fallback": "anthropic/claude-opus-4-6",
-      "fallbackReason": "极致稳定 - Opus 4.6 高级推理互备",
-      "reasoningEffort": "xhigh",
-      "temperature": 0.55,
-      "maxTokens": 6000
+      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "fallback": ["anthropic/claude-opus-4-6", "dashscope/qwen-max-latest"],
+      "temperature": 0.6,
+      "maxTokens": 8000
     },
-    // 深度工作者 - GPT-5.3-Codex
-    // 职责：自主完成复杂开发任务，执行细节实现
     "hephaestus": {
       "model": "openai/gpt-5.3-codex",
-      "fallback": "github-copilot/claude-opus-4.6",
-      "fallbackReason": "极致稳定 - Copilot Opus 4.6 高级互备",
-      "reasoningEffort": "high",
+      "fallback": ["github-copilot/claude-3.5-sonnet"],
       "temperature": 0.55,
       "maxTokens": 8000
     },
-    // 多模态分析 - Gemini 3 Pro
-    // 职责：图像分析、UI 评审、多模态任务
     "multimodal-looker": {
-      "model": "google/gemini-3-pro-preview",
-      "fallback": "google/gemini-3-flash-preview",
-      "fallbackReason": "极致稳定 - Gemini Flash 3 多模态互备",
-      "variant": "high",
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.5,
-      "maxTokens": 4000
+      "maxTokens": 6000
     },
-    // 规划前分析 - Claude Sonnet 4.5 Thinking
-    // 职责：需求歧义识别、AI失败点分析
     "metis": {
       "model": "anthropic/claude-sonnet-4-6",
-      "fallback": "github-copilot/claude-sonnet-4.6",
-      "fallbackReason": "极致稳定 - Sonnet 4.5 思考互备",
+      "fallback": ["github-copilot/claude-3.5-sonnet", "dashscope/qwen-max-latest"],
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -160,143 +146,89 @@
       "temperature": 0.55,
       "maxTokens": 4000
     },
-    // 规划审查 - GPT-5.3-Codex
-    // 职责：计划验证、完整性检查、可验证性评估
     "momus": {
-      "model": "openai/gpt-5.3-codex",
-      "fallback": "anthropic/claude-opus-4-6",
-      "fallbackReason": "极致稳定 - Opus 4.6 审查互备",
-      "reasoningEffort": "medium",
-      "temperature": 0.55,
+      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "fallback": ["anthropic/claude-sonnet-4-6", "google/gemini-3.1-pro-preview"],
+      "temperature": 0.6,
+      "maxTokens": 8000
+    },
+    "librarian": {
+      "model": "kimi/kimi-coding-pro",
+      "fallback": ["anthropic/claude-sonnet-4-6"],
+      "temperature": 0.4,
+      "maxTokens": 6000
+    },
+    "explore": {
+      "model": "step/step-2-16k",
+      "fallback": ["zhipuai-coding-plan/glm-5"],
+      "temperature": 0.3,
       "maxTokens": 4000
     },
-    // 深度思考 - Claude Opus 4.6 Thinking (Github Copilot)
-    // 职责：复杂问题的深度分析和思考
-    "atlas": {
-      "model": "github-copilot/claude-opus-4.6",
-      "fallback": "anthropic/claude-opus-4-6",
-      "fallbackReason": "极致稳定 - Anthropic Opus 4.6 互备",
-      "thinking": {
-        "type": "enabled",
-        "budgetTokens": 150000
-      },
-      "temperature": 0.55,
-      "maxTokens": 6000
-    }
-  },
-  // ========== Category 配置 ==========
-  "categories": {
-    // 深度逻辑推理
-    "ultrabrain": {
-      "model": "openai/gpt-5.3-codex",
-      "fallback": "anthropic/claude-opus-4-6",
-      "fallbackReason": "极致稳定 - Opus 4.6 超强推理互备",
-      "variant": "xhigh",
-      "reasoningEffort": "xhigh",
-      "temperature": 0.2,
-      "maxTokens": 8000,
-      "description": "复杂架构决策、深度逻辑推理、算法设计"
-    },
-    // 创意任务
-    "artistry": {
-      "model": "google/gemini-3-pro-preview",
-      "fallback": "anthropic/claude-sonnet-4-6",
-      "fallbackReason": "极致稳定 - Sonnet 4.5 创意互备",
-      "variant": "max",
-      "temperature": 0.7,
-      "maxTokens": 6000,
-      "description": "创意文案、设计创意、新颖想法生成"
-    },
-    // 通用高难度
-    "unspecified-high": {
-      "model": "anthropic/claude-opus-4-6",
-      "fallback": "github-copilot/claude-opus-4.6",
-      "fallbackReason": "极致稳定 - Copilot Opus 4.6 互备",
-      "variant": "max",
-      "thinking": {
-        "type": "enabled",
-        "budgetTokens": 100000
-      },
-      "temperature": 0.3,
-      "maxTokens": 8000,
-      "description": "复杂功能实现、架构设计、系统优化"
-    },
-    // 文档/技术写作
-    "writing": {
-      "model": "github-copilot/claude-sonnet-4.6",
+    "fast-writer": {
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["anthropic/claude-sonnet-4-6"],
       "temperature": 0.6,
-      "maxTokens": 5000,
-      "description": "文档编写、技术文章、API 文档"
+      "maxTokens": 8000
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "temperature": 0.5,
+      "maxTokens": 5000
     },
-    // 深度分析
+    "ultrabrain": {
+      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "fallback": ["anthropic/claude-opus-4-6"],
+      "temperature": 0.6,
+      "maxTokens": 8000
+    },
     "deep": {
-      "model": "openai/gpt-5.3-codex",
-      "fallback": "anthropic/claude-opus-4-6",
-      "fallbackReason": "极致稳定 - Opus 4.6 深度分析互备",
-      "reasoningEffort": "xhigh",
-      "temperature": 0.2,
-      "maxTokens": 8000,
-      "description": "系统分析、性能优化、问题诊断"
-    }
-  },
-  // ========== 并发控制 ==========
-  "background_task": {
-    "defaultConcurrency": 5,
-    "staleTimeoutMs": 300000,
-    // Provider 级别并发限制
-    "providerConcurrency": {
-      "anthropic": 3,
-      "openai": 3,
-      "google": 5,
-      "zhipuai-coding-plan": 15,
-      "github-copilot": 2
+      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "fallback": ["dashscope/qwen-max-latest"],
+      "temperature": 0.6,
+      "maxTokens": 8000
     },
-    // 模型级别并发限制（优先级更高）
-    "modelConcurrency": {
-      "anthropic/claude-opus-4-6": 2,
-      "anthropic/claude-sonnet-4-6": 2,
-      "anthropic/claude-haiku-4-5": 5,
-      "github-copilot/claude-opus-4.6": 2,
-      "github-copilot/claude-sonnet-4.6": 2,
-      "github-copilot/claude-haiku-4.5": 5,
-      "google/antigravity-claude-opus-4-6-thinking": 2,
-      "google/gemini-3-pro-preview": 4,
-      "google/gemini-3-flash-preview": 8,
-      "openai/gpt-5.3-codex": 2,
-      "zhipuai-coding-plan/glm-4.7": 20
+    "artistry": {
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["kimi/kimi-coding-pro"],
+      "temperature": 0.8,
+      "maxTokens": 8000
+    },
+    "quick": {
+      "model": "step/step-2-16k",
+      "temperature": 0.3,
+      "maxTokens": 3000
+    },
+    "unspecified-low": {
+      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
+      "temperature": 0.4,
+      "maxTokens": 4000
+    },
+    "unspecified-high": {
+      "model": "dashscope/qwen-max-latest",
+      "temperature": 0.5,
+      "maxTokens": 6000
+    },
+    "writing": {
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["kimi/kimi-coding-pro", "ark-cn/Kimi-K2-thinking"],
+      "temperature": 0.7,
+      "maxTokens": 8000
     }
   },
-  // ========== Sisyphus Agent 配置 ==========
-  "sisyphus_agent": {
-    "disabled": false,
-    "default_builder_enabled": false,
-    "planner_enabled": true,
-    "replace_plan": true
-  },
-  // ========== Git 配置 ==========
-  "git_master": {
-    "commit_footer": true,
-    "include_co_authored_by": true
-  },
-  // ========== Tmux 集成 ==========
-  "tmux": {
-    "enabled": true,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
-  },
-  // ========== 实验性功能 ==========
-  "experimental": {
-    "aggressive_truncation": false,
-    "auto_resume": true,
-    "truncate_all_tool_outputs": false,
-    "dynamic_context_pruning": {
-      "enabled": false
+  "background_task": {
+    "defaultConcurrency": 25,
+    "staleTimeoutMs": 300000,
+    "providerConcurrency": {
+      "github-copilot": 25,
+      "openai": 15,
+      "anthropic": 15,
+      "google": 20,
+      "dashscope": 20,
+      "ark-cn": 20,
+      "minimax-cn-coding-plan": 20,
+      "kimi": 20
     }
-  },
-  // ========== MCP 配置 ==========
-  "disabled_mcps": ["github"],
-  // ========== Hooks 配置 ==========
-  "disabled_hooks": []
+  }
 }
