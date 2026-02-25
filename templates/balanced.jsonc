@@ -36,14 +36,14 @@
         "priority": 1,
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-2.0-Code"]
       },
       "minimax-cn-coding-plan": {
         "priority": 1,
         "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.005,
         "maxConcurrentRequests": 30,
-        "fallbackModels": ["kimi/kimi-coding-pro", "ark-cn/doubao-1.5-pro"]
+        "fallbackModels": ["kimi/kimi-coding-pro", "ark-cn/Kimi-K2.5"]
       },
       "ark-cn": {
         "priority": 2,
@@ -57,7 +57,7 @@
         "maxRequestsPerDay": 10000,
         "maxCostPerRequest": 0.005,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code"]
       },
       "google": {
         "priority": 1,
@@ -92,7 +92,7 @@
   "agents": {
     "sisyphus": {
       "model": "github-copilot/gpt-4o",
-      "fallback": ["kimi/kimi-coding-pro", "minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro", "deepseek/deepseek-v3-2"],
+      "fallback": ["kimi/kimi-coding-pro", "minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code", "deepseek/deepseek-v3-2"],
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -107,7 +107,7 @@
     },
     "oracle": {
       "model": "dashscope/qwen-max-latest",
-      "fallback": ["github-copilot/gpt-4o", "ark-cn/doubao-1.5-pro"],
+      "fallback": ["github-copilot/gpt-4o", "ark-cn/Doubao-Seed-Code"],
       "temperature": 0.5,
       "maxTokens": 5000
     },
@@ -122,18 +122,18 @@
       "maxTokens": 4000
     },
     "explore": {
-      "model": "ark-cn/doubao-1.5-pro",
+      "model": "ark-cn/Doubao-Seed-Code",
       "temperature": 0.5,
       "maxTokens": 4000
     },
     "multimodal-looker": {
-      "model": "google/gemini-2.5-pro",
+      "model": "google/gemini-3.1-pro-preview",
       "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.5,
       "maxTokens": 4000
     },
     "metis": {
-      "model": "google/gemini-2.5-pro",
+      "model": "google/gemini-3.1-pro-preview",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 40000
@@ -160,7 +160,7 @@
       "maxTokens": 4000
     },
     "ultrabrain": {
-      "model": "google/gemini-2.5-pro",
+      "model": "google/gemini-3.1-pro-preview",
       "thinking": {
         "type": "enabled",
         "budgetTokens": 80000
@@ -169,8 +169,8 @@
       "maxTokens": 8000
     },
     "artistry": {
-      "model": "google/gemini-2.5-pro",
-      "fallback": ["ark-cn/doubao-1.5-pro", "kimi/kimi-coding-pro"],
+      "model": "google/gemini-3.1-pro-preview",
+      "fallback": ["ark-cn/Doubao-Seed-Code", "kimi/kimi-coding-pro"],
       "temperature": 0.7,
       "maxTokens": 6000
     },
@@ -190,14 +190,14 @@
       "maxTokens": 5000
     },
     "writing": {
-      "model": "google/gemini-2.5-pro",
+      "model": "google/gemini-3.1-pro-preview",
       "fallback": ["kimi/kimi-coding-pro"],
       "temperature": 0.6,
       "maxTokens": 6000
     },
     "deep": {
       "model": "siliconflow/deepseek-ai/DeepSeek-R1",
-      "fallback": ["google/gemini-2.5-pro"],
+      "fallback": ["google/gemini-3.1-pro-preview"],
       "temperature": 0.6,
       "maxTokens": 8000
     }

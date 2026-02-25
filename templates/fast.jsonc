@@ -42,13 +42,13 @@
         "priority": 1,
         "maxRequestsPerDay": 50000,
         "maxConcurrentRequests": 40,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-2.0-Code"]
       },
       "zhipuai-coding-plan": {
         "priority": 2,
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/doubao-1.5-pro"]
+        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code"]
       },
       "github-copilot": {
         "priority": 2,
@@ -80,7 +80,7 @@
   "agents": {
     "sisyphus": {
       "model": "step/step-2-16k",
-      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/kimi-coding-pro", "ark-cn/doubao-1.5-pro"],
+      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/kimi-coding-pro", "ark-cn/Doubao-Seed-Code"],
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -120,7 +120,7 @@
       "maxTokens": 3000
     },
     "hephaestus": {
-      "model": "ark-cn/doubao-1.5-pro",
+      "model": "ark-cn/Doubao-Seed-Code",
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -130,7 +130,7 @@
       "maxTokens": 4000
     },
     "multimodal-looker": {
-      "model": "google/gemini-2.5-flash",
+      "model": "google/gemini-3.1-flash",
       "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.5,
       "maxTokens": 3000
@@ -148,7 +148,7 @@
       "maxTokens": 5000
     },
     "artistry": {
-      "model": "google/gemini-2.5-flash",
+      "model": "google/gemini-3.1-flash",
       "temperature": 0.6,
       "maxTokens": 4500
     },
@@ -168,7 +168,7 @@
       "maxTokens": 5000
     },
     "writing": {
-      "model": "ark-cn/doubao-1.5-pro",
+      "model": "ark-cn/Doubao-Seed-Code",
       "temperature": 0.5,
       "maxTokens": 4000
     },
