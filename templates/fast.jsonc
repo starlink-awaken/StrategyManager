@@ -18,6 +18,14 @@
       "方舟 CodingPlan Pro"
     ]
   },
+  "claude_code": {
+    "skills": false,
+    "mcp": false,
+    "plugins": false,
+    "hooks": false,
+    "commands": false,
+    "agents": false
+  },
   "lsp": {
     "scene_coverage": ["daily", "coding", "tools", "research", "creative", "writing"],
     "budget": {
@@ -106,6 +114,10 @@
       "maxTokens": 4000
     },
     "explore": {
+      "model": "step/step-3.5-flash",
+      "temperature": 0.5,
+      "maxTokens": 4000
+    },
       "model": "github-copilot/grok-code-fast-1",
       "temperature": 0.5,
       "maxTokens": 4000
@@ -145,7 +157,7 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "step/step-2-16k",
+      "model": "step/step-3.5-flash",
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -160,7 +172,7 @@
       "maxTokens": 4500
     },
     "quick": {
-      "model": "step/step-2-16k",
+      "model": "step/step-3.5-flash",
       "temperature": 0.5,
       "maxTokens": 2000
     },

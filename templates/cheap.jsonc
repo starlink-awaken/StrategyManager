@@ -17,6 +17,14 @@
       "DeepSeek / 硅基流动"
     ]
   },
+  "claude_code": {
+    "skills": false,
+    "mcp": false,
+    "plugins": false,
+    "hooks": false,
+    "commands": false,
+    "agents": false
+  },
   "lsp": {
     "scene_coverage": ["daily", "tools", "education", "health", "entertainment", "chinese"],
     "budget": {
@@ -100,7 +108,7 @@
       "temperature": 0.3
     },
     "explore": {
-      "model": "step/step-2-16k",
+      "model": "step/step-3.5-flash",
       "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5"],
       "temperature": 0.3
     }
@@ -116,11 +124,11 @@
       "temperature": 0.2
     },
     "deep": {
-      "model": "dashscope/qwen-max-latest",
+      "model": "dashscope/qwen-3.5-plus",
       "fallback": ["ark-cn/Doubao-Seed-Code"]
     },
     "quick": {
-      "model": "step/step-2-16k",
+      "model": "step/step-3.5-flash",
       "fallback": ["github-copilot/gpt-4o"],
       "temperature": 0.3
     },

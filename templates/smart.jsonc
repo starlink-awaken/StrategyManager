@@ -22,7 +22,12 @@
     ]
   },
   "claude_code": {
-    "skills": false
+    "skills": false,
+    "mcp": false,
+    "plugins": false,
+    "hooks": false,
+    "commands": false,
+    "agents": false
   },
   "lsp": {
     "scene_coverage": [

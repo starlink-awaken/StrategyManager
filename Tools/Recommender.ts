@@ -93,13 +93,13 @@ const MODEL_PROFILES: Record<
   zhipu: { quality: 0.7, cost: 0.85, speed: 0.75 },
   github: { quality: 0.8, cost: 0.9, speed: 0.9 },
   "ark-cn": { quality: 0.7, cost: 0.9, speed: 0.8 },
-  dashscope: { quality: 0.75, cost: 0.85, speed: 0.8 },
+  dashscope: { quality: 0.9, cost: 0.95, speed: 0.85 },
   kimi: { quality: 0.7, cost: 0.85, speed: 0.75 },
-  step: { quality: 0.7, cost: 0.85, speed: 0.75 },
+  step: { quality: 0.8, cost: 0.9, speed: 0.95 },
   minimax: { quality: 0.7, cost: 0.85, speed: 0.75 },
   siliconflow: { quality: 0.75, cost: 0.95, speed: 0.9 },
   unknown: { quality: 0.6, cost: 0.6, speed: 0.6 },
-};
+};;
 
 // ==================== 智能推荐器类 ====================
 
@@ -356,9 +356,9 @@ export class SmartRecommender {
     if (lower.startsWith("zai-") || lower.includes("zhipu")) return "zhipu";
     if (lower.startsWith("github/")) return "github";
     if (lower.startsWith("ark-cn/")) return "ark-cn";
-    if (lower.startsWith("dashscope/")) return "dashscope";
+    if (lower.startsWith("dashscope/") || lower.startsWith("qwen-")) return "dashscope";
     if (lower.startsWith("kimi/")) return "kimi";
-    if (lower.startsWith("step/")) return "step";
+    if (lower.startsWith("step/") || lower.startsWith("stepfun/") || lower.startsWith("step-")) return "step";
     if (lower.startsWith("minimax/")) return "minimax";
     if (lower.startsWith("siliconflow/")) return "siliconflow";
     return "unknown";

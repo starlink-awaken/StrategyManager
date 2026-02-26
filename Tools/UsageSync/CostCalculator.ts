@@ -54,6 +54,21 @@ export class CostCalculator {
       'deepseek-code': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
       'default': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
     },
+    dashscope: {
+      'qwen-max': { input: 2 / 1000000, output: 6 / 1000000 },
+      'qwen-3.5-plus': { input: 0.1 / 1000000, output: 0.3 / 1000000 },
+      'default': { input: 1 / 1000000, output: 3 / 1000000 },
+    },
+    step: {
+      'step-3.5-flash': { input: 0.15 / 1000000, output: 0.45 / 1000000 },
+      'step-2-16k': { input: 1 / 1000000, output: 3 / 1000000 },
+      'default': { input: 1 / 1000000, output: 3 / 1000000 },
+    },
+    siliconflow: {
+      'deepseek-chat': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
+      'deepseek-code': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
+      'default': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
+    },
     siliconflow: {
       'default': { input: 0.01 / 1000000, output: 0.03 / 1000000 },
     },

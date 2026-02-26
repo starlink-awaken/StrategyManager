@@ -191,14 +191,36 @@ export class StrategyValidator {
       // Domestic Models
       "ark-cn/Doubao-Seed",
       "ark-cn/Doubao-pro-32k",
-      "dashscope/qwen-2.5-72b",
       "dashscope/qwen-max",
+      "dashscope/qwen-plus",
+      "dashscope/qwen-turbo",
+  "dashscope/qwen-max",
+  "dashscope/qwen-3.5-plus",
+  "dashscope/qwen-3-72b",
+  "step/step-1-8k",
+  "step/step-2-16k",
+  "step/step-3.5-flash",
+      "dashscope/qwen3.5-plus",
+      "dashscope/qwen3-235b-a22b",
+      "dashscope/qwen3-30b-a3b",
+      "dashscope/qwen3-8b",
+      "dashscope/qwen-2.5-72b",
       "kimi/moonshot-v1-8k",
       "step/step-1-8k",
+      "step/step-1-32k",
+      "step/step-1-128k",
+      "step/step-1-256k",
+      "step/step-2-16k",
+      "step/step-3.5-flash",
+      "step/step-3-vl",
       "minimax/MiniMax-M2.5",
       // SiliconFlow
       "siliconflow/deepseek-ai/DeepSeek-V3",
       "siliconflow/deepseek-ai/DeepSeek-R1",
+      // OpenRouter
+      "openrouter/qwen/qwen3-next-80b-a3b-instruct:free",
+      "openrouter/qwen/qwen3-coder:free",
+      "openrouter/stepfun/step-3.5-flash:free",
     ];
 
     const checkModel = (model: string, field: string) => {

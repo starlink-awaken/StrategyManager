@@ -19,6 +19,14 @@
       "DeepSeek API / 硅基流动"
     ]
   },
+  "claude_code": {
+    "skills": false,
+    "mcp": false,
+    "plugins": false,
+    "hooks": false,
+    "commands": false,
+    "agents": false
+  },
   "lsp": {
     "scene_coverage": ["daily", "coding", "tools", "finance", "general", "collaboration", "creative", "writing"],
     "budget": {
@@ -175,7 +183,7 @@
       "maxTokens": 6000
     },
     "quick": {
-      "model": "step/step-2-16k",
+      "model": "step/step-3.5-flash",
       "temperature": 0.5,
       "maxTokens": 2000
     },
