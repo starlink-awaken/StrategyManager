@@ -145,7 +145,8 @@
       "fallback": [
         "anthropic/claude-opus-4-6",
         "dashscope/qwen-max-latest",
-        "ark-cn/Doubao-Seed-2.0-Code",
+      "ark-cn/Doubao-Seed-2.0-Code",
+      "siliconflow/deepseek-ai/DeepSeek-V3"
         "siliconflow/deepseek-ai/DeepSeek-V3"
       ],
       "thinking": {

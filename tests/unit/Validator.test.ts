@@ -176,7 +176,7 @@ describe("StrategyValidator - Model Availability", () => {
       agents: {
         default: { model: "anthropic/claude-opus-4-6" },
 
-        coding: { model: "openai/gpt-5.2" },
+        coding: { model: "openai/gpt-5.2-codex" },
         research: { model: "google/gemini-3-pro" },
       },
     });

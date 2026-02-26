@@ -1,5 +1,17 @@
 [
   {
+    "timestamp": "2026-02-26T15:20:35.060Z",
+    "strategyName": "fast",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-26T15:20:35.053Z",
+    "strategyName": "fast",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",
+    "action": "switch"
+  },
+  {
     "timestamp": "2026-02-26T15:19:08.918Z",
     "strategyName": "fast",
     "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",

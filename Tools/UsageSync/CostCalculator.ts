@@ -46,8 +46,16 @@ export class CostCalculator {
       'default': { input: 0, output: 0 },
     },
     github: {
+      'claude-opus-4.6': { input: 15 / 1000000, output: 75 / 1000000 },
+      'claude-sonnet-4.6': { input: 3 / 1000000, output: 15 / 1000000 },
+      'gpt-5.3-codex': { input: 5 / 1000000, output: 15 / 1000000 },
       'copilot': { input: 10 / 30, output: 0 }, // $10/月，按天平均
       'default': { input: 10 / 30, output: 0 },
+    },
+    'ark-cn': {
+      'doubao-seed-2.0-pro': { input: 0.0001 / 1000, output: 0.0003 / 1000 }, // 价格降低 90%
+      'doubao-seed-2.0-code': { input: 0.00005 / 1000, output: 0.00015 / 1000 },
+      'default': { input: 0.0002 / 1000, output: 0.0006 / 1000 },
     },
     deepseek: {
       'deepseek-chat': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
@@ -73,30 +81,30 @@ export class CostCalculator {
       'default': { input: 0.01 / 1000000, output: 0.03 / 1000000 },
     },
   };
-  
+
   /**
    * 计算单条记录的成本
    */
   static calculateCost(data: UsageData): number {
     const provider = data.provider.toLowerCase();
     const model = data.model.toLowerCase();
-    
+
     // 获取定价信息
     const providerPricing = this.PRICING[provider];
     if (!providerPricing) {
       console.warn(`Unknown provider: ${provider}, using default pricing`);
       return data.cost || 0;
     }
-    
+
     const pricing = providerPricing[model] || providerPricing['default'];
-    
+
     // 计算成本
     const inputCost = (data.usage.inputTokens || 0) * pricing.input;
     const outputCost = (data.usage.outputTokens || 0) * pricing.output;
-    
+
     return inputCost + outputCost;
   }
-  
+
   /**
    * 批量计算成本并更新数据
    */
@@ -106,7 +114,7 @@ export class CostCalculator {
       cost: this.calculateCost(data),
     }));
   }
-  
+
   /**
    * 生成成本报告
    */
@@ -120,43 +128,43 @@ export class CostCalculator {
   } {
     const costByProvider: Record<string, { cost: number; count: number; percentage?: number }> = {};
     const costByModel: Record<string, { cost: number; percentage: number }> = {};
-    
+
     let totalCost = 0;
     let totalTokens = 0;
     let totalRequests = 0;
-    
+
     const periods = {
       start: new Date(),
       end: new Date(0),
     };
-    
+
     for (const data of dataList) {
       const cost = this.calculateCost(data);
       totalCost += cost;
-      
+
       // 按厂商统计
       if (!costByProvider[data.provider]) {
         costByProvider[data.provider] = { cost: 0, count: 0 };
       }
       costByProvider[data.provider].cost += cost;
       costByProvider[data.provider].count += 1;
-      
+
       // 按模型统计
       const modelKey = `${data.provider}:${data.model}`;
       if (!costByModel[modelKey]) {
         costByModel[modelKey] = { cost: 0, percentage: 0 };
       }
       costByModel[modelKey].cost += cost;
-      
+
       // 统计总量
       totalTokens += data.usage.totalTokens || 0;
       totalRequests += data.usage.requests || 1;
-      
+
       // 更新时间范围
       if (data.period.start < periods.start) periods.start = data.period.start;
       if (data.period.end > periods.end) periods.end = data.period.end;
     }
-    
+
     // 计算百分比
     const finalCostByProvider: Record<string, { cost: number; percentage: number; count: number }> = {};
     for (const provider in costByProvider) {
@@ -168,11 +176,11 @@ export class CostCalculator {
         count,
       };
     }
-    
+
     for (const model in costByModel) {
       costByModel[model].percentage = totalCost > 0 ? (costByModel[model].cost / totalCost) * 100 : 0;
     }
-    
+
     return {
       totalCost,
       costByProvider: finalCostByProvider,
@@ -182,21 +190,21 @@ export class CostCalculator {
       period: periods,
     };
   }
-  
+
   /**
    * 获取模型的定价信息
    */
   static getPricing(provider: string, model?: string): { input: number; output: number } | null {
     const providerPricing = this.PRICING[provider.toLowerCase()];
     if (!providerPricing) return null;
-    
+
     if (model) {
       return providerPricing[model.toLowerCase()] || providerPricing['default'];
     }
-    
+
     return providerPricing['default'];
   }
-  
+
   /**
    * 更新定价（用于动态调整）
    */
@@ -207,11 +215,11 @@ export class CostCalculator {
   ): void {
     const p = provider.toLowerCase();
     const m = model.toLowerCase();
-    
+
     if (!this.PRICING[p]) {
       this.PRICING[p] = {};
     }
-    
+
     this.PRICING[p][m] = pricing;
   }
 }
