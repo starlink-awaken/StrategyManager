@@ -21,6 +21,9 @@
       "DeepSeek API / SiliconFlow"
     ]
   },
+  "claude_code": {
+    "skills": false
+  },
   "lsp": {
     "scene_coverage": [
       "core development",
