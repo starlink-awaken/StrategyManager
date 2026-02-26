@@ -160,6 +160,14 @@ export function getCurrentStrategy(): StrategyMetadata | null {
  * 读取指定策略配置
  */
 export function readStrategy(strategyName: string): StrategyConfig | null {
+  if (strategyName.endsWith(".jsonc") && fileExists(strategyName)) {
+    try {
+      return readJSONC(strategyName);
+    } catch (err) {
+      error(`读取策略失败: ${strategyName}`);
+      return null;
+    }
+  }
   const strategyFile = path.join(STRATEGIES_DIR, `${strategyName}.jsonc`);
   const dynamicFile = path.join(DYNAMIC_STRATEGIES_DIR, `${strategyName}.jsonc`);
 

@@ -27,7 +27,14 @@
     "agents": false
   },
   "lsp": {
-    "scene_coverage": ["daily", "coding", "tools", "research", "creative", "writing"],
+    "scene_coverage": [
+      "daily",
+      "coding",
+      "tools",
+      "research",
+      "creative",
+      "writing"
+    ],
     "budget": {
       "monthlyLimitUSD": 100,
       "dailyAlertThreshold": 0.8,
@@ -38,25 +45,37 @@
         "priority": 1,
         "maxRequestsPerDay": 50000,
         "maxConcurrentRequests": 50,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/kimi-coding-pro"]
+        "fallbackModels": [
+          "minimax-cn-coding-plan/MiniMax-M2.5",
+          "kimi/kimi-coding-pro"
+        ]
       },
       "minimax-cn-coding-plan": {
         "priority": 1,
         "maxRequestsPerDay": 50000,
         "maxConcurrentRequests": 40,
-        "fallbackModels": ["kimi/kimi-coding-pro", "github-copilot/gpt-4o"]
+        "fallbackModels": [
+          "kimi/kimi-coding-pro",
+          "github-copilot/gpt-4o"
+        ]
       },
       "kimi": {
         "priority": 1,
         "maxRequestsPerDay": 50000,
         "maxConcurrentRequests": 40,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-2.0-Code"]
+        "fallbackModels": [
+          "minimax-cn-coding-plan/MiniMax-M2.5",
+          "ark-cn/Doubao-Seed-2.0-Code"
+        ]
       },
       "zhipuai-coding-plan": {
         "priority": 2,
         "maxRequestsPerDay": 20000,
         "maxConcurrentRequests": 20,
-        "fallbackModels": ["minimax-cn-coding-plan/MiniMax-M2.5", "ark-cn/Doubao-Seed-Code"]
+        "fallbackModels": [
+          "minimax-cn-coding-plan/MiniMax-M2.5",
+          "ark-cn/Doubao-Seed-Code"
+        ]
       },
       "github-copilot": {
         "priority": 2,
@@ -82,14 +101,24 @@
     },
     "constraints": {
       "maxToolsPerRequest": 12,
-      "allowedTools": ["web_search", "file_io", "code_generation", "shell_execution", "data_processing", "git_operations"]
+      "allowedTools": [
+        "web_search",
+        "file_io",
+        "code_generation",
+        "shell_execution",
+        "data_processing",
+        "git_operations"
+      ]
     }
   },
   "agents": {
     "sisyphus": {
       "model": "github-copilot/grok-code-fast-1",
-      "fallback": ["minimax-cn-coding-plan/MiniMax-M2.5", "kimi/kimi-coding-pro", "ark-cn/Doubao-Seed-Code"],
-
+      "fallback": [
+        "minimax-cn-coding-plan/MiniMax-M2.5",
+        "kimi/kimi-coding-pro",
+        "ark-cn/Doubao-Seed-Code"
+      ],
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -104,7 +133,9 @@
     },
     "oracle": {
       "model": "dashscope/qwen-max-latest",
-      "fallback": ["github-copilot/gpt-4o"],
+      "fallback": [
+        "github-copilot/gpt-4o"
+      ],
       "temperature": 0.5,
       "maxTokens": 5000
     },
@@ -115,16 +146,6 @@
     },
     "explore": {
       "model": "step/step-3.5-flash",
-      "temperature": 0.5,
-      "maxTokens": 4000
-    },
-      "model": "github-copilot/grok-code-fast-1",
-      "temperature": 0.5,
-      "maxTokens": 4000
-    },
-
-    "explore": {
-      "model": "step/step-2-16k",
       "temperature": 0.5,
       "maxTokens": 4000
     },
@@ -150,7 +171,9 @@
     },
     "multimodal-looker": {
       "model": "google/gemini-3.1-flash",
-      "fallback": ["github-copilot/gpt-4o"],
+      "fallback": [
+        "github-copilot/gpt-4o"
+      ],
       "temperature": 0.5,
       "maxTokens": 3000
     }
