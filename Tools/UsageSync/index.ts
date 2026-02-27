@@ -39,37 +39,51 @@ import {
   QuotaConfig,
 } from "./interfaces";
 import { QuotaMonitor } from "./QuotaMonitor";
-import type { StrategyConfig } from "../interfaces";
+import type { LspProviderQuotaConfig, StrategyConfig } from "../interfaces";
+import { normalizeProvider } from "../ProviderNormalization";
 
+export function normalizeProviderForUsageSync(provider: string): string {
+  return normalizeProvider(provider);
+}
 
 /**
  * 将策略的 lsp.provider_quotas 转换为 QuotaConfig[]
  * 策略结构: { "anthropic": { "maxRequestsPerDay": 50, ... }, ... }
  * 转换为: [{ provider, monthlyLimitTokens, fallbackPriority }]
  */
-export function adaptStrategyQuotas( strategyQuotas: Record<string, any> ): QuotaConfig[] {
-  const result: QuotaConfig[] = [];
+export function adaptStrategyQuotas(strategyQuotas: Record<string, LspProviderQuotaConfig>): QuotaConfig[] {
+  const normalized = new Map<string, QuotaConfig>();
   const TOKENS_PER_REQUEST = 3000; // 估算值
 
   for (const [provider, config] of Object.entries(strategyQuotas)) {
-    const quota = config as any;
-    const dailyRequests = quota.maxRequestsPerDay || 1000;
+    const normalizedProvider = normalizeProviderForUsageSync(provider);
+    const dailyRequests = Number(config.maxRequestsPerDay || 1000);
     const monthlyLimitTokens = dailyRequests * TOKENS_PER_REQUEST * 30;
 
     const fallbackPriority: string[] = [];
-    if (quota.fallbackModels && Array.isArray(quota.fallbackModels)) {
-      fallbackPriority.push(...quota.fallbackModels);
+    if (config.fallbackModels && Array.isArray(config.fallbackModels)) {
+      fallbackPriority.push(...config.fallbackModels);
     }
 
-    result.push({
-      provider,
-      monthlyLimitTokens,
-      thresholdPercent: 80,
-      fallbackPriority: fallbackPriority.length > 0 ? fallbackPriority : undefined,
-    });
+    const existing = normalized.get(normalizedProvider);
+    if (!existing) {
+      normalized.set(normalizedProvider, {
+        provider: normalizedProvider,
+        monthlyLimitTokens,
+        thresholdPercent: 80,
+        fallbackPriority: fallbackPriority.length > 0 ? fallbackPriority : undefined,
+      });
+      continue;
+    }
+
+    existing.monthlyLimitTokens += monthlyLimitTokens;
+    if (fallbackPriority.length > 0) {
+      const merged = new Set([...(existing.fallbackPriority || []), ...fallbackPriority]);
+      existing.fallbackPriority = Array.from(merged);
+    }
   }
 
-  return result;
+  return Array.from(normalized.values());
 }
 
 /**

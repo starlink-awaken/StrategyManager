@@ -1,7 +1,7 @@
 # StrategyManager 策略升级迁移指南 (2026)
 
 **文档版本**: 1.0.0  
-**最后更新**: 2026-02-08  
+**最后更新**: 2026-02-27  
 **适用版本**: StrategyManager 3.0.0+
 
 ---
@@ -56,6 +56,22 @@
 
 - **Strategy-2**: 从 ¥400-700 降至 ¥280-490（30% 节省）
 - **Strategy-6**: 新增智能体专用策略（¥800-1200）
+
+#### 4. 长上下文压缩基线（新增）
+
+- 对使用 `github-copilot/claude-sonnet-4.6` / `github-copilot/claude-opus-4.6` 的策略，统一建议显式配置：
+
+```json
+"compaction": {
+  "auto": true,
+  "prune": true,
+  "reserved": 2000
+}
+```
+
+- 迁移检查点：
+  - 若历史配置未设置 `compaction`，升级后请补齐。
+  - 若 `reserved > 5000`，建议降至 `1000-3000`，减少提前压缩。
 
 ---
 
@@ -695,7 +711,7 @@ bun test tests/performance/
 
 | 模型 | 直连 API | GitHub Copilot |
 |------|----------|----------------|
-| Claude Sonnet 4.5 | `anthropic/claude-sonnet-4-5` | `github-copilot/claude-sonnet-4.5` |
+| Claude Sonnet 4.5 | `anthropic/claude-sonnet-4-5` | `github-copilot/claude-sonnet-4.6` |
 | Claude Opus 4.5 | `anthropic/claude-opus-4-5` | 不支持 |
 | Claude Haiku 4 | `anthropic/claude-haiku-4` | 不支持 |
 

@@ -55,10 +55,6 @@
   - 编码/研究/金融: 0.2-0.25（精确）
   - 创意/写作/多媒体: 0.6-0.75（创新）
   - 日常/工具: 0.3（平衡）
-- **maxTokens**:
-  - 研究: 7000（深度）
-  - 编码/金融: 4500-5000（中等）
-  - 日常: 3000-3500（轻量）
 
 ### 4. 元数据更新
 
@@ -144,9 +140,9 @@ export function saveDynamicStrategyAs(
    - 验证替换后的策略仍通过验证
 
 3. **参数调优测试**
-   - coding 场景: temperature=0.2, maxTokens=5000
-   - creative 场景: temperature=0.75, maxTokens=5000
-   - daily 场景: temperature=0.3, maxTokens=3500
+   - coding 场景: temperature=0.2
+   - creative 场景: temperature=0.75
+   - daily 场景: temperature=0.3
 
 4. **清理测试**
    - 创建 10 天前的动态策略

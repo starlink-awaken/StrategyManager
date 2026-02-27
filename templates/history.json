@@ -1,5 +1,83 @@
 [
   {
+    "timestamp": "2026-02-27T16:31:07.192Z",
+    "strategyName": "balanced",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/balanced.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T16:31:07.182Z",
+    "strategyName": "cheap",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/cheap.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T16:30:05.908Z",
+    "strategyName": "cheap",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/cheap.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T16:30:05.896Z",
+    "strategyName": "smart",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/smart.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T16:28:46.036Z",
+    "strategyName": "smart",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/smart.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T16:28:46.026Z",
+    "strategyName": "fast",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T15:56:11.798Z",
+    "strategyName": "fast",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T15:56:11.789Z",
+    "strategyName": "smart",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/smart.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T15:07:38.470Z",
+    "strategyName": "smart",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/smart.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T15:07:38.463Z",
+    "strategyName": "balanced",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/balanced.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T13:13:02.886Z",
+    "strategyName": "cheap",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/cheap.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T13:13:02.877Z",
+    "strategyName": "fast",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",
+    "action": "switch"
+  },
+  {
+    "timestamp": "2026-02-27T12:50:22.150Z",
+    "strategyName": "fast",
+    "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",
+    "action": "switch"
+  },
+  {
     "timestamp": "2026-02-26T15:20:35.060Z",
     "strategyName": "fast",
     "strategyPath": "/Users/xiamingxing/.config/opencode/strategies/fast.jsonc",

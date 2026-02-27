@@ -44,7 +44,7 @@ const SCENARIO_TEMPLATE_MAP: Record<ScenarioType, string[]> = {
 
 const MODEL_FALLBACKS: Record<Priority, { models: string[] }> = {
   quality: { models: ["anthropic/claude-opus-4-6", "openai/gpt-5.1-codex-max"] },
-  cost: { models: ["github-copilot/raptor-mini", "google/gemini-3.1-flash"] },
+  cost: { models: ["github-copilot/gpt-5-mini", "google/gemini-3.1-flash"] },
   speed: { models: ["github-copilot/grok-code-fast-1", "google/gemini-3.1-flash"] },
   balanced: { models: ["openai/gpt-5.1-codex-max", "anthropic/claude-sonnet-4-6"] },
 };
@@ -81,13 +81,11 @@ function tuneAgentParameters(config: StrategyConfig, scenarioType: ScenarioType)
   if (!config.agents) return;
   const tuning = {
     temperature: { coding: 0.2, research: 0.2, creative: 0.75, writing: 0.6, multimedia: 0.7, social: 0.7, documentation: 0.25, daily: 0.3, tools: 0.25, education: 0.4, health: 0.35, finance: 0.2, entertainment: 0.6 } as Record<ScenarioType, number>,
-    maxTokens: { coding: 5000, research: 7000, creative: 5000, writing: 4500, multimedia: 4500, social: 4000, documentation: 3500, daily: 3500, tools: 3000, education: 4000, health: 4000, finance: 4500, entertainment: 3500 } as Record<ScenarioType, number>,
   };
 
   for (const agent of Object.values(config.agents)) {
     if (!agent) continue;
     if (typeof agent.temperature === "number") agent.temperature = tuning.temperature[scenarioType];
-    if (typeof agent.maxTokens === "number") agent.maxTokens = tuning.maxTokens[scenarioType];
   }
 }
 

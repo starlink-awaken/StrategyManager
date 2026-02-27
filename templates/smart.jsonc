@@ -1,24 +1,25 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-  "description": "旗舰智能策略：结合顶级订阅API与国产头部模型，专攻复杂项目与深度创意任务，不差钱",
+  "description": "旗舰智能型：复杂任务优先，顶级模型互备并最大化资源可用性",
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 2000
+  },
   "metadata": {
-    "version": "3.1.0",
-    "updated": "2026-02-25",
+    "version": "3.3.0",
+    "updated": "2026-02-27",
     "cost_level": "high",
-    "use_case": "关键项目、复杂架构设计、深度推理任务、文学创作与前沿探索",
-    "optimization": "全平台顶级模型互为兜底，集成 Qwen-Max、Gemini 3.1 Pro、DeepSeek R1、Doubao Seed Code",
-    "monthly_cost": "¥2000-3000 (主要消耗订阅额度与高优先级 API)",
+    "use_case": "架构设计、复杂重构、深度推理、多模型协作",
+    "optimization": "Anthropic/OpenAI/Google 高质量主线 + 国产Pro与DeepSeek做容量与推理托底",
+    "monthly_cost": "¥300-1800 (随强度波动)",
     "resources_used": [
-      "GitHub Copilot Pro+",
       "Anthropic Pro",
-      "OpenAI Plus",
-      "Google Pro (Gemini 3.1)",
-      "DashScope (Qwen Max)",
-      "方舟 CodingPlan Pro (Doubao Seed Code)",
-      "MiniMax Coding Plan Pro",
-      "Kimi Coding Plan Pro",
-      "ZhiPu CodingPlan Pro (GLM-5)",
-      "DeepSeek API / SiliconFlow"
+      "ChatGPT Plus/Pro",
+      "Google Pro 双账号",
+      "GitHub Copilot Pro+",
+      "DeepSeek 余额",
+      "Kimi/MiniMax/ZhiPu/Bailian/Volcengine Pro"
     ]
   },
   "claude_code": {
@@ -36,99 +37,106 @@
       "code review",
       "research",
       "creative",
-      "writing",
-      "multimedia",
-      "collaboration",
-      "education",
-      "documentation",
+      "multimodal",
       "agent-heavy"
     ],
     "budget": {
-      "monthlyLimitUSD": 3000,
-      "dailyAlertThreshold": 0.8,
+      "monthlyLimitUSD": 2500,
+      "dailyAlertThreshold": 0.93,
       "emergencySwitchTo": "balanced"
     },
     "provider_quotas": {
       "anthropic": {
         "priority": 1,
-        "maxRequestsPerDay": 10000,
-        "maxConcurrentRequests": 10,
+        "maxRequestsPerDay": 520,
+        "maxConcurrentRequests": 16,
         "fallbackModels": [
-          "openai/gpt-5.2",
-          "google/gemini-3.1-pro-preview"
+          "anthropic/claude-opus-4-6",
+          "anthropic/claude-sonnet-4-6"
         ]
       },
       "openai": {
         "priority": 1,
-        "maxRequestsPerDay": 10000,
-        "maxConcurrentRequests": 10,
+        "maxRequestsPerDay": 520,
+        "maxConcurrentRequests": 16,
         "fallbackModels": [
-          "anthropic/claude-opus-4-6",
-          "deepseek/deepseek-v3-2"
+          "openai/gpt-5.3-codex",
+          "openai/gpt-5.2-codex"
         ]
       },
       "google": {
         "priority": 1,
-        "maxRequestsPerDay": 15000,
-        "maxCostPerRequest": 0.03,
-        "maxConcurrentRequests": 20,
+        "maxRequestsPerDay": 760,
+        "maxConcurrentRequests": 24,
         "fallbackModels": [
-          "openai/gpt-5.2",
-          "dashscope/qwen-max-latest"
+          "google/antigravity-gemini-3.1-pro",
+          "google/antigravity-claude-sonnet-4-6-thinking"
         ]
       },
       "github-copilot": {
-        "priority": 1,
-        "maxRequestsPerDay": 100000,
-        "maxConcurrentRequests": 50
-      },
-      "dashscope": {
         "priority": 2,
-        "maxRequestsPerDay": 20000,
-        "maxConcurrentRequests": 20,
+        "maxRequestsPerDay": 520,
+        "maxConcurrentRequests": 18,
         "fallbackModels": [
-          "ark-cn/Kimi-K2-thinking"
+          "github-copilot/gpt-4o",
+          "github-copilot/gpt-4.1",
+          "github-copilot/gpt-5-mini"
         ]
       },
-      "ark-cn": {
+      "deepseek": {
         "priority": 2,
-        "maxRequestsPerDay": 20000,
-        "maxConcurrentRequests": 20
+        "maxRequestsPerDay": 560,
+        "maxConcurrentRequests": 20,
+        "fallbackModels": [
+          "deepseek/deepseek-reasoner",
+          "deepseek/deepseek-chat"
+        ]
       },
-      "minimax-cn-coding-plan": {
+      "bailian-coding-plan": {
         "priority": 2,
-        "maxRequestsPerDay": 50000,
-        "maxConcurrentRequests": 30
-      },
-      "kimi": {
-        "priority": 2,
-        "maxRequestsPerDay": 50000,
-        "maxConcurrentRequests": 30
+        "maxRequestsPerDay": 460,
+        "maxConcurrentRequests": 16,
+        "fallbackModels": [
+          "bailian-coding-plan/qwen3-max-2026-01-23",
+          "bailian-coding-plan/qwen3.5-plus"
+        ]
       },
       "zhipuai-coding-plan": {
         "priority": 2,
-        "maxRequestsPerDay": 20000,
-        "maxConcurrentRequests": 20,
+        "maxRequestsPerDay": 500,
+        "maxConcurrentRequests": 16,
         "fallbackModels": [
-          "minimax-cn-coding-plan/MiniMax-M2.5"
+          "zhipuai-coding-plan/glm-5",
+          "zhipuai-coding-plan/glm-4.7"
         ]
       },
-      "siliconflow": {
-        "priority": 3,
-        "maxRequestsPerDay": 10000,
-        "maxConcurrentRequests": 20
-      },
-      "deepseek": {
-        "priority": 3,
-        "maxRequestsPerDay": 20000,
-        "maxConcurrentRequests": 20,
+      "minimax-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 480,
+        "maxConcurrentRequests": 18,
         "fallbackModels": [
-          "dashscope/qwen-max-latest"
+          "minimax-coding-plan/MiniMax-M2.5"
+        ]
+      },
+      "kimi-coding-plan": {
+        "priority": 2,
+        "maxRequestsPerDay": 480,
+        "maxConcurrentRequests": 18,
+        "fallbackModels": [
+          "kimi-coding-plan/kimi-for-coding"
+        ]
+      },
+      "volcegine-coding-plan": {
+        "priority": 3,
+        "maxRequestsPerDay": 400,
+        "maxConcurrentRequests": 14,
+        "fallbackModels": [
+          "volcegine-coding-plan/doubao-seed-2-0-code-preview-latest"
         ]
       }
     },
     "constraints": {
-      "maxToolsPerRequest": 15,
+      "maxToolsPerRequest": 20,
       "allowedTools": [
         "web_search",
         "file_io",
@@ -141,173 +149,143 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "github-copilot/claude-opus-4.6",
+      "model": "anthropic/claude-opus-4-6",
       "fallback": [
-        "anthropic/claude-opus-4-6",
-        "dashscope/qwen-max-latest",
-      "ark-cn/Doubao-Seed-2.0-Code",
-      "siliconflow/deepseek-ai/DeepSeek-V3"
-        "siliconflow/deepseek-ai/DeepSeek-V3"
+        "openai/gpt-5.3-codex",
+        "github-copilot/claude-opus-4.6",
+        "google/antigravity-claude-sonnet-4-6-thinking"
       ],
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 200000
-      },
-      "temperature": 0.6,
-      "maxTokens": 8000
+        "budgetTokens": 120000
+      }
     },
-    "prometheus": {
-      "model": "openai/gpt-5.1-codex-max",
-      "fallback": [
-        "github-copilot/claude-3.5-sonnet",
-        "google/gemini-3.1-pro-preview"
-      ],
-      "thinking": {
-        "type": "enabled",
-        "budgetTokens": 150000
-      },
-      "temperature": 0.55,
-      "maxTokens": 6000
-    },
-    "oracle": {
-      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
-      "fallback": [
-        "anthropic/claude-opus-4-6",
-        "dashscope/qwen-max-latest"
-      ],
-      "temperature": 0.6,
-      "maxTokens": 8000
-    },
-    "hephaestus": {
-      "model": "openai/gpt-5.1-codex-max",
-      "fallback": [
-        "github-copilot/claude-3.5-sonnet"
-      ],
-      "temperature": 0.55,
-      "maxTokens": 8000
-    },
-    "multimodal-looker": {
-      "model": "google/gemini-3.1-pro-preview",
-      "fallback": [
-        "github-copilot/gpt-4o"
-      ],
-      "temperature": 0.5,
-      "maxTokens": 6000
-    },
-    "metis": {
+    "sisyphus-junior": {
       "model": "anthropic/claude-sonnet-4-6",
       "fallback": [
-        "github-copilot/claude-3.5-sonnet",
-        "dashscope/qwen-max-latest"
+        "openai/gpt-5.2-codex",
+        "google/antigravity-gemini-3.1-pro",
+        "github-copilot/claude-sonnet-4.6"
       ],
       "thinking": {
         "type": "enabled",
-        "budgetTokens": 80000
+        "budgetTokens": 40000
       },
-      "temperature": 0.55,
-      "maxTokens": 4000
+      "temperature": 0.35
     },
-    "momus": {
-      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+    "prometheus": {
+      "model": "openai/gpt-5.3-codex",
       "fallback": [
         "anthropic/claude-sonnet-4-6",
-        "google/gemini-3.1-pro-preview"
+        "github-copilot/gpt-5.3-codex"
       ],
-      "temperature": 0.6,
-      "maxTokens": 8000
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 96000
+      }
+    },
+    "oracle": {
+      "model": "google/antigravity-claude-sonnet-4-6-thinking",
+      "fallback": [
+        "anthropic/claude-sonnet-4-6",
+        "google/antigravity-gemini-3.1-pro",
+        "openai/gpt-5.2-codex"
+      ]
+    },
+    "hephaestus": {
+      "model": "openai/gpt-5.3-codex",
+      "fallback": [
+        "github-copilot/gpt-5.2-codex",
+        "anthropic/claude-sonnet-4-6"
+      ]
+    },
+    "multimodal-looker": {
+      "model": "google/antigravity-gemini-3.1-pro",
+      "fallback": [
+        "google/antigravity-gemini-3-flash",
+        "github-copilot/gpt-4o"
+      ]
+    },
+    "metis": {
+      "model": "deepseek/deepseek-reasoner",
+      "fallback": [
+        "anthropic/claude-sonnet-4-6",
+        "zhipuai-coding-plan/glm-5",
+        "openai/gpt-5.2-codex"
+      ]
+    },
+    "momus": {
+      "model": "bailian-coding-plan/qwen3-max-2026-01-23",
+      "fallback": [
+        "zhipuai-coding-plan/glm-5",
+        "volcegine-coding-plan/doubao-seed-2-0-code-preview-latest"
+      ]
     },
     "librarian": {
-      "model": "kimi/kimi-coding-pro",
+      "model": "kimi-coding-plan/kimi-for-coding",
       "fallback": [
         "anthropic/claude-sonnet-4-6"
-      ],
-      "temperature": 0.4,
-      "maxTokens": 6000
+      ]
     },
     "explore": {
-      "model": "step/step-2-16k",
+      "model": "google/antigravity-gemini-3.1-pro",
+      "fallback": [
+        "deepseek/deepseek-chat"
+      ]
+    },
+    "atlas": {
+      "model": "minimax-coding-plan/MiniMax-M2.5",
       "fallback": [
         "zhipuai-coding-plan/glm-5"
-      ],
-      "temperature": 0.3,
-      "maxTokens": 4000
-    },
-    "fast-writer": {
-      "model": "google/gemini-3.1-pro-preview",
-      "fallback": [
-        "anthropic/claude-sonnet-4-6"
-      ],
-      "temperature": 0.6,
-      "maxTokens": 8000
+      ]
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "temperature": 0.5,
-      "maxTokens": 5000
+      "model": "google/antigravity-gemini-3.1-pro"
     },
     "ultrabrain": {
-      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "model": "anthropic/claude-opus-4-6",
       "fallback": [
-        "anthropic/claude-opus-4-6"
-      ],
-      "temperature": 0.6,
-      "maxTokens": 8000
+        "openai/gpt-5.3-codex"
+      ]
     },
     "deep": {
-      "model": "siliconflow/deepseek-ai/DeepSeek-R1",
+      "model": "deepseek/deepseek-reasoner",
       "fallback": [
-        "dashscope/qwen-max-latest"
-      ],
-      "temperature": 0.6,
-      "maxTokens": 8000
+        "anthropic/claude-sonnet-4-6",
+        "openai/gpt-5.3-codex"
+      ]
     },
     "artistry": {
-      "model": "google/gemini-3.1-pro-preview",
+      "model": "google/antigravity-gemini-3.1-pro",
       "fallback": [
-        "kimi/kimi-coding-pro"
+        "google/antigravity-gemini-3-flash"
       ],
-      "temperature": 0.8,
-      "maxTokens": 8000
+      "temperature": 0.8
     },
     "quick": {
-      "model": "step/step-2-16k",
-      "temperature": 0.3,
-      "maxTokens": 3000
+      "model": "github-copilot/gpt-5-mini",
+      "fallback": [
+        "github-copilot/gpt-4.1"
+      ]
     },
     "unspecified-low": {
-      "model": "minimax-cn-coding-plan/MiniMax-M2.5",
-      "temperature": 0.4,
-      "maxTokens": 4000
+      "model": "github-copilot/gpt-4.1"
     },
     "unspecified-high": {
-      "model": "dashscope/qwen-max-latest",
-      "temperature": 0.5,
-      "maxTokens": 6000
+      "model": "anthropic/claude-sonnet-4-6",
+      "fallback": [
+        "openai/gpt-5.3-codex"
+      ]
     },
     "writing": {
-      "model": "google/gemini-3.1-pro-preview",
+      "model": "google/antigravity-gemini-3.1-pro",
       "fallback": [
-        "kimi/kimi-coding-pro",
-        "ark-cn/Kimi-K2-thinking"
+        "anthropic/claude-sonnet-4-6",
+        "kimi-coding-plan/kimi-for-coding"
       ],
-      "temperature": 0.7,
-      "maxTokens": 8000
-    }
-  },
-  "background_task": {
-    "defaultConcurrency": 25,
-    "staleTimeoutMs": 300000,
-    "providerConcurrency": {
-      "github-copilot": 25,
-      "openai": 15,
-      "anthropic": 15,
-      "google": 20,
-      "dashscope": 20,
-      "ark-cn": 20,
-      "minimax-cn-coding-plan": 20,
-      "kimi": 20
+      "temperature": 0.7
     }
   }
 }

@@ -5,14 +5,17 @@
  * 提供多层次验证（错误/警告/信息）和自动修复建议
  */
 
-import { colorize, success, error, warning, info } from "./FormatUtils";
-import { defaultHealthManager } from "./HealthManager";
-import type { 
-  StrategyConfig, 
-  AgentConfig, 
+import type {
+  StrategyConfig,
+  AgentConfig,
   CategoryConfig,
-  ValidationSeverity 
+  ValidationSeverity,
+  LspProviderQuotaConfig,
 } from "./interfaces";
+import {
+  normalizeProvider,
+  MONITORED_USAGE_PROVIDERS,
+} from "./ProviderNormalization";
 
 // ==================== 类型定义 ====================
 
@@ -32,6 +35,93 @@ export interface ValidationResult {
   warnings: ValidationError[];
   info: ValidationError[];
   suggestions: string[];
+}
+
+const KNOWN_MODELS = new Set([
+  // Anthropic / OpenAI / Google
+  "anthropic/claude-opus-4-6",
+  "anthropic/claude-sonnet-4-6",
+  "anthropic/claude-haiku-4-5",
+  "openai/gpt-5.3-codex",
+  "openai/gpt-5.2-codex",
+  "openai/gpt-5-mini",
+  "openai/gpt-4.1",
+  "openai/gpt-4o",
+  "google/antigravity-gemini-3.1-pro",
+  "google/antigravity-gemini-3-flash",
+  "google/antigravity-claude-sonnet-4-6",
+  "google/antigravity-claude-sonnet-4-6-thinking",
+  "google/gemini-3.1-pro-preview",
+  "google/gemini-3-pro",
+  "google/gemini-3-pro-preview",
+  "google/gemini-3-flash-preview",
+  "google/gemini-flash-latest",
+  // GitHub Copilot
+  "github-copilot/claude-opus-4.6",
+  "github-copilot/claude-sonnet-4.6",
+  "github-copilot/claude-haiku-4.5",
+  "github-copilot/grok-code-fast-1",
+  "github-copilot/gpt-5.3-codex",
+  "github-copilot/gpt-5.2-codex",
+  "github-copilot/gpt-5-mini",
+  "github-copilot/gpt-4.1",
+  "github-copilot/gpt-4o",
+  // 国内/聚合 Provider
+  "deepseek/deepseek-chat",
+  "deepseek/deepseek-reasoner",
+  "zhipuai-coding-plan/glm-4.5-air",
+  "zhipuai-coding-plan/glm-4.7",
+  "zhipuai-coding-plan/glm-4.7-flash",
+  "zhipuai-coding-plan/glm-5",
+  "minimax-coding-plan/MiniMax-M2.5",
+  "minimax-cn-coding-plan/MiniMax-M2.5",
+  "kimi-coding-plan/kimi-for-coding",
+  "bailian-coding-plan/qwen3.5-plus",
+  "bailian-coding-plan/qwen3-coder-plus",
+  "bailian-coding-plan/qwen3-coder-next",
+  "bailian-coding-plan/qwen3-max-2026-01-23",
+  "bailian-coding-plan/glm-4.7",
+  "bailian-coding-plan/glm-5",
+  "bailian-coding-plan/kimi-k2.5",
+  "volcegine-coding-plan/doubao-seed-2-0-code-preview-latest",
+  "meituan/LongCat-Flash-Chat",
+  // 兼容历史模板
+  "siliconflow/deepseek-ai/DeepSeek-R1",
+  "siliconflow/deepseek-ai/DeepSeek-V3",
+  "dashscope/qwen-3.5-plus",
+  "dashscope/qwen3.5-plus",
+  "step/step-3.5-flash",
+  "step/step-2-16k",
+]);
+
+function getModelProvider(model: string): string | null {
+  const slashIndex = model.indexOf("/");
+  if (slashIndex <= 0) {
+    return null;
+  }
+  return model.slice(0, slashIndex);
+}
+
+function collectModelEntries(config: StrategyConfig): Array<{ field: string; model: string }> {
+  const entries: Array<{ field: string; model: string }> = [];
+
+  if (config.agents) {
+    for (const [agentName, agentConfig] of Object.entries(config.agents) as [string, AgentConfig][]) {
+      if (agentConfig.model) {
+        entries.push({ field: `agents.${agentName}.model`, model: agentConfig.model });
+      }
+    }
+  }
+
+  if (config.categories) {
+    for (const [categoryName, categoryConfig] of Object.entries(config.categories) as [string, CategoryConfig][]) {
+      if (categoryConfig.model) {
+        entries.push({ field: `categories.${categoryName}.model`, model: categoryConfig.model });
+      }
+    }
+  }
+
+  return entries;
 }
 
 // ==================== 验证器类 ====================
@@ -63,6 +153,12 @@ export class StrategyValidator {
 
     // 5. GitHub Copilot 利用率检查
     this.validateGitHubCopilotUsage(config, result);
+
+    // 6. Provider 配额配置与耦合检查
+    this.validateProviderQuotas(config, result, strategyName);
+
+    // 7. 上下文压缩配置检查（重点关注 Copilot Claude 200K 窗口）
+    this.validateCompaction(config, result);
 
     // 根据错误数量判断是否有效
     result.valid = result.errors.length === 0;
@@ -147,306 +243,45 @@ export class StrategyValidator {
     config: StrategyConfig,
     result: ValidationResult,
   ): void {
-    const knownModels = [
-      // Anthropic
-      "anthropic/claude-opus-4-6",
-      "anthropic/claude-sonnet-4-6",
-      "anthropic/claude-haiku-4-6",
-      "anthropic/claude-3-5-sonnet",
-      "anthropic/claude-3-5-haiku",
-      "anthropic/claude-3-opus",
-      // OpenAI
-      "openai/gpt-5.3",
-      "openai/gpt-5.3-codex",
-      "openai/gpt-5.2-codex",
-      "openai/gpt-5-mini",
-      "openai/gpt-5.1-codex-max",
-      "openai/gpt-4.1",
-      "openai/gpt-4o",
-      "openai/gpt-4o-mini",
-      "openai/o1-preview",
-      "openai/o1-mini",
-      // Google
-      "google/gemini-3.1-pro-preview",
-      "google/gemini-3.1-flash",
-      "google/gemini-3-pro",
-      "google/gemini-3-flash",
-      "google/antigravity-gemini-3-pro",
-      // GitHub Copilot
-      "github-copilot/claude-opus-4.6",
-      "github-copilot/claude-sonnet-4.6",
-      "github-copilot/claude-haiku-4-6",
-      "github-copilot/claude-3-5-sonnet",
-      "github-copilot/grok-code-fast-1",
-      "github-copilot/raptor-mini",
-      "github-copilot/gpt-5.3-codex",
-      "github-copilot/gpt-5-mini",
-      "github-copilot/gpt-5.2-codex",
-      "github-copilot/gpt-4.1",
-      "github-copilot/gpt-4o",
-      // ZhiPu
-      "zhipuai-coding-plan/glm-5",
-      "zhipuai-coding-plan/glm-4.7",
-      // DeepSeek
-      "deepseek/deepseek-v3",
-      "deepseek/deepseek-v3-2",
-      "deepseek/deepseek-r1",
-      // Domestic Models
-      "ark-cn/Doubao-Seed-2.0-Pro",
-      "ark-cn/Doubao-Seed-2.0-Lite",
-      "ark-cn/Doubao-Seed-2.0-Mini",
-      "ark-cn/Doubao-Seed-2.0-Code",
-      "ark-cn/Doubao-pro-32k",
-      "dashscope/qwen-max",
-      "dashscope/qwen-3.5-plus",
-      "dashscope/qwen-3-72b",
-      "dashscope/qwen-plus",
-      "dashscope/qwen-turbo",
-      "dashscope/qwen3.5-plus",
-      "dashscope/qwen3-235b-a22b",
-      "dashscope/qwen3-30b-a3b",
-      "dashscope/qwen3-8b",
-      "dashscope/qwen-2.5-72b",
-      "kimi/moonshot-v1-8k",
-      "step/step-1-8k",
-      "step/step-1-32k",
-      "step/step-1-128k",
-      "step/step-1-256k",
-      "step/step-2-16k",
-      "step/step-3.5-flash",
-      "step/step-3-vl",
-      "minimax/MiniMax-M2.5",
-      "siliconflow/deepseek-ai/DeepSeek-V3",
-      "siliconflow/deepseek-ai/DeepSeek-R1",
-      "openrouter/qwen/qwen3-next-80b-a3b-instruct:free",
-      "openrouter/qwen/qwen3-coder:free",
-      "openrouter/stepfun/step-3.5-flash:free",
-      "openai/o1-mini",
-      // Google
-      "google/gemini-3.1-pro-preview",
-      "google/gemini-3.1-flash",
-      "google/gemini-3-pro",
-      "google/gemini-3-flash",
-      "google/antigravity-gemini-3-pro",
-      // GitHub Copilot
-      "github-copilot/claude-opus-4.6",
-      "github-copilot/claude-sonnet-4.6",
-      "github-copilot/claude-haiku-4-6",
-      "github-copilot/claude-3-5-sonnet",
-      "github-copilot/grok-code-fast-1",
-      "github-copilot/raptor-mini",
-      "github-copilot/gpt-5.3-codex",
-      "github-copilot/gpt-5-mini",
-      "github-copilot/gpt-5.2-codex",
-      "github-copilot/gpt-4.1",
-      "github-copilot/gpt-4o",
-      // ZhiPu
-      "zhipuai-coding-plan/glm-5",
-      "zhipuai-coding-plan/glm-4.7",
-      // DeepSeek
-      "deepseek/deepseek-v3",
-      "deepseek/deepseek-v3-2",
-      "deepseek/deepseek-r1",
-      // Domestic Models
-      "ark-cn/Doubao-Seed-2.0-Pro",
-      "ark-cn/Doubao-Seed-2.0-Lite",
-      "ark-cn/Doubao-Seed-2.0-Mini",
-      "ark-cn/Doubao-Seed-2.0-Code",
-      "ark-cn/Doubao-pro-32k",
-      "dashscope/qwen-max",
-      "dashscope/qwen-3.5-plus",
-      "dashscope/qwen-3-72b",
-      "dashscope/qwen-plus",
-      "dashscope/qwen-turbo",
-      "dashscope/qwen3.5-plus",
-      "dashscope/qwen3-235b-a22b",
-      "dashscope/qwen3-30b-a3b",
-      "dashscope/qwen3-8b",
-      "dashscope/qwen-2.5-72b",
-      "kimi/moonshot-v1-8k",
-      "step/step-1-8k",
-      "step/step-1-32k",
-      "step/step-1-128k",
-      "step/step-1-256k",
-      "step/step-2-16k",
-      "step/step-3.5-flash",
-      "step/step-3-vl",
-      "minimax/MiniMax-M2.5",
-      "siliconflow/deepseek-ai/DeepSeek-V3",
-      "siliconflow/deepseek-ai/DeepSeek-R1",
-      "openrouter/qwen/qwen3-next-80b-a3b-instruct:free",
-      "openrouter/qwen/qwen3-coder:free",
-      "openrouter/stepfun/step-3.5-flash:free",
-      "anthropic/claude-3-5-haiku",
-      "anthropic/claude-3-opus",
-      "openai/gpt-5.3",
-      "openai/gpt-5.3-codex",
-      "openai/gpt-5.2-codex",
-      "openai/gpt-5-mini",
-      "openai/gpt-5.1-codex-max",
-      "openai/gpt-4.1",
-      "openai/gpt-4o",
-      "openai/gpt-4o-mini",
-      "openai/o1-preview",
-      "openai/o1-mini",
-      // Google
-      "google/gemini-3.1-pro-preview",
-      "google/gemini-3.1-flash",
-      "google/gemini-3-pro",
-      "google/gemini-3-flash",
-      "google/antigravity-gemini-3-pro",
-      // GitHub Copilot
-      "github-copilot/claude-opus-4.6",
-      "github-copilot/claude-sonnet-4.6",
-      "github-copilot/claude-haiku-4-6",
-      "github-copilot/claude-3-5-sonnet",
-      "github-copilot/grok-code-fast-1",
-      "github-copilot/raptor-mini",
-      "github-copilot/gpt-5.3-codex",
-      "github-copilot/gpt-5-mini",
-      "github-copilot/gpt-5.2-codex",
-      "github-copilot/gpt-4.1",
-      "github-copilot/gpt-4o",
-      // ZhiPu
-      "zhipuai-coding-plan/glm-5",
-      "zhipuai-coding-plan/glm-4.7",
-      // DeepSeek
-      "deepseek/deepseek-v3",
-      "deepseek/deepseek-v3-2",
-      "deepseek/deepseek-r1",
-      // Domestic Models
-      "ark-cn/Doubao-Seed-2.0-Pro",
-      "ark-cn/Doubao-Seed-2.0-Lite",
-      "ark-cn/Doubao-Seed-2.0-Mini",
-      "ark-cn/Doubao-Seed-2.0-Code",
-      "ark-cn/Doubao-pro-32k",
-      "dashscope/qwen-max",
-      "dashscope/qwen-3.5-plus",
-      "dashscope/qwen-3-72b",
-      "dashscope/qwen-plus",
-      "dashscope/qwen-turbo",
-      "dashscope/qwen3.5-plus",
-      "dashscope/qwen3-235b-a22b",
-      "dashscope/qwen3-30b-a3b",
-      "dashscope/qwen3-8b",
-      "dashscope/qwen-2.5-72b",
-      "kimi/moonshot-v1-8k",
-      "step/step-1-8k",
-      "step/step-1-32k",
-      "step/step-1-128k",
-      "step/step-1-256k",
-      "step/step-2-16k",
-      "step/step-3.5-flash",
-      "step/step-3-vl",
-      "minimax/MiniMax-M2.5",
-      "siliconflow/deepseek-ai/DeepSeek-V3",
-      "siliconflow/deepseek-ai/DeepSeek-R1",
-      "openrouter/qwen/qwen3-next-80b-a3b-instruct:free",
-      "openrouter/qwen/qwen3-coder:free",
-      "openrouter/stepfun/step-3.5-flash:free",
-    ];
-      "openai/gpt-5.1-codex-max",
-      "openai/gpt-5-mini",
-      "openai/gpt-4.1",
-      "openai/gpt-4o",
-      "openai/gpt-4o-mini",
-      "openai/o1-preview",
-      "openai/o1-mini",
-      // Google
-      "google/gemini-3.1-pro-preview",
-      "google/gemini-3.1-flash",
-      "google/gemini-3-pro",
-      "google/gemini-3-flash",
-      "google/antigravity-gemini-3-pro",
-      // GitHub Copilot
-      "github-copilot/claude-opus-4.6",
-      "github-copilot/claude-sonnet-4.6",
-      "github-copilot/claude-haiku-4-6",
-      "github-copilot/claude-3-5-sonnet",
-      "github-copilot/grok-code-fast-1",
-      "github-copilot/raptor-mini",
-      "github-copilot/gpt-5.3-codex",
-      "github-copilot/gpt-5-mini",
-      "github-copilot/claude-sonnet-4.6",
-      "github-copilot/claude-3-5-sonnet",
-      "github-copilot/grok-code-fast-1",
-      "github-copilot/raptor-mini",
-      "github-copilot/gpt-5.2-codex",
-      "github-copilot/gpt-5-mini",
-      "github-copilot/gpt-4.1",
-      "github-copilot/gpt-4o",
-      // ZhiPu
-      "zhipuai-coding-plan/glm-5",
-      "zhipuai-coding-plan/glm-4.7",
-      // DeepSeek
-      "deepseek/deepseek-v3",
-      "deepseek/deepseek-v3-2",
-      "deepseek/deepseek-r1",
-      // Domestic Models
-      "ark-cn/Doubao-Seed-2.0-Pro",
-      "ark-cn/Doubao-Seed-2.0-Lite",
-      "ark-cn/Doubao-Seed-2.0-Mini",
-      "ark-cn/Doubao-Seed-2.0-Code",
-      "ark-cn/Doubao-pro-32k",
-      "ark-cn/Doubao-pro-32k",
-      "dashscope/qwen-max",
-      "dashscope/qwen-turbo",
-  "dashscope/qwen-max",
-  "dashscope/qwen-3.5-plus",
-  "dashscope/qwen-3-72b",
-  "step/step-1-8k",
-  "step/step-2-16k",
-  "step/step-3.5-flash",
-      "dashscope/qwen3.5-plus",
-      "dashscope/qwen3-235b-a22b",
-      "dashscope/qwen3-30b-a3b",
-      "dashscope/qwen3-8b",
-      "dashscope/qwen-2.5-72b",
-      "kimi/moonshot-v1-8k",
-      "step/step-1-8k",
-      "step/step-1-32k",
-      "step/step-1-128k",
-      "step/step-1-256k",
-      "step/step-2-16k",
-      "step/step-3.5-flash",
-      "step/step-3-vl",
-      "minimax/MiniMax-M2.5",
-      // SiliconFlow
-      "siliconflow/deepseek-ai/DeepSeek-V3",
-      "siliconflow/deepseek-ai/DeepSeek-R1",
-      // OpenRouter
-      "openrouter/qwen/qwen3-next-80b-a3b-instruct:free",
-      "openrouter/qwen/qwen3-coder:free",
-      "openrouter/stepfun/step-3.5-flash:free",
-    ];
-
-    const checkModel = (model: string, field: string) => {
-      if (!knownModels.includes(model)) {
-        result.warnings.push({
+    for (const { field, model } of collectModelEntries(config)) {
+      const provider = getModelProvider(model);
+      if (!provider) {
+        result.errors.push({
           field,
-          message: `模型 ${model} 可能不可用或已过时`,
-          severity: "warning",
+          message: `模型 ${model} 缺少 provider 前缀（应为 provider/model）`,
+          severity: "error",
           fix: {
-            description: "检查模型名称是否正确，或更新为最新可用模型",
+            description: "将模型改为带 provider 前缀格式，例如 github-copilot/gpt-5-mini",
           },
         });
+        continue;
       }
-    };
 
-    if (config.agents) {
-      for (const [agentName, agentConfig] of Object.entries(config.agents) as [string, AgentConfig][]) {
-        if (agentConfig.model) {
-          checkModel(agentConfig.model, `agents.${agentName}.model`);
-        }
+      if (KNOWN_MODELS.has(model)) {
+        continue;
       }
-    }
 
-    if (config.categories) {
-      for (const [categoryName, categoryConfig] of Object.entries(config.categories) as [string, CategoryConfig][]) {
-        if (categoryConfig.model) {
-          checkModel(categoryConfig.model, `categories.${categoryName}.model`);
-        }
+      const normalizedProvider = normalizeProvider(provider);
+      if (!MONITORED_USAGE_PROVIDERS.has(normalizedProvider) && !provider.includes("-")) {
+        result.warnings.push({
+          field,
+          message: `模型 ${model} 可能不可用或已过时（provider ${provider} 可能无效）`,
+          severity: "warning",
+          fix: {
+            description: "检查 provider 是否拼写正确，或先运行 opencode models --refresh 再更新模型",
+          },
+        });
+        continue;
       }
+
+      result.warnings.push({
+        field,
+        message: `模型 ${model} 可能不可用或已过时`,
+        severity: "warning",
+        fix: {
+          description: "检查模型名称是否正确，或更新为当前可用模型",
+        },
+      });
     }
   }
 
@@ -475,23 +310,8 @@ export class StrategyValidator {
       }
     };
 
-    if (config.agents) {
-      for (const [agentName, agentConfig] of Object.entries(config.agents) as [string, AgentConfig][]) {
-        if (agentConfig.model) {
-          checkExpensive(agentConfig.model, `agents.${agentName}.model`);
-        }
-      }
-    }
-
-    if (config.categories) {
-      for (const [categoryName, categoryConfig] of Object.entries(config.categories) as [string, CategoryConfig][]) {
-        if (categoryConfig.model) {
-          checkExpensive(
-            categoryConfig.model,
-            `categories.${categoryName}.model`,
-          );
-        }
-      }
+    for (const { field, model } of collectModelEntries(config)) {
+      checkExpensive(model, field);
     }
 
     if (expensiveModelCount > 3) {
@@ -564,26 +384,14 @@ export class StrategyValidator {
       totalModels++;
       if (model.startsWith("github-copilot/")) {
         copilotModels++;
-        if (model.includes("gpt-5-mini") || model.includes("gpt-4.1")) {
+        if (model.includes("gpt-5-mini") || model.includes("gpt-4.1") || model.includes("gpt-4o")) {
           freeModels++;
         }
       }
     };
 
-    if (config.agents) {
-      for (const agentConfig of Object.values(config.agents) as AgentConfig[]) {
-        if (agentConfig.model) {
-          checkCopilot(agentConfig.model);
-        }
-      }
-    }
-
-    if (config.categories) {
-      for (const categoryConfig of Object.values(config.categories) as CategoryConfig[]) {
-        if (categoryConfig.model) {
-          checkCopilot(categoryConfig.model);
-        }
-      }
+    for (const { model } of collectModelEntries(config)) {
+      checkCopilot(model);
     }
 
     const utilizationRate = totalModels > 0 ? copilotModels / totalModels : 0;
@@ -603,11 +411,220 @@ export class StrategyValidator {
     if (freeModels === 0 && copilotModels > 0) {
       result.info.push({
         field: "github-copilot",
-        message: "未使用 GitHub Copilot 免费模型（gpt-5-mini, gpt-4.1）",
+        message: "未使用 GitHub Copilot 免费模型（gpt-5-mini, gpt-4.1, gpt-4o）",
         severity: "info",
         fix: {
-          description: "在 quick 或 unspecified-low 场景使用免费模型以降低成本",
+          description: "在 quick 或 unspecified-low 场景使用低成本模型以降低成本",
         },
+      });
+    }
+  }
+
+  /**
+   * provider_quotas 与模型路由耦合检查
+   */
+  private validateProviderQuotas(
+    config: StrategyConfig,
+    result: ValidationResult,
+    strategyName?: string,
+  ): void {
+    const quotas = config.lsp?.provider_quotas;
+    if (!quotas) {
+      result.info.push({
+        field: "lsp.provider_quotas",
+        message: "未配置 provider_quotas，无法进行精细化配额治理",
+        severity: "info",
+        fix: {
+          description: "建议在 lsp.provider_quotas 中为主要 provider 设置 daily 与 concurrency 限制",
+        },
+      });
+      return;
+    }
+
+    const usedProviders = new Set(
+      collectModelEntries(config)
+        .map((entry) => getModelProvider(entry.model))
+        .filter((p): p is string => Boolean(p))
+        .map((p) => normalizeProvider(p)),
+    );
+
+    const quotaProviders = new Set<string>();
+
+    for (const [provider, quotaConfig] of Object.entries(quotas)) {
+      const normalizedProvider = normalizeProvider(provider);
+      quotaProviders.add(normalizedProvider);
+      this.validateSingleProviderQuota(provider, quotaConfig, result);
+
+      if (!MONITORED_USAGE_PROVIDERS.has(normalizedProvider)) {
+        result.info.push({
+          field: `lsp.provider_quotas.${provider}`,
+          message: `provider ${provider} 当前不在 UsageSync 监控列表中，配额仅作为路由约束不参与统计`,
+          severity: "info",
+        });
+      }
+    }
+
+    for (const provider of usedProviders) {
+      if (!quotaProviders.has(provider)) {
+        result.info.push({
+          field: "lsp.provider_quotas",
+          message: `模型使用了 provider ${provider}，但未设置对应配额`,
+          severity: "info",
+          fix: {
+            description: `建议为 ${provider} 增加 provider_quotas 项`,
+          },
+        });
+      }
+    }
+
+    for (const provider of quotaProviders) {
+      if (!usedProviders.has(provider)) {
+        result.info.push({
+          field: "lsp.provider_quotas",
+          message: `provider_quotas 中的 ${provider} 当前未被任何模型使用，可考虑移除`,
+          severity: "info",
+        });
+      }
+    }
+
+    const emergencySwitchTo = config.lsp?.budget?.emergencySwitchTo;
+    if (emergencySwitchTo && strategyName && emergencySwitchTo === strategyName) {
+      result.warnings.push({
+        field: "lsp.budget.emergencySwitchTo",
+        message: "emergencySwitchTo 与当前策略同名，无法在紧急情况切换",
+        severity: "warning",
+        fix: {
+          description: "建议设置为其他策略，例如 cheap 或 balanced",
+        },
+      });
+    }
+  }
+
+  private validateSingleProviderQuota(
+    provider: string,
+    quotaConfig: LspProviderQuotaConfig,
+    result: ValidationResult,
+  ): void {
+    if (!quotaConfig || typeof quotaConfig !== "object") {
+      result.errors.push({
+        field: `lsp.provider_quotas.${provider}`,
+        message: `provider_quotas.${provider} 配置无效`,
+        severity: "error",
+      });
+      return;
+    }
+
+    if (
+      quotaConfig.maxRequestsPerDay !== undefined
+      && (!Number.isFinite(quotaConfig.maxRequestsPerDay) || quotaConfig.maxRequestsPerDay <= 0)
+    ) {
+      result.errors.push({
+        field: `lsp.provider_quotas.${provider}.maxRequestsPerDay`,
+        message: "maxRequestsPerDay 必须是正数",
+        severity: "error",
+      });
+    }
+
+    if (
+      quotaConfig.maxConcurrentRequests !== undefined
+      && (!Number.isFinite(quotaConfig.maxConcurrentRequests) || quotaConfig.maxConcurrentRequests <= 0)
+    ) {
+      result.errors.push({
+        field: `lsp.provider_quotas.${provider}.maxConcurrentRequests`,
+        message: "maxConcurrentRequests 必须是正数",
+        severity: "error",
+      });
+    }
+
+    if (
+      quotaConfig.maxRequestsPerDay !== undefined
+      && quotaConfig.maxConcurrentRequests !== undefined
+      && quotaConfig.maxConcurrentRequests > quotaConfig.maxRequestsPerDay
+    ) {
+      result.warnings.push({
+        field: `lsp.provider_quotas.${provider}`,
+        message: "maxConcurrentRequests 大于 maxRequestsPerDay，配置可能不合理",
+        severity: "warning",
+      });
+    }
+  }
+
+  /**
+   * compaction 配置检查
+   *
+   * 背景：
+   * - GitHub Copilot 渠道 Claude Sonnet/Opus 4.6 常按 200K 上下文处理。
+   * - reserved 过大将导致更早触发压缩，影响长上下文连续性。
+   */
+  private validateCompaction(
+    config: StrategyConfig,
+    result: ValidationResult,
+  ): void {
+    const models = collectModelEntries(config).map((entry) => entry.model);
+    const usesCopilotClaudeLongContext = models.some((model) =>
+      model === "github-copilot/claude-sonnet-4.6" || model === "github-copilot/claude-opus-4.6"
+    );
+
+    const compaction = config.compaction;
+    if (!compaction) {
+      if (usesCopilotClaudeLongContext) {
+        result.info.push({
+          field: "compaction",
+          message: "检测到 Copilot Claude 4.6（常见 200K 上下文），建议显式配置 compaction 以避免提前压缩",
+          severity: "info",
+          fix: {
+            description: "建议配置 compaction: { auto: true, prune: true, reserved: 2000 }",
+          },
+        });
+      }
+      return;
+    }
+
+    const reserved = compaction.reserved;
+    if (reserved !== undefined && (!Number.isFinite(reserved) || reserved < 0)) {
+      result.errors.push({
+        field: "compaction.reserved",
+        message: "compaction.reserved 必须是非负数",
+        severity: "error",
+      });
+      return;
+    }
+
+    if (usesCopilotClaudeLongContext && reserved === undefined) {
+      result.info.push({
+        field: "compaction.reserved",
+        message: "使用 Copilot Claude 4.6 时建议显式设置 reserved（推荐 2000）",
+        severity: "info",
+        fix: {
+          description: "设置 compaction.reserved: 2000，平衡尾部空间与压缩触发时机",
+        },
+      });
+    }
+
+    if (usesCopilotClaudeLongContext && typeof reserved === "number" && reserved > 5000) {
+      result.warnings.push({
+        field: "compaction.reserved",
+        message: `reserved=${reserved} 可能导致 Copilot Claude 4.6 在远低于 200K 时提前压缩`,
+        severity: "warning",
+        fix: {
+          description: "建议将 reserved 调整至 1000-3000（推荐 2000）",
+        },
+      });
+    }
+
+    if (typeof reserved === "number" && reserved > 20000) {
+      result.warnings.push({
+        field: "compaction.reserved",
+        message: `reserved=${reserved} 过高，可能显著缩短可用上下文窗口`,
+        severity: "warning",
+      });
+    }
+
+    if (usesCopilotClaudeLongContext && compaction.auto === false) {
+      result.info.push({
+        field: "compaction.auto",
+        message: "在长上下文场景下关闭自动压缩可能导致请求失败或上下文突增失败",
+        severity: "info",
       });
     }
   }

@@ -44,6 +44,35 @@ export interface AgentThinkingConfig {
   budgetTokens?: number;
 }
 
+export interface LspProviderQuotaConfig {
+  priority?: number;
+  maxRequestsPerDay?: number;
+  maxConcurrentRequests?: number;
+  fallbackModels?: string[];
+}
+
+export interface LspBudgetConfig {
+  monthlyLimitUSD?: number;
+  dailyAlertThreshold?: number;
+  emergencySwitchTo?: string;
+}
+
+export interface LspConfig {
+  scene_coverage?: string[];
+  budget?: LspBudgetConfig;
+  provider_quotas?: Record<string, LspProviderQuotaConfig>;
+  constraints?: {
+    maxToolsPerRequest?: number;
+    allowedTools?: string[];
+  };
+  quotaSensitivity?: "low" | "medium" | "high";
+  timeBasedRouting?: {
+    workHours?: { model: string; reason?: string };
+    offHours?: { model: string; reason?: string };
+  };
+  [key: string]: any;
+}
+
 export interface AgentConfig {
   model?: string;
   variant?: string;
@@ -86,7 +115,12 @@ export interface CategoryConfig {
 export interface StrategyConfig {
   $schema?: string;
   description?: string;
-  lsp?: Record<string, any>;
+  compaction?: {
+    auto?: boolean;
+    prune?: boolean;
+    reserved?: number;
+  };
+  lsp?: LspConfig;
   agents?: Record<string, AgentConfig>;
   categories?: Record<string, CategoryConfig>;
   background_task?: {

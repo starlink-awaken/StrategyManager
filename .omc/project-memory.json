@@ -1,0 +1,176 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1772195996123,
+  "projectRoot": "/Volumes/Model/Workspace/Skills/local/StrategyManager",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "npm test",
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {
+      "type-check": "tsc --noEmit",
+      "dev:watch": "bun --watch Tools/ManageStrategies.ts",
+      "test": "bun test",
+      "test:watch": "bun test --watch",
+      "test:coverage": "bun test --coverage",
+      "test:unit": "bun test tests/unit/",
+      "test:pathmanager": "bun test tests/unit/PathManager.test.ts",
+      "test:validator": "bun test tests/unit/Validator.test.ts",
+      "test:recommender": "bun test tests/unit/Recommender.test.ts",
+      "test:ci": "bun test --coverage --reporter=junit"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": "*.test.ts",
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "Tools": {
+      "path": "Tools",
+      "purpose": null,
+      "fileCount": 21,
+      "lastAccessed": 1772195996015,
+      "keyFiles": [
+        "AGENTS.md",
+        "ActiveValidator.ts",
+        "ContextEnhancer.ts",
+        "CostReport.ts",
+        "DynamicStrategy.ts"
+      ]
+    },
+    "Workflows": {
+      "path": "Workflows",
+      "purpose": null,
+      "fileCount": 16,
+      "lastAccessed": 1772195996018,
+      "keyFiles": [
+        "AGENTS.md",
+        "Compare.md",
+        "CostReport.md",
+        "Export.md",
+        "FeedbackReport.md"
+      ]
+    },
+    "command": {
+      "path": "command",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772195996027,
+      "keyFiles": [
+        "strategies.md"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 5,
+      "lastAccessed": 1772195996030,
+      "keyFiles": [
+        "COMMAND_PATH_RESOLUTION.md",
+        "DYNAMIC_GOVERNANCE.md",
+        "README.md",
+        "migration-guide-2026.md",
+        "model-selection-guide-2026.md"
+      ]
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1772195996032,
+      "keyFiles": [
+        "cost-simulation-2026.json",
+        "model-availability-2026.json"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 8,
+      "lastAccessed": 1772195996032,
+      "keyFiles": [
+        "AGENTS.md",
+        "auto-govern.sh",
+        "install-slash-command.sh",
+        "install.sh",
+        "setup-opencode-integration.sh"
+      ]
+    },
+    "templates": {
+      "path": "templates",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1772195996033,
+      "keyFiles": [
+        "AGENTS.md",
+        "balanced.jsonc",
+        "cheap.jsonc",
+        "fast.jsonc",
+        "history.json"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 6,
+      "lastAccessed": 1772195996033,
+      "keyFiles": [
+        "AGENTS.md",
+        "CLI.test.ts",
+        "DataProcessing.test.ts",
+        "ManageStrategies.test.ts",
+        "README.md"
+      ]
+    },
+    "tests/fixtures": {
+      "path": "tests/fixtures",
+      "purpose": "Test fixtures",
+      "fileCount": 1,
+      "lastAccessed": 1772195996114,
+      "keyFiles": [
+        "mock-data.ts"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

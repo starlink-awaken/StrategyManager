@@ -77,9 +77,6 @@ export class CostCalculator {
       'deepseek-code': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
       'default': { input: 0.14 / 1000000, output: 0.28 / 1000000 },
     },
-    siliconflow: {
-      'default': { input: 0.01 / 1000000, output: 0.03 / 1000000 },
-    },
   };
 
   /**

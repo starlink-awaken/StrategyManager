@@ -679,3 +679,136 @@ describe("StrategyValidator - Edge Cases", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+// ==================== Provider Quota Validation ====================
+
+describe("StrategyValidator - Provider Quotas", () => {
+  let validator: StrategyValidator;
+
+  beforeEach(() => {
+    validator = new StrategyValidator();
+  });
+
+  it("should report error for invalid provider quota values", () => {
+    const config = createMockConfig({
+      lsp: {
+        provider_quotas: {
+          "github-copilot": {
+            maxRequestsPerDay: -1,
+            maxConcurrentRequests: 0,
+          },
+        },
+      },
+    });
+
+    const result = validator.validate(config);
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((e) => e.field.includes("maxRequestsPerDay")),
+    ).toBe(true);
+    expect(
+      result.errors.some((e) => e.field.includes("maxConcurrentRequests")),
+    ).toBe(true);
+  });
+
+  it("should detect missing quota for used providers", () => {
+    const config = createMockConfig({
+      agents: {
+        a: { model: "github-copilot/gpt-5-mini" },
+        b: { model: "deepseek/deepseek-chat" },
+      },
+      lsp: {
+        provider_quotas: {
+          "github-copilot": {
+            maxRequestsPerDay: 100,
+            maxConcurrentRequests: 10,
+          },
+        },
+      },
+    });
+
+    const result = validator.validate(config);
+    expect(
+      result.info.some((i) => i.message.includes("未设置对应配额")),
+    ).toBe(true);
+  });
+
+  it("should warn when emergencySwitchTo equals current strategy name", () => {
+    const config = createMockConfig({
+      lsp: {
+        budget: {
+          emergencySwitchTo: "cheap",
+        },
+        provider_quotas: {
+          "github-copilot": {
+            maxRequestsPerDay: 100,
+            maxConcurrentRequests: 10,
+          },
+        },
+      },
+    });
+
+    const result = validator.validate(config, "cheap");
+    expect(
+      result.warnings.some((w) => w.field === "lsp.budget.emergencySwitchTo"),
+    ).toBe(true);
+  });
+});
+
+// ==================== Compaction Validation ====================
+
+describe("StrategyValidator - Compaction", () => {
+  let validator: StrategyValidator;
+
+  beforeEach(() => {
+    validator = new StrategyValidator();
+  });
+
+  it("should suggest compaction config when using Copilot Claude 4.6 without compaction", () => {
+    const config = createMockConfig({
+      agents: {
+        main: { model: "github-copilot/claude-sonnet-4.6" },
+      },
+      compaction: undefined,
+    });
+
+    const result = validator.validate(config);
+    expect(
+      result.info.some((i) => i.field === "compaction" && i.message.includes("200K")),
+    ).toBe(true);
+  });
+
+  it("should warn when reserved is too high for Copilot Claude long context", () => {
+    const config = createMockConfig({
+      agents: {
+        main: { model: "github-copilot/claude-opus-4.6" },
+      },
+      compaction: {
+        auto: true,
+        prune: true,
+        reserved: 8000,
+      },
+    });
+
+    const result = validator.validate(config);
+    expect(
+      result.warnings.some((w) => w.field === "compaction.reserved" && w.message.includes("提前压缩")),
+    ).toBe(true);
+  });
+
+  it("should report error for invalid compaction reserved value", () => {
+    const config = createMockConfig({
+      compaction: {
+        auto: true,
+        prune: true,
+        reserved: -1,
+      },
+    });
+
+    const result = validator.validate(config);
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((e) => e.field === "compaction.reserved"),
+    ).toBe(true);
+  });
+});

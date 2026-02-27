@@ -1,7 +1,27 @@
 # 模型选择指南 2026
 
-**最后更新**: 2026-02-08  
+**最后更新**: 2026-02-27  
 **适用版本**: StrategyManager v3.0+
+
+---
+
+## 重要更新（2026-02-27）
+
+- 已确认 `github-copilot/claude-sonnet-4.6`、`github-copilot/claude-opus-4.6` 在当前策略设计中按 **200K 上下文窗口**处理。
+- 为避免“未到 200K 就提前压缩”的体验问题，模板和运行配置建议显式设置：
+
+```json
+"compaction": {
+  "auto": true,
+  "prune": true,
+  "reserved": 2000
+}
+```
+
+- 实操建议：
+  - `reserved` 推荐区间 `1000-3000`，默认 `2000`。
+  - 当使用 Copilot Claude 4.6 处理长会话时，避免将 `reserved` 设得过高（如 `>5000`），否则会明显提前触发压缩。
+  - 超长上下文主链优先使用 `anthropic/openai/google`，Copilot Claude 作为次级回退更稳。
 
 ---
 
@@ -52,7 +72,7 @@
 |-----------|----------|----------|---------|
 | Oracle | `openai/gpt-5.2-codex` | `github-copilot/gpt-4o` | ¥1000-1500 |
 | Ultrabrain | `github-copilot/claude-opus-4.6` | - | (包含在内) |
-| Prometheus | `github-copilot/claude-sonnet-4.5` | - | (包含在内) |
+| Prometheus | `github-copilot/claude-sonnet-4.6` | - | (包含在内) |
 
 **适用场景**:
 - 关键架构决策
@@ -103,9 +123,9 @@
 
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
-| Writing | `github-copilot/claude-sonnet-4.5` | - | ¥500-800 |
-| Artistry | `github-copilot/claude-sonnet-4.5` | - | (包含在内) |
-| Prometheus | `github-copilot/claude-sonnet-4.5` | - | (包含在内) |
+| Writing | `github-copilot/claude-sonnet-4.6` | - | ¥500-800 |
+| Artistry | `github-copilot/claude-sonnet-4.6` | - | (包含在内) |
+| Prometheus | `github-copilot/claude-sonnet-4.6` | - | (包含在内) |
 
 **适用场景**:
 - 技术博客和文章
@@ -314,7 +334,7 @@
 | 渠道 | Model ID 格式 | 示例 | 功能差异 |
 |------|---------------|------|----------|
 | **直连 API** | `anthropic/{model-name}` | `anthropic/claude-sonnet-4-5`<br>`anthropic/claude-opus-4-6` | ✅ 完整功能<br>✅ 最新模型<br>✅ Extended Thinking |
-| **GitHub Copilot** | `github-copilot/{model-name}` | `github-copilot/claude-sonnet-4.5`<br>`github-copilot/claude-opus-4.6` | ⚠️ 可能缺少最新版本<br>⚠️ Extended Thinking 支持有限 |
+| **GitHub Copilot** | `github-copilot/{model-name}` | `github-copilot/claude-sonnet-4.6`<br>`github-copilot/claude-opus-4.6` | ⚠️ 可能缺少最新版本<br>⚠️ Extended Thinking 支持有限 |
 
 **注意事项**:
 - **版本号差异**: 直连 API 使用日期格式（如 `-20250110`），Copilot 使用简化版本号
