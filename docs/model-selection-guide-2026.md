@@ -23,6 +23,13 @@
   - 当使用 Copilot Claude 4.6 处理长会话时，避免将 `reserved` 设得过高（如 `>5000`），否则会明显提前触发压缩。
   - 超长上下文主链优先使用 `anthropic/openai/google`，Copilot Claude 作为次级回退更稳。
 
+## 模板刷新说明（2026-03-26）
+
+- 默认模板已移除 `Bailian/Qwen` 依赖，当前统一改用可继续使用的 `ZhiPu GLM` 作为替代。
+- 默认 `GPT` 组合已刷新到 `OpenAI GPT-5.4` / `GitHub Copilot GPT-5.4 mini`。
+- 默认 `Gemini` 组合已刷新到 `Gemini 2.5 Pro / 2.5 Flash`（项目内采用 `google/antigravity-*` 命名）。
+- 下文部分成本/能力对比段落保留了旧版术语，作为历史选型背景参考；**当前生效的默认值以 `templates/*.jsonc` 为准**。
+
 ---
 
 ## 目录
@@ -45,8 +52,8 @@
 
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
-| Oracle | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | ¥280-490 |
-| Visual-engineering | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
+| Oracle | `github-copilot/gpt-5.4-mini` | `zhipuai-coding-plan/glm-4.7` | ¥280-490 |
+| Visual-engineering | `google/antigravity-gemini-2.5-pro` | `google/antigravity-gemini-2.5-flash` | (包含在内) |
 | Sisyphus | `zhipuai-coding-plan/glm-4.7` | - | 几乎免费 |
 
 **适用场景**:
@@ -57,8 +64,8 @@
 
 **成本优化建议**:
 - 使用 GLM-4.7 处理大规模文本编辑（60倍额度）
-- GPT-4o 作为免费兜底，适合快速任务
-- GPT-5 mini 处理中等复杂度推理
+- GLM-4.7 作为低成本兜底，适合高频文本任务
+- GPT-5.4 mini 处理中等复杂度推理
 
 ---
 
@@ -70,7 +77,7 @@
 
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
-| Oracle | `openai/gpt-5.2-codex` | `github-copilot/gpt-4o` | ¥1000-1500 |
+| Oracle | `openai/gpt-5.4` | `github-copilot/gpt-5.4-mini` | ¥1000-1500 |
 | Ultrabrain | `github-copilot/claude-opus-4.6` | - | (包含在内) |
 | Prometheus | `github-copilot/claude-sonnet-4.6` | - | (包含在内) |
 
@@ -81,7 +88,7 @@
 - 安全审计
 
 **质量保证**:
-- GPT-5.2-Codex: 代码专精，推理能力最强
+- GPT-5.4: 当前默认高质量代码与推理主力
 - Claude Opus: 深度分析，长上下文理解
 - Claude Sonnet: 平衡性能和质量
 
@@ -96,9 +103,9 @@
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
 | Sisyphus | `zhipuai-coding-plan/glm-4.7` | - | ¥800-1200 |
-| Prometheus | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
-| Oracle | `openai/gpt-5.2-codex` | `github-copilot/gpt-4o` | (包含在内) |
-| Hephaestus | `github-copilot/gpt-5-mini` | `github-copilot/gpt-4o` | (包含在内) |
+| Prometheus | `github-copilot/gpt-5.4-mini` | `github-copilot/gpt-5.4-mini` | (包含在内) |
+| Oracle | `openai/gpt-5.4` | `github-copilot/gpt-5.4-mini` | (包含在内) |
+| Hephaestus | `github-copilot/gpt-5.4-mini` | `github-copilot/gpt-5.4-mini` | (包含在内) |
 | 其他 agents | `zhipuai-coding-plan/glm-4.7` | - | (包含在内) |
 
 **适用场景**:
@@ -109,8 +116,8 @@
 
 **优化建议**:
 - 编排器使用 GLM-4.7（大额度支持高并发）
-- 关键决策使用 GPT-5.2-Codex（质量保证）
-- 规划器使用 GPT-5 mini（性价比高）
+- 关键决策使用 GPT-5.4（质量保证）
+- 规划器使用 GPT-5.4 mini（性价比高）
 - 探索和查询使用 GLM-4.7（快速响应）
 
 ---
@@ -151,7 +158,7 @@
 |-----------|----------|----------|---------|
 | Deep | `github-copilot/claude-opus-4.6` | - | ¥1800-2500 |
 | Ultrabrain | `github-copilot/claude-opus-4.6` | - | (包含在内) |
-| Oracle | `openai/gpt-5.2-codex` | - | (包含在内) |
+| Oracle | `openai/gpt-5.4` | - | (包含在内) |
 
 **适用场景**:
 - 文献综述和学术研究
@@ -176,10 +183,10 @@
 
 | 角色/类别 | 推荐模型 | Fallback | 成本/月 |
 |-----------|----------|----------|---------|
-| Sisyphus | `github-copilot/gpt-4o` | - | ¥50-150 |
-| Prometheus | `github-copilot/gpt-4o` | - | (包含在内) |
+| Sisyphus | `github-copilot/gpt-5.4-mini` | - | ¥50-150 |
+| Prometheus | `github-copilot/gpt-5.4-mini` | - | (包含在内) |
 | Oracle | `zhipuai-coding-plan/glm-4.7` | - | (包含在内) |
-| Librarian | `github-copilot/gpt-5-mini` | - | (包含在内) |
+| Librarian | `github-copilot/gpt-5.4-mini` | - | (包含在内) |
 
 **适用场景**:
 - 学习和探索
@@ -200,51 +207,51 @@
 
 | 模型 | 性能 | 成本 | 延迟 | 适用场景 | 备注 |
 |------|------|------|------|----------|------|
-| **GPT-5.2-Codex** | ⭐⭐⭐⭐⭐ | ¥0.01/1K (in) + ¥0.03/1K (out) | 中等 | 关键决策、架构设计 | 代码专精，最强推理 |
-| **GPT-5 mini** | ⭐⭐⭐⭐ | ¥0.005/1K (in) + ¥0.015/1K (out) | 低 (快 30-40%) | 日常开发、中等任务 | 性价比最高 |
-| **GPT-4o** | ⭐⭐⭐ | **免费** | 低 | 快速任务、Fallback | GitHub Copilot 免费 |
+| **GPT-5.4** | ⭐⭐⭐⭐⭐ | 高 | 中等 | 关键决策、架构设计 | 当前默认高质量主力 |
+| **GPT-5.4 mini** | ⭐⭐⭐⭐ | 中低 | 低 | 日常开发、中等任务 | 当前默认高性价比主力 |
+| **GLM-4.7** | ⭐⭐⭐⭐ | 极低 | 低 | 低成本兜底、高并发 | 当前默认国产兜底 |
 
-#### GPT-5.2-Codex vs GPT-5 mini
+#### GPT-5.4 vs GPT-5.4 mini
 
 ```
 性能对比:
-  GPT-5.2-Codex: 推理能力 100%，代码专精
-  GPT-5 mini:    推理能力 ~80%，速度快 30-40%
+  GPT-5.4:      推理能力 100%，适合关键决策与复杂编码
+  GPT-5.4 mini: 推理能力 ~80%，速度更快、成本更低
 
 成本对比:
-  GPT-5.2-Codex: 月成本 ¥1000-1500（高频使用）
-  GPT-5 mini:    月成本 ¥500-750（同等调用）
-  节省:          50%
+  GPT-5.4:      月成本较高（适合关键链路）
+  GPT-5.4 mini: 月成本更低（适合默认主力）
+  节省:         约 40-60%
 
 延迟对比:
-  GPT-5.2-Codex: 首字响应 2-3s
-  GPT-5 mini:    首字响应 1.5-2s（快 15-25%）
+  GPT-5.4:      首字响应更稳，复杂任务表现更强
+  GPT-5.4 mini: 首字响应更快，适合高频交互
 
 推荐场景:
-  GPT-5.2-Codex → 关键架构、复杂算法、生产环境
-  GPT-5 mini    → 日常开发、重构、调试、文档
+  GPT-5.4      → 关键架构、复杂算法、生产环境
+  GPT-5.4 mini → 日常开发、重构、调试、文档
 ```
 
-#### GPT-5 mini vs GPT-4o
+#### GPT-5.4 mini vs GLM-4.7
 
 ```
 性能对比:
-  GPT-5 mini: 推理能力 80%，适合中等任务
-  GPT-4o:     推理能力 ~60%，适合快速任务
+  GPT-5.4 mini: 推理能力更强，适合默认主力
+  GLM-4.7:      更便宜，适合高频并发与兜底
 
 成本对比:
-  GPT-5 mini: 月成本 ¥500-750（高频使用）
-  GPT-4o:     完全免费（GitHub Copilot）
-  节省:       100%
+  GPT-5.4 mini: 月成本中低，综合性最好
+  GLM-4.7:      成本极低，适合兜底和大量调用
+  节省:         显著
 
 用途对比:
-  GPT-5 mini → 主力模型（日常开发）
-  GPT-4o     → Fallback 模型（免费兜底）
+  GPT-5.4 mini → 主力模型（日常开发）
+  GLM-4.7      → Fallback 模型（高并发兜底）
 
 关键差异:
-  ❌ GPT-4o 不适合作为主力模型（推理能力较弱）
-  ✅ GPT-4o 适合 Fallback（免费、快速）
-  ✅ GPT-5 mini 是主力（性能和成本平衡）
+  ✅ GPT-5.4 mini 适合作为默认主力
+  ✅ GLM-4.7 适合 Fallback（额度大、成本低）
+  ✅ GPT-5.4 适合关键高质量链路
 ```
 
 ---
@@ -254,7 +261,7 @@
 | 模型 | 性能 | 成本 | 上下文 | 适用场景 | 备注 |
 |------|------|------|--------|----------|------|
 | **Claude Opus 4.6** | ⭐⭐⭐⭐⭐ | 高 | 200K | 深度研究、复杂分析 | 最强推理，长上下文 |
-| **Claude Sonnet 4.5** | ⭐⭐⭐⭐ | 中 | 200K | 创意写作、规划 | 平衡性能和成本 |
+| **Claude Sonnet 4.6** | ⭐⭐⭐⭐ | 中 | 200K | 创意写作、规划 | 平衡性能和成本 |
 | **Claude Haiku 4.5** | ⭐⭐⭐ | 低 | 200K | 快速任务、探索 | 轻量级、高性价比 |
 
 #### Claude Sonnet vs Haiku
@@ -319,12 +326,12 @@
 
 | 渠道 | Model ID 格式 | 示例 | 功能差异 |
 |------|---------------|------|----------|
-| **直连 API** | `openai/{model-name}` | `github-copilot/gpt-5-mini`<br>`openai/gpt-5.2-codex` | ✅ 完整功能<br>✅ 最新模型<br>✅ 无限流 |
-| **GitHub Copilot** | `github-copilot/{model-name}` | `github-copilot/gpt-5-mini`<br>`github-copilot/gpt-4o` (免费) | ⚠️ 可能限流<br>⚠️ 集成化<br>✅ 部分免费 |
+| **直连 API** | `openai/{model-name}` | `github-copilot/gpt-5.4-mini`<br>`openai/gpt-5.4` | ✅ 完整功能<br>✅ 最新模型<br>✅ 无限流 |
+| **GitHub Copilot** | `github-copilot/{model-name}` | `github-copilot/gpt-5.4-mini`<br>`github-copilot/gpt-5.4-mini` (免费) | ⚠️ 可能限流<br>⚠️ 集成化<br>✅ 部分免费 |
 
 **注意事项**:
-- **GPT-4o** 仅在 GitHub Copilot 中免费
-- **GPT-5.2-Codex** 直连 API 功能完整，Copilot 可能有额外限制
+- `GPT-5.4` 适合质量优先场景，`GPT-5.4 mini` 适合默认主力场景
+- 在成本敏感场景下，优先通过 `GLM-4.7` 承担兜底与高并发任务
 - **限流**: Copilot 在高峰期可能限制 QPS
 
 ---
@@ -333,7 +340,7 @@
 
 | 渠道 | Model ID 格式 | 示例 | 功能差异 |
 |------|---------------|------|----------|
-| **直连 API** | `anthropic/{model-name}` | `anthropic/claude-sonnet-4-5`<br>`anthropic/claude-opus-4-6` | ✅ 完整功能<br>✅ 最新模型<br>✅ Extended Thinking |
+| **直连 API** | `anthropic/{model-name}` | `anthropic/claude-sonnet-4-6`<br>`anthropic/claude-opus-4-6` | ✅ 完整功能<br>✅ 最新模型<br>✅ Extended Thinking |
 | **GitHub Copilot** | `github-copilot/{model-name}` | `github-copilot/claude-sonnet-4.6`<br>`github-copilot/claude-opus-4.6` | ⚠️ 可能缺少最新版本<br>⚠️ Extended Thinking 支持有限 |
 
 **注意事项**:
@@ -378,9 +385,9 @@
 ```jsonc
 {
   "oracle": {
-    "model": "github-copilot/gpt-5-mini",
-    "fallback": "github-copilot/gpt-4o",
-    "fallbackReason": "成本优化 - GPT-4o 免费兜底"
+    "model": "github-copilot/gpt-5.4-mini",
+    "fallback": "github-copilot/gpt-5.4-mini",
+    "fallbackReason": "成本优化 - 使用当前低成本主力模型兜底"
   }
 }
 ```
@@ -391,9 +398,9 @@
 - 预算有限
 
 **优势**:
-- ✅ GPT-4o 完全免费
-- ✅ 快速响应（低延迟）
-- ✅ 无额度限制
+- ✅ 低成本、响应快
+- ✅ 适合作为默认主力或二级回退
+- ✅ 与当前模板默认值保持一致
 
 **局限**:
 - ⚠️ 推理能力较弱（适合简单任务）
@@ -406,7 +413,7 @@
 ```jsonc
 {
   "oracle": {
-    "model": "openai/gpt-5.2-codex",
+    "model": "openai/gpt-5.4",
     "fallback": "zhipuai-coding-plan/glm-4.7",
     "fallbackReason": "高额度兜底 - GLM-4.7 60倍额度"
   }
@@ -424,7 +431,7 @@
 - ✅ 高并发支持
 
 **局限**:
-- ⚠️ 推理能力略低于 GPT-5.2-Codex
+- ⚠️ 推理能力略低于 GPT-5.4
 
 ---
 
@@ -463,8 +470,8 @@ bun run Tools/ManageStrategies.ts switch strategy-2-balanced
 ```jsonc
 {
   "oracle": {
-    "model": "github-copilot/gpt-5-mini",           // 主模型
-    "fallback": "github-copilot/gpt-4o"    // 一级 Fallback（免费）
+    "model": "github-copilot/gpt-5.4-mini",           // 主模型
+    "fallback": "github-copilot/gpt-5.4-mini"    // 一级 Fallback（免费）
     // 未来支持: "secondaryFallback": "zhipuai-coding-plan/glm-4.7"
   }
 }
@@ -475,13 +482,13 @@ bun run Tools/ManageStrategies.ts switch strategy-2-balanced
 ```jsonc
 // 日常开发 - 免费 Fallback
 "visual-engineering": {
-  "model": "github-copilot/gpt-5-mini",
-  "fallback": "github-copilot/gpt-4o"
+  "model": "github-copilot/gpt-5.4-mini",
+  "fallback": "github-copilot/gpt-5.4-mini"
 }
 
 // 关键任务 - 高额度 Fallback
 "ultrabrain": {
-  "model": "openai/gpt-5.2-codex",
+  "model": "openai/gpt-5.4",
   "fallback": "zhipuai-coding-plan/glm-4.7"
 }
 ```
@@ -504,12 +511,12 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
 
 | 场景 | 推荐策略 | 主模型 | Fallback | 成本/月 |
 |------|----------|--------|----------|---------|
-| **日常开发** | Strategy-2 | GPT-5 mini | GPT-4o (免费) | ¥280-490 |
-| **重要任务** | Strategy-1 | GPT-5.2-Codex | GPT-4o (免费) | ¥1000-1500 |
-| **智能体协作** | Strategy-6 | GPT-5.2-Codex + GPT-5 mini | GPT-4o (免费) | ¥800-1200 |
+| **日常开发** | Strategy-2 | GPT-5.4 mini | GLM-4.7 | ¥280-490 |
+| **重要任务** | Strategy-1 | GPT-5.4 | GPT-5.4 mini | ¥1000-1500 |
+| **智能体协作** | Strategy-6 | GPT-5.4 + GPT-5.4 mini | GLM-4.7 | ¥800-1200 |
 | **创意写作** | Strategy-4 | Claude Sonnet | - | ¥500-800 |
 | **深度研究** | Strategy-5 | Claude Opus | - | ¥1800-2500 |
-| **成本敏感** | Strategy-3 | GPT-4o (免费) | GLM-4.7 (额度) | ¥50-150 |
+| **成本敏感** | Strategy-3 | GPT-5.4 mini | GLM-4.7 (额度) | ¥50-150 |
 
 ---
 
@@ -517,9 +524,9 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
 
 | 模型 | 性能评分 | 成本评分 | 适用场景 | 不适用场景 |
 |------|----------|----------|----------|------------|
-| **GPT-5.2-Codex** | ⭐⭐⭐⭐⭐ | ⭐⭐ | 关键决策、架构设计、复杂算法 | 日常任务（过度浪费） |
-| **GPT-5 mini** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 日常开发、重构、调试 | 超复杂推理 |
-| **GPT-4o** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ (免费) | Fallback、快速任务 | 主力模型（推理弱） |
+| **GPT-5.4** | ⭐⭐⭐⭐⭐ | ⭐⭐ | 关键决策、架构设计、复杂算法 | 纯日常任务（成本偏高） |
+| **GPT-5.4 mini** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 日常开发、重构、调试 | 超复杂推理 |
+| **GLM-4.7** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Fallback、高并发、大规模编辑 | 英文重度精修 |
 | **Claude Opus** | ⭐⭐⭐⭐⭐ | ⭐⭐ | 深度分析、长上下文 | 快速迭代 |
 | **Claude Sonnet** | ⭐⭐⭐⭐ | ⭐⭐⭐ | 创意写作、规划 | 超高并发 |
 | **Claude Haiku** | ⭐⭐⭐ | ⭐⭐⭐⭐ | 快速探索、轻量级 | 复杂推理 |
@@ -533,7 +540,7 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
 
 | 模型系列 | GitHub Copilot | 直连 API |
 |----------|----------------|----------|
-| **OpenAI** | ✅ 支持（GPT-4o 免费） | ✅ 完整功能 |
+| **OpenAI** | ✅ 支持（GPT-5.4 / GPT-5.4 mini） | ✅ 完整功能 |
 | **Anthropic** | ✅ 支持（可能缺少最新版本） | ✅ 完整功能 |
 | **Google Gemini** | ❌ **不支持** | ✅ 完整功能 |
 | **ZhiPu GLM** | ❌ **不支持** | ✅ 60倍额度 |
@@ -544,8 +551,8 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
 
 | 优化方案 | 节省比例 | 适用场景 |
 |----------|----------|----------|
-| GPT-5.2-Codex → GPT-5 mini | 50% | 日常开发 |
-| GPT-5 mini → GPT-4o (Fallback) | 100% (免费) | 成本压力大 |
+| GPT-5.4 → GPT-5.4 mini | 40-60% | 日常开发 |
+| GPT-5.4 mini → GLM-4.7 (Fallback) | 显著 | 成本压力大 |
 | Claude Sonnet → Haiku | 75% | 快速探索 |
 | 顶级模型 → GLM-4.7 | 95%+ | 高并发场景 |
 | Strategy-1 → Strategy-2 | 70-80% | 预算有限 |
@@ -567,7 +574,7 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
    关键决策/架构          日常开发
         │                    │
    Strategy-1            Strategy-2
-   GPT-5.2-Codex         GPT-5 mini
+   GPT-5.4               GPT-5.4 mini
    ¥1000-1500/月         ¥280-490/月
         │                    │
    需要更多智能体？       预算紧张？
@@ -575,15 +582,15 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
         Yes                  Yes
         │                    │
    Strategy-6            Strategy-3
-   GPT-5.2-Codex         GPT-4o (免费)
+   GPT-5.4               GLM-4.7
    + GLM-4.7             + GLM-4.7
    ¥800-1200/月          ¥50-150/月
 ```
 
 ### 关键建议
 
-1. **日常开发**: Strategy-2 + GPT-5 mini（性价比最高）
-2. **关键任务**: Strategy-1 + GPT-5.2-Codex（质量优先）
+1. **日常开发**: Strategy-2 + GPT-5.4 mini（性价比最高）
+2. **关键任务**: Strategy-1 + GPT-5.4（质量优先）
 3. **智能体协作**: Strategy-6 + 混合模型（并发优化）
 4. **成本敏感**: Strategy-3 + 免费模型（极致节省）
 5. **创意写作**: Strategy-4 + Claude Sonnet（文笔优秀）
@@ -591,11 +598,11 @@ bun run Tools/ManageStrategies.ts switch strategy-3-economical
 
 ### 常见错误
 
-❌ **错误 1**: 日常任务使用 GPT-5.2-Codex（浪费成本）  
-✅ **正确**: 日常任务使用 GPT-5 mini + GPT-4o Fallback
+❌ **错误 1**: 日常任务默认走 GPT-5.4（成本过高）  
+✅ **正确**: 日常任务使用 GPT-5.4 mini + GLM-4.7 Fallback
 
-❌ **错误 2**: 关键决策使用 GPT-4o（推理能力不足）  
-✅ **正确**: 关键决策使用 GPT-5.2-Codex 或 Claude Opus
+❌ **错误 2**: 关键决策只走低成本 fallback（推理能力不足）  
+✅ **正确**: 关键决策使用 GPT-5.4 或 Claude Opus
 
 ❌ **错误 3**: 忽略 Fallback 配置（成本失控）  
 ✅ **正确**: 所有主模型配置免费 Fallback

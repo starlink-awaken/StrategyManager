@@ -168,10 +168,10 @@ jq . ~/.config/opencode/oh-my-opencode.json
   // 代理配置
   "agents": {
     "Sisyphus": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "anthropic/claude-opus-4-6",
     },
     "oracle": {
-      "model": "openai/gpt-5.2",
+      "model": "openai/gpt-5.4",
     },
   },
 
@@ -192,7 +192,7 @@ jq . ~/.config/opencode/oh-my-opencode.json
       "model": "anthropic/claude-haiku-4-5",
     },
     "ultrabrain": {
-      "model": "openai/gpt-5.2-codex",
+      "model": "openai/gpt-5.4",
       "variant": "xhigh",
     },
   },

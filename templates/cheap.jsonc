@@ -46,8 +46,7 @@
         "maxRequestsPerDay": 420,
         "maxConcurrentRequests": 16,
         "fallbackModels": [
-          "github-copilot/gpt-5-mini",
-          "github-copilot/gpt-4.1"
+          "github-copilot/gpt-5.4-mini"
         ]
       },
       "deepseek": {
@@ -83,20 +82,12 @@
           "kimi-coding-plan/kimi-for-coding"
         ]
       },
-      "bailian-coding-plan": {
-        "priority": 3,
-        "maxRequestsPerDay": 320,
-        "maxConcurrentRequests": 12,
-        "fallbackModels": [
-          "bailian-coding-plan/qwen3.5-plus"
-        ]
-      },
       "google": {
         "priority": 3,
         "maxRequestsPerDay": 300,
         "maxConcurrentRequests": 10,
         "fallbackModels": [
-          "google/antigravity-gemini-3-flash"
+          "google/antigravity-gemini-2.5-flash"
         ]
       }
     },
@@ -114,9 +105,8 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
-        "github-copilot/gpt-4.1",
         "deepseek/deepseek-chat",
         "minimax-coding-plan/MiniMax-M2.5",
         "zhipuai-coding-plan/glm-4.7-flash"
@@ -124,18 +114,16 @@
       "temperature": 0.25
     },
     "sisyphus-junior": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
-        "github-copilot/gpt-4.1",
         "deepseek/deepseek-chat",
         "zhipuai-coding-plan/glm-4.7-flash"
       ],
       "temperature": 0.2
     },
     "prometheus": {
-      "model": "github-copilot/gpt-4.1",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
-        "github-copilot/gpt-5-mini",
         "kimi-coding-plan/kimi-for-coding"
       ],
       "temperature": 0.2
@@ -143,23 +131,22 @@
     "oracle": {
       "model": "zhipuai-coding-plan/glm-4.7",
       "fallback": [
-        "bailian-coding-plan/qwen3.5-plus",
+        "zhipuai-coding-plan/glm-5",
         "deepseek/deepseek-chat"
       ],
       "temperature": 0.3
     },
     "explore": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
-        "github-copilot/gpt-4.1",
         "deepseek/deepseek-chat"
       ],
       "temperature": 0.3
     },
     "multimodal-looker": {
-      "model": "google/antigravity-gemini-3-flash",
+      "model": "google/antigravity-gemini-2.5-flash",
       "fallback": [
-        "github-copilot/gpt-4o"
+        "github-copilot/gpt-5.4-mini"
       ],
       "temperature": 0.4
     },
@@ -171,7 +158,7 @@
       ]
     },
     "librarian": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
         "zhipuai-coding-plan/glm-4.7-flash"
       ]
@@ -180,13 +167,14 @@
       "model": "deepseek/deepseek-reasoner",
       "fallback": [
         "zhipuai-coding-plan/glm-5",
-        "github-copilot/gpt-4o"
+        "github-copilot/gpt-5.4-mini"
       ]
     },
     "momus": {
-      "model": "bailian-coding-plan/qwen3-coder-plus",
+      "model": "zhipuai-coding-plan/glm-4.7",
       "fallback": [
-        "minimax-coding-plan/MiniMax-M2.5"
+        "minimax-coding-plan/MiniMax-M2.5",
+        "kimi-coding-plan/kimi-for-coding"
       ]
     },
     "atlas": {
@@ -195,10 +183,10 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "google/antigravity-gemini-3-flash"
+      "model": "google/antigravity-gemini-2.5-flash"
     },
     "ultrabrain": {
-      "model": "github-copilot/gpt-4o",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
         "zhipuai-coding-plan/glm-5"
       ]
@@ -210,13 +198,13 @@
       ]
     },
     "quick": {
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.4-mini",
       "fallback": [
-        "github-copilot/gpt-4.1"
+        "zhipuai-coding-plan/glm-4.7"
       ]
     },
     "unspecified-low": {
-      "model": "github-copilot/gpt-5-mini"
+      "model": "github-copilot/gpt-5.4-mini"
     },
     "unspecified-high": {
       "model": "zhipuai-coding-plan/glm-4.7",
@@ -227,11 +215,11 @@
     "writing": {
       "model": "kimi-coding-plan/kimi-for-coding",
       "fallback": [
-        "bailian-coding-plan/qwen3.5-plus"
+        "zhipuai-coding-plan/glm-5"
       ]
     },
     "artistry": {
-      "model": "google/antigravity-gemini-3-flash"
+      "model": "google/antigravity-gemini-2.5-flash"
     }
   }
 }
