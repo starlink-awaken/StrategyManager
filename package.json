@@ -12,7 +12,7 @@
     "test:pathmanager": "bun test tests/unit/PathManager.test.ts",
     "test:validator": "bun test tests/unit/Validator.test.ts",
     "test:recommender": "bun test tests/unit/Recommender.test.ts",
-    "test:ci": "bun test --coverage --reporter=junit"
+    "test:ci": "bun test --coverage --coverage-reporter=lcov --coverage-dir coverage --reporter=junit --reporter-outfile test-results.xml"
   },
   "keywords": [
     "opencode",

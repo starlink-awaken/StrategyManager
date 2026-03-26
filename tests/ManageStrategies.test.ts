@@ -183,4 +183,25 @@ describe('ManageStrategies', () => {
       delete process.env.STRATEGIES_DIR;
     });
   });
+
+  describe('CLI routing regression guards', () => {
+    it('should keep govern command routed to the governance handler', () => {
+      const source = fs.readFileSync(
+        path.join(process.cwd(), 'Tools', 'ManageStrategies.ts'),
+        'utf8'
+      );
+
+      expect(source).toMatch(/case "govern":\s*await handleGovernance\(\);\s*break;/);
+    });
+
+    it('should keep both generate and disable help entries visible', () => {
+      const source = fs.readFileSync(
+        path.join(process.cwd(), 'Tools', 'ManageStrategies.ts'),
+        'utf8'
+      );
+
+      expect(source).toContain('disable/enable <target>');
+      expect(source).toContain('generate <desc>');
+    });
+  });
 });

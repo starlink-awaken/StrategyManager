@@ -271,6 +271,7 @@ function printCliHelp(): void {
   console.log("  sync-usage                  同步多平台使用数据");
   console.log("  check-health                执行主动健康检查");
   console.log("  disable/enable <target>     手动熔断/恢复模型厂商");
+  console.log("  generate <desc>             动态生成策略");
   console.log("  govern                      执行自主治理扫描");
 }
 
@@ -328,7 +329,28 @@ if (import.meta.main) {
           if (!positionals[0]) error("请提供目标");
           else await defaultHealthManager.enable(positionals[0], positionals[0].includes('/') ? 'model' : 'provider');
           break;
-        case "govern": await handleGovernance(); break;
+        case "generate":
+          if (positionals.length === 0) error("请提供场景描述");
+          else {
+            const result = generateDynamicStrategy({
+              description: positionals.join(" "),
+              priority: parsePriority(flags.priority as string),
+              retentionDays: flags["retention-days"] ? parseInt(flags["retention-days"] as string) : undefined,
+              save: flags.save !== false
+            });
+            if (result) {
+              success(`已生成动态策略: ${result.name}`);
+              info(`基于模板: ${result.baseTemplate}`);
+              info(`描述: ${result.config.description}`);
+              info(`文件路径: ${result.filePath}`);
+            } else {
+              error("生成失败");
+            }
+          }
+          break;
+        case "govern":
+          await handleGovernance();
+          break;
         default: printCliHelp();
       }
     } catch (err) {
